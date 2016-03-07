@@ -1,8 +1,10 @@
 module object_unit(input clk,
                     input rst_n,
                     //FROM matrix_unit
+                    //matrix_unit must wait for addr_vld to go high before giving new commands
                     input crt_obj, //should be a pulse
                     input del_obj, //should be a pulse
+                    input del_all,
                     input ref_addr, //should be a pulse
                     input [4:0] obj_num,
                     input changed_in,
@@ -20,23 +22,19 @@ module object_unit(input clk,
                     output reg changed_out);
 
 reg inc_nxt, set_mem_full, clr_mem_full, drive_addr, drive_ref_addr;
-reg set_nxt_obj, set_lst_stored_obj;
+reg set_nxt_obj, clr_nxt_obj, ret_lst_stored_obj;
 reg [4:0] curr_obj, nxt_obj;
 
-localparam IDLE=2'b00, SET_NXT_OBJ=2'b01, DRIVE_ADDR=2'b10, DRIVE_REF_ADDR=2'b11;
+localparam IDLE=2'b00, SET_NXT_OBJ=2'b01;
 reg [1:0] st, nxt_st;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-    end else begin
-    end
-end
-
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
+        obj_map <= 32'b0;
+    end else if (del_all) begin
         obj_map <= 32'b0;
     end
-    //after reset, the SM will handle this
+    //after reset, the state machine will handle this
 end
 
 always @(posedge clk, negedge rst_n) begin
@@ -47,6 +45,8 @@ always @(posedge clk, negedge rst_n) begin
             nxt_obj <= nxt_obj +1;
         else if (set_nxt_obj)
             nxt_obj <= obj_num;
+        else if (clr_nxt_obj)
+            nxt_obj <= 5'b0;
     end
 end
 
@@ -54,7 +54,7 @@ always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         lst_stored_obj <= 5'b0;
     end else begin
-        if (set_lst_stored_obj)
+        if (ret_lst_stored_obj)
             lst_stored_obj <= nxt_obj;
     end
 end
@@ -63,7 +63,7 @@ always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         lst_stored_obj_vld <= 1'b0;
     end else begin
-        if (set_lst_stored_obj)
+        if (ret_lst_stored_obj)
             lst_stored_obj_vld <= 1'b1;
         else
             lst_stored_obj_vld <= 1'b0;
@@ -106,6 +106,14 @@ end
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
+        changed_out <= 1'b0;
+    end else begin
+        changed_out <= changed_in;
+    end
+end
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
         st <= IDLE;
     end else begin
         st <= nxt_st;
@@ -118,54 +126,52 @@ inc_nxt = 1'b0;
 set_mem_full = 1'b0;
 clr_mem_full = 1'b0;
 set_nxt_obj = 1'b0;
+clr_nxt_obj = 1'b0;
 drive_addr = 1'b0;
 drive_ref_addr = 1'b0;
-set_lst_stored_obj = 1'b0;
+ret_lst_stored_obj = 1'b0;
 case(st)
     IDLE:
         if (crt_obj) begin
-            obj_map[nxt_obj] = 1'b1; //write into the obj_map (maybe not synthesizable)
-            curr_obj = nxt_obj;//mark this loc as the curr obj
-            set_lst_stored_obj = 1'b1;//return value of lst_stored_obj to CPU
-            if(nxt_obj == 31) begin //1st check for full memory
+            obj_map[nxt_obj] = 1'b1; //write into the obj_map (is this synthesizable?)
+            curr_obj = nxt_obj;//save this loc for driving addr later
+            ret_lst_stored_obj = 1'b1;//return value of lst_stored_obj to CPU
+            if(nxt_obj == 31) begin //check if obj mem is full
                 set_mem_full = 1'b1;
-                nxt_st = DRIVE_ADDR;
-            end else begin //if memory is not full, move nxt_obj to the next free loc
+                drive_addr = 1'b1;
+                nxt_st = IDLE;
+            end else begin //if memory is not full, set nxt_obj to the next free loc
                 inc_nxt = 1'b1;
                 nxt_st = SET_NXT_OBJ;
             end
         end else if (del_obj) begin
             clr_mem_full = 1'b1; //clear mem_full flag
-            obj_map[obj_num] = 1'b0; //clear obj_map
+            obj_map[obj_num] = 1'b0; //clear obj_map entry
             if(obj_num < nxt_obj) //always use the free location with lowest index for nxt_obj
                 set_nxt_obj = 1'b1;
                 nxt_st = IDLE;
+        end else if (del_all) begin
+            obj_map = 32'b0; //clear the entire obj_map
+            clr_nxt_obj = 1'b1;//reset nxt_obj
+            nxt_st = IDLE;
         end else if (ref_addr) begin //simply read the obj_num given by CPU and translate address
-            nxt_st = DRIVE_REF_ADDR;
+            drive_ref_addr = 1'b1;
+            nxt_st = IDLE;
         end else begin
             nxt_st = IDLE;
         end
     SET_NXT_OBJ:
-        if(obj_map[nxt_obj] == 1'b0) begin //fix this
-            nxt_st = DRIVE_ADDR;
-        end else if (nxt_obj == 31) begin //2nd check for full memory
+        if(obj_map[nxt_obj] == 1'b0) begin //if the incremented nxt_obj map entry is free
+            drive_addr = 1'b1;
+            nxt_st = IDLE;
+        end else if (nxt_obj == 31) begin //if its not free and we've reached the end of map
             set_mem_full = 1'b1;
-            nxt_st = DRIVE_ADDR;
-        end else begin
+            drive_addr = 1'b1;
+            nxt_st = IDLE;
+        end else begin //else check the next loc in the obj_map
             inc_nxt = 1'b1;
             nxt_st = SET_NXT_OBJ;
         end
-    DRIVE_ADDR:
-        begin
-            drive_addr = 1'b1;
-            nxt_st = IDLE;
-        end
-    DRIVE_REF_ADDR:
-        begin
-            drive_ref_addr = 1'b1;
-            nxt_st = IDLE;
-        end
-
 endcase
 end
 
