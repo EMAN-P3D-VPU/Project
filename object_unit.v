@@ -11,8 +11,8 @@ module object_unit(input clk,
 
                     //TO video_memory_unit
                     output reg[8:0] addr,
-                    output reg addr_vld,
                     //to matrix_unit
+                    output reg addr_vld,
                     output reg [4:0] lst_stored_obj,
                     output reg lst_stored_obj_vld,
                     output reg obj_mem_full,
@@ -59,6 +59,7 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 
+//dont need this i think
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         lst_stored_obj_vld <= 1'b0;
