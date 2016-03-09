@@ -87,9 +87,9 @@ always @(posedge clk, negedge rst_n) begin
         addr <= 9'b0;
     end else begin
         if(drive_addr)
-            addr <= 12*curr_obj;
+            addr <= 18*curr_obj;
         else if (drive_ref_addr)
-            addr <= 12*obj_num;
+            addr <= 18*obj_num;
         //else hold
     end
 end
