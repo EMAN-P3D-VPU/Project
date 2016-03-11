@@ -10,7 +10,7 @@ module object_unit(input clk,
                     input changed_in,
 
                     //TO video_memory_unit
-                    output reg[8:0] addr,
+                    output reg[4:0] addr,
                     //to matrix_unit
                     output reg addr_vld,
                     output reg [4:0] lst_stored_obj,
@@ -87,9 +87,9 @@ always @(posedge clk, negedge rst_n) begin
         addr <= 9'b0;
     end else begin
         if(drive_addr)
-            addr <= 18*curr_obj;
+            addr <= curr_obj; //mem is 144-bit deep, so no need for multiplier
         else if (drive_ref_addr)
-            addr <= 18*obj_num;
+            addr <= obj_num;
         //else hold
     end
 end

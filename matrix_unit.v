@@ -28,10 +28,11 @@ module matrix_unit(input clk,
                                         // B - create matrix
                                         // C - use matrix
                                         // F - loadback
+                                        //TODO - add the option of rotating around centroid or origin
             input [3:0] gmt_code,  //for translate_single - [3:2] bits select point, [1] - y, [0] - x
                                    //for rotate and scale (3 bits) - selects amount
             //FROM VIDEO MEMORY UNIT
-            input [143:0] mem_obj,
+            input [143:0] obj_in,
             //FROM OBJECT UNIT
             input addr_vld,
             input [4:0] lst_stored_obj_in,
@@ -39,6 +40,7 @@ module matrix_unit(input clk,
             input obj_mem_full_in,
             //FROM CLIPPING UNIT
             input clr_changed,
+            input reading,
 
             //TO CPU
             output reg busy,
@@ -54,20 +56,24 @@ module matrix_unit(input clk,
             output reg [143:0] obj_out,
             output reg rd_en,
             output reg wr_en,
-            output reg loadback
-);
+            output reg loadback,
+            //TO CLIPPING UNIT
+            output reg writing
+            );
 
 reg [5:0] coeff_addr;
 wire [7:0] coeff_1, coeff_2, coeff_3, coeff_4;
-coeff_ROM ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
+coeff_ROM cff_ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
 
-reg [15:0] c11, c12, c13, c21, c22, c23; //not sure about the width of these
-reg [6:0] c11_d, c12_d, c21_d, c22_d;
+reg signed [15:0] c11, c12, c13, c21, c22, c23; //not sure about the width of these
+reg signed [7:0] c11_d, c12_d, c21_d, c22_d;
 reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3; //note - regs are signed
 reg signed [15:0]  s0, t0, s1, t1, s2, t2, s3, t3; //note - regs are signed
-reg [7:0] color_reg, type_reg;
+wire signed [15:0] x_centroid, y_centroid;
+reg [7:0] color_reg;
+reg [1:0] type_reg;
 
-reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_mem_obj, calc_centroid;
+reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_obj_in, calc_centroid;
 reg mat_mult, mat_mult_cen, writeback, writeback_cen;
 wire [15:0] scl_coeff, scl_coeff_d;
 wire crt_cmd, del_cmd, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
@@ -77,7 +83,7 @@ wire dont_touch_p0, dont_touch_p1, dont_touch_p2, dont_touch_p3;
 
 reg [3:0] st, nxt_st;
 localparam IDLE=4'h0, WAIT_FOR_VLD_WR=4'h1, WAIT_FOR_VLD_RD=4'h2, LD_OBJ=4'h3, 
-    CALC_CENTROID = 4'h4, MAT_MULT=4'h5, MAT_MULT_CEN = 4'h6, WRITEBACK = 4'h7, WRITEBACK_CEN = 4'h8;
+    MAT_MULT=4'h4, CALC_CENTROID = 4'h5, MAT_MULT_CEN = 4'h6, WRITEBACK = 4'h7, WRITEBACK_CEN = 4'h8;
 
 assign crt_cmd = (gmt_op == 4'h0)? 1'b1: 1'b0;
 assign del_cmd = (gmt_op == 4'h1)? 1'b1: 1'b0;
@@ -150,7 +156,7 @@ always @(posedge clk, negedge rst_n) begin
                 obj_out[127:112] <= v7;
             end
             obj_out[135:128] <= obj_color;
-            obj_out[143:136] <= {6'bx, obj_type};
+            obj_out[143:136] <= {obj_type, 6'hx};
         end else if (writeback) begin
             obj_out[15:0] <= x0;
             obj_out[31:15] <= y0;
@@ -161,7 +167,7 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[111:96] <= x3;
             obj_out[127:112] <= y3;
             obj_out[135:128] <= color_reg;
-            obj_out[143:136] <= type_reg;
+            obj_out[143:142] <= type_reg;
         end else if (writeback_cen) begin
             obj_out[15:0] <= s0 + x0;
             obj_out[31:15] <= t0 + y0;
@@ -172,7 +178,7 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[111:96] <= s3 + x3;
             obj_out[127:112] <= t3 + y3;
             obj_out[135:128] <= color_reg;
-            obj_out[143:136] <= type_reg;
+            obj_out[143:142] <= type_reg;
         end
     end
 end
@@ -194,10 +200,10 @@ always @(posedge clk, negedge rst_n) begin
         c21 <= 16'b0;
         c22 <= 16'b0;
         c23 <= 16'b0;
-        c11_d <= 7'b1; //max divisor needed is 100
-        c12_d <= 7'b1;
-        c21_d <= 7'b1;
-        c22_d <= 7'b1;
+        c11_d <= 8'b1; //max divisor needed is 100
+        c12_d <= 8'b1;
+        c21_d <= 8'b1;
+        c22_d <= 8'b1;
     end else begin
         //TODO - should we multiply by a 100 here and then make the divide uniform
         if (ld_trans_coeff) begin //translate amt should be in pixels
@@ -223,12 +229,12 @@ always @(posedge clk, negedge rst_n) begin
             c21_d <= 1;
             c22_d <= scl_coeff_d;
         end else if (ld_rot_coeff) begin
-            c11 <= coeff_1;
-            c12 <= coeff_2;
-            c13 <= 0;
-            c21 <= coeff_3;
-            c22 <= coeff_4;
-            c23 <= 0;
+            c11 <= {{8{coeff_1[7]}}, coeff_1};
+            c12 <= {{8{coeff_2[7]}}, coeff_2};
+            c13 <= 16'h0;
+            c21 <= {{8{coeff_3[7]}}, coeff_3};
+            c22 <= {{8{coeff_4[7]}}, coeff_4};
+            c23 <= 16'h0;
             c11_d <= 100;
             c21_d <= 100;
             c12_d <= 100;
@@ -277,17 +283,17 @@ end
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
     end else begin
-        if(ld_mem_obj) begin
-            x0 <= mem_obj[15:0];
-            y0 <= mem_obj[31:16];
-            x1 <= mem_obj[47:32];
-            y1 <= mem_obj[63:48];
-            x2 <= mem_obj[79:64];
-            y2 <= mem_obj[95:80];
-            x3 <= mem_obj[111:96];
-            y3 <= mem_obj[127:112];
-            color_reg <= mem_obj[135:128];
-            type_reg <= mem_obj[143:136];
+        if(ld_obj_in) begin
+            x0 <= obj_in[15:0];
+            y0 <= obj_in[31:16];
+            x1 <= obj_in[47:32];
+            y1 <= obj_in[63:48];
+            x2 <= obj_in[79:64];
+            y2 <= obj_in[95:80];
+            x3 <= obj_in[111:96];
+            y3 <= obj_in[127:112];
+            color_reg <= obj_in[135:128];
+            type_reg <= obj_in[143:142];
         end
         if (mat_mult) begin
             if(type_reg >= 0 && !dont_touch_p0) begin //point
@@ -321,20 +327,21 @@ always @(*) begin
 busy = 1'b1;
 crt_obj = 1'b0;
 del_obj = 1'b0;
-wr_en = 1'b1;
+obj_num_out = 5'bx; //maybe we should have a separate flop to drive obj_num to obj_unit
 ref_addr = 1'b0;
-obj_num_out = 5'b0; //maybe we should have a separate flop to drive obj_num to obj_unit
+loadback = 1'b0;
+wr_en = 1'b0;
+rd_en = 1'b0;
 ld_trans_coeff = 1'b0;
 ld_scl_coeff = 1'b0;
 ld_rot_coeff = 1'b0;
-ld_mem_obj = 1'b0;
+coeff_addr = 5'bz;
+ld_obj_in = 1'b0;
 mat_mult = 1'b0;
 mat_mult_cen = 1'b0;
 writeback = 1'b0;
 writeback_cen = 1'b0;
 calc_centroid = 1'b0;
-coeff_addr = 5'bz;
-loadback = 1'b0;
 case (st)
     IDLE:
         if(go)begin
@@ -352,6 +359,7 @@ case (st)
                 ref_addr = 1'b1;
                 nxt_st = WAIT_FOR_VLD_RD;
             end else if (ldback) begin
+                obj_num_out = obj_num_in;
                 ref_addr = 1'b1;
                 loadback = 1'b1; //not sure if the matrix unit needs to wait for anything
                 nxt_st = IDLE;
@@ -372,27 +380,24 @@ case (st)
         end
     WAIT_FOR_VLD_RD:
         if(addr_vld == 1'b1) begin
-            rd_en = 1'b1; //read from video mem - obj goes into mem_obj
+            rd_en = 1'b1; //read from video mem - obj goes into obj_in
             nxt_st = LD_OBJ;
         end else begin
             nxt_st = WAIT_FOR_VLD_RD;
         end
     LD_OBJ:
         begin
-            ld_mem_obj = 1'b1;
+            ld_obj_in = 1'b1;
             if(trans_all || trans_one) begin
                 ld_trans_coeff = 1'b1;
                 nxt_st = MAT_MULT;
             end else if(scl_cmd) begin
-                ld_scl_coeff = 1'b1;
                 nxt_st = CALC_CENTROID;
             end else if (rotl_cmd) begin
-                coeff_addr = 4*gmt_code[2:0];
-                ld_rot_coeff = 1'b1; //this might now work, data might take 1 cycle more
+                coeff_addr = 4*gmt_code[2:0]; //coeffs will be available in the next cycle
                 nxt_st = CALC_CENTROID;
             end else if (rotr_cmd) begin
                 coeff_addr = 32 + 4*gmt_code[2:0];
-                ld_rot_coeff = 1'b1;
                 nxt_st = CALC_CENTROID;
             end
         end
@@ -403,6 +408,10 @@ case (st)
         end
     CALC_CENTROID:
         begin
+            if(scl_cmd)
+                ld_scl_coeff = 1'b1;
+            else if (rotl_cmd || rotr_cmd)
+                ld_rot_coeff = 1'b1;
             calc_centroid = 1'b1;
             nxt_st = MAT_MULT_CEN;
         end
@@ -413,13 +422,17 @@ case (st)
         end
     WRITEBACK:
         begin
-            writeback = 1'b1;
-            nxt_st = IDLE;
+            writeback = 1'b1; 
+            obj_num_out = obj_num_in;
+            ref_addr = 1'b1;
+            nxt_st = WAIT_FOR_VLD_WR;
         end
     WRITEBACK_CEN:
         begin
             writeback_cen = 1'b1;
-            nxt_st = IDLE;
+            obj_num_out = obj_num_in;
+            ref_addr = 1'b1;
+            nxt_st = WAIT_FOR_VLD_WR;
         end
 
 endcase
