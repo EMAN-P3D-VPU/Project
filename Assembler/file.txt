@@ -1,0 +1,15 @@
+_Label  AND R1  R2    # comment
+        OR  R3  R1
+        J   _Label     //comment that is a couple words
+
+_var1   .FILL   0x1234  # First variable
+
+// Just a line containing a comment //
+# and another line with just a comment #
+
+_Label2 OR  R5  R5
+        OR  R9  R10
+        JR  R6
+
+_var2   .FILL   0x2345 # Second variable
+_var3   .FILL   0x3456 # Third variable
