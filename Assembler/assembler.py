@@ -118,10 +118,10 @@ registers = {
 'R17'   : '10001',
 'R18'   : '10010',
 'R19'   : '10011',  'RT'    : '10011',  # Jump Return Register (PC + 1)
-'R20'   : '10100',  'RO'    : '10100',  # Return Object Register
-'R21'   : '10101',  'FS'    : '10101',  # Flags Register
-'R22'   : '10110',  'SP'    : '10110',  # Stack Pointer
-'R23'   : '10111',  'FP'    : '10111',  # Frame Pointer
+'R20'   : '10100',  'SP'    : '10100',  # Stack Pointer
+'R21'   : '10101',  'FP'    : '10101',  # Frame Pointer
+'R22'   : '10110',  'FS'    : '10110',  # Flags Register
+'R23'   : '10111',  'RO'    : '10111',  # Return Object Register
 'R24'   : '11000',  'V0'    : '11000',  # Vertex Register0
 'R25'   : '11001',  'V1'    : '11001',  # Vertex Register1
 'R26'   : '11010',  'V2'    : '11010',  # Vertex Register2
