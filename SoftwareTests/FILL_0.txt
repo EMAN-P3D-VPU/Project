@@ -1,0 +1,7 @@
+/////////////////////////////
+//Simple background fill test
+/////////////////////////////
+FILL 0x00
+WAIT 1000
+FILL 0xFF
+HALT
