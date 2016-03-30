@@ -22,7 +22,7 @@ module object_unit(input clk,
                     output reg changed_out);
 
 reg inc_nxt, set_mem_full, clr_mem_full, drive_addr, drive_ref_addr;
-reg set_nxt_obj, clr_nxt_obj, ret_lst_stored_obj;
+reg set_nxt_obj, clr_nxt_obj, ret_lst_stored_obj, store_in_map, del_from_map;
 reg [4:0] curr_obj, nxt_obj;
 
 localparam IDLE=2'b00, SET_NXT_OBJ=2'b01;
@@ -31,10 +31,14 @@ reg [1:0] st, nxt_st;
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         obj_map <= 32'b0;
-    end else if (del_all) begin
-        obj_map <= 32'b0;
+    end else begin
+        if(del_all) 
+            obj_map <= 32'b0;
+        else if(store_in_map)
+            obj_map[nxt_obj] <= 1'b1; 
+        else if(del_from_map)
+            obj_map[obj_num] <= 1'b0; 
     end
-    //after reset, the state machine will handle this
 end
 
 always @(posedge clk, negedge rst_n) begin
@@ -52,7 +56,7 @@ end
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        lst_stored_obj <= 5'b0;
+        lst_stored_obj <= 5'bx;
     end else begin
         if (ret_lst_stored_obj)
             lst_stored_obj <= nxt_obj;
@@ -131,10 +135,12 @@ clr_nxt_obj = 1'b0;
 drive_addr = 1'b0;
 drive_ref_addr = 1'b0;
 ret_lst_stored_obj = 1'b0;
+store_in_map = 1'b0;
+del_from_map = 1'b0;
 case(st)
     IDLE:
         if (crt_obj) begin
-            obj_map[nxt_obj] = 1'b1; //write into the obj_map (is this synthesizable?)
+            store_in_map = 1'b1; //write into the obj_map (is this synthesizable?)
             curr_obj = nxt_obj;//save this loc for driving addr later
             ret_lst_stored_obj = 1'b1;//return value of lst_stored_obj to CPU
             if(nxt_obj == 31) begin //check if obj mem is full
@@ -147,14 +153,14 @@ case(st)
             end
         end else if (del_obj) begin
             clr_mem_full = 1'b1; //clear mem_full flag
-            obj_map[obj_num] = 1'b0; //clear obj_map entry
+            del_from_map = 1'b1; //clear obj_map entry
             if(obj_num < nxt_obj) //always use the free location with lowest index for nxt_obj
                 set_nxt_obj = 1'b1;
                 nxt_st = IDLE;
-        end else if (del_all) begin
-            obj_map = 32'b0; //clear the entire obj_map
-            clr_nxt_obj = 1'b1;//reset nxt_obj
-            nxt_st = IDLE;
+        //end else if (del_all) begin
+        //    obj_map = 32'b0; //clear the entire obj_map
+        //    clr_nxt_obj = 1'b1;//reset nxt_obj
+        //    nxt_st = IDLE;
         end else if (ref_addr) begin //simply read the obj_num given by CPU and translate address
             drive_ref_addr = 1'b1;
             nxt_st = IDLE;

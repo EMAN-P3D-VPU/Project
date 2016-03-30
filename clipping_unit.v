@@ -1,7 +1,7 @@
 module clipping_unit(input clk,
                     input rst_n,
                     input [31:0] obj_map,
-                    input [147:0] obj,
+                    input [143:0] obj,
                     input raster_ready,
                     output [9:0] x0,
                     output [9:0] y0,
@@ -14,4 +14,8 @@ module clipping_unit(input clk,
                     output read_en,
                     output clr_changed
                     );
+
+always @(posedge clk, negedge rst_n) begin
+end
+
 endmodule

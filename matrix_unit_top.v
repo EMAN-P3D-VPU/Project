@@ -1,25 +1,38 @@
-module matrix_unit_tb();
+module matrix_unit_top(input clk,
+                        input rst_n,
+                        input [15:0] v0, //all these have to be input regs
+                        input [15:0] v1,
+                        input [15:0] v2,
+                        input [15:0] v3,
+                        input [15:0] v4,
+                        input [15:0] v5,
+                        input [15:0] v6,
+                        input [15:0] v7,
+                        input [1:0] obj_type,
+                        input [7:0] obj_color,
+                        input [4:0] obj_num_in,
+                        input [3:0] gmt_op,
+                        input [3:0] gmt_code,
+                        input go,
+                        output busy,
+                        output obj_mem_full_out,
+                        output [4:0] lst_stored_obj_out
+                        );
 
-reg clk, rst_n;
-//CPU inputs
-reg [15:0] v0, v1, v2, v3, v4, v5, v6, v7;
-reg [1:0] obj_type;
-reg [7:0] obj_color;
-reg [4:0] obj_num_in;
-reg [3:0] gmt_op, gmt_code;
-reg go, busy;
-wire obj_mem_full_in, obj_mem_full_out;
+//CPU-matrix interface
+//wire busy;
+//wire obj_mem_full_out;
+//wire [4:0] lst_stored_obj_out;
 //matrix-obj_unit interface
-reg crt_obj, del_obj, del_all, ref_addr, changed_in;
-reg [4:0] obj_num_out, lst_stored_obj_in, lst_stored_obj_out;
-reg addr_vld;
+wire crt_obj, del_obj, del_all, ref_addr, changed_in, obj_mem_full_in, addr_vld;
+wire [4:0] obj_num_out, lst_stored_obj_in;
 //matrix-mem_unit interface
-reg [143:0] mat_obj_in, mat_obj_out;
-reg mat_rd_en, mat_wr_en, loadback;
+wire [143:0] mat_obj_in, mat_obj_out;
+wire mat_rd_en, mat_wr_en, loadback;
 //obj-mem interface
-reg [4:0] mat_addr;
+wire [4:0] mat_addr;
 //clipping
-reg [31:0] obj_map;
+wire [31:0] obj_map;
 
 matrix_unit_new mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2), .v3(v3), .v4(v4), .v5(v5), .v6(v6), .v7(v7),
                 .obj_type(obj_type), .obj_color(obj_color), .obj_num_in(obj_num_in),
@@ -38,63 +51,5 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
                 .addr_vld(addr_vld), .lst_stored_obj(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full(obj_mem_full_in), .obj_map(obj_map));
 
-
-initial begin
-clk = 1'b0;
-rst_n = 1'b0; 
-v0 = 100;
-v1 = 100;
-v2 = 100;
-v3 = 200;
-v4 = 200;
-v5 = 200;
-v6 = 200;
-v7 = 100;
-go = 1'b0;
-@(negedge clk);
-rst_n = 1'b1;
-gmt_op <= 4'h0; //crt
-//create three objects
-//obj0 - quad
-@(posedge clk);
-obj_type <= 2'h3;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-//obj1 - tri
-@(posedge clk);
-obj_type <= 2'h2;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-//obj2 - line
-@(posedge clk);
-obj_type <= 2'h1;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-//translate object 1 (tri) along x-axis by a 100 pixels
-obj_num_in <= 5'h1;
-v0 <= 100;
-gmt_op <= 4'h4;
-gmt_code[1:0] <= 2'b01;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-//rotate object  0 by 60 degrees
-obj_num_in <= 5'h0;
-gmt_op <= 4'h6; //rotl
-gmt_code[2:0] <= 3'h4; //45 deg
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-
-
-end
-
-always #5 clk = ~clk;
 
 endmodule
