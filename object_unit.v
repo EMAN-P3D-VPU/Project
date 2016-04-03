@@ -2,22 +2,22 @@ module object_unit(input clk,
                     input rst_n,
                     //FROM matrix_unit
                     //matrix_unit must wait for addr_vld to go high before giving new commands
-                    input crt_obj, //should be a pulse
-                    input del_obj, //should be a pulse
+                    input crt_obj, //should be a pulse - TESTED
+                    input del_obj, //should be a pulse - TESTED
                     input del_all,
-                    input ref_addr, //should be a pulse
-                    input [4:0] obj_num,
+                    input ref_addr, //should be a pulse - TESTED
+                    input [4:0] obj_num, // - TESTED
                     input changed_in,
 
                     //TO video_memory_unit
-                    output reg[4:0] addr,
+                    output reg[4:0] addr, // - TESTED
                     //to matrix_unit
-                    output reg addr_vld,
+                    output reg addr_vld, // - TESTED
                     output reg [4:0] lst_stored_obj,
                     output reg lst_stored_obj_vld,
                     output reg obj_mem_full,
                     //to clipping logic
-                    output reg [31:0] obj_map,
+                    output reg [31:0] obj_map, // - TESTED
                     //to framebuffer and rasterizer
                     output reg changed_out);
 

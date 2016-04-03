@@ -11,16 +11,16 @@ module matrix_unit_new(input clk,
             input signed [15:0] v5,
             input signed [15:0] v6,
             input signed [15:0] v7,
-            input [1:0] obj_type, //0 -line, 1 -triangle, 2 -quad
+            input [1:0] obj_type, //0-pt, 1-line, 2-triangle, 3-quad - ALL TESTED
             input [7:0] obj_color,
             input [4:0] obj_num_in,
             input [3:0] gmt_op, // 0 - create_obj,
-                                        // 1 - delete single obj
+                                        // 1 - delete single obj - TESTED
                                         // 2 - delete all
                                         // 3 - translate single point
-                                        // 4 - translate all points
+                                        // 4 - translate all points - TESTED
                                         // 5 - scale
-                                        // 6 - rot left,
+                                        // 6 - rot left, - TESTED
                                         // 7 - rot right,
                                         // 8 - reflect x
                                         // 9 - reflect y
@@ -30,7 +30,7 @@ module matrix_unit_new(input clk,
                                         // F - loadback
                                         //TODO - add the option of rotating around centroid or origin
             input [3:0] gmt_code,  //for translate_single - [3:2] bits select point, [1] - y, [0] - x
-                                   //for rotate and scale (3 bits) - selects amount
+                                   //for rotate and scale [2:0] - selects amount, [3] - whether around centroid - TESTED
             //FROM VIDEO MEMORY UNIT
             input [143:0] obj_in,
             //FROM OBJECT UNIT
@@ -51,7 +51,7 @@ module matrix_unit_new(input clk,
             output reg del_obj,
             output reg ref_addr,
             output reg [4:0] obj_num_out,
-            output changed,
+            output reg changed, //TODO - implement 'changed' logic
             //TO VIDEO MEMORY UNIT
             output reg [143:0] obj_out,
             output reg rd_en,
@@ -61,13 +61,12 @@ module matrix_unit_new(input clk,
             output reg writing
             );
 
-reg [5:0] coeff_addr;
+reg [4:0] coeff_addr;
 wire signed[15:0] coeff_1, coeff_2, coeff_3, coeff_4;
 coeff_ROM cff_ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
 
-reg signed [15:0] c11, c12, c13, c21, c22, c23; //not sure about the width of these
-reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3; //note - regs are signed
-//reg signed [15:0]  s0, t0, s1, t1, s2, t2, s3, t3; //note - regs are signed
+reg signed [15:0] c11, c12, c13, c21, c22, c23; 
+reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3;
 wire signed [15:0] x_cen_tmp, y_cen_tmp;
 reg signed [15:0] x_centroid, y_centroid;
 reg signed [15:0] reg_x, reg_y;
@@ -77,14 +76,17 @@ wire signed [31:0] sum_1, sum_2;
 reg [7:0] color_reg;
 reg [1:0] type_reg;
 
-reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_obj_in, calc_from_cen;
+reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_obj_in, calc_from_cen, get_rotl_coeff, get_rotr_coeff;
 reg ld_point, inc_point_cnt, clr_point_cnt, ldback_reg, do_mult, do_div;
 reg mat_mult, writeback, writeback_cen, set_op_cen, clr_op_cen;
 wire [15:0] scl_coeff, scl_coeff_d;
+wire trans_x, trans_y, rot_cen;
+wire [2:0] rot_amt;
 wire crt_cmd, del_cmd, del_all, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
 wire ref_x, ref_y, ref_xy, crt_mat, use_mat, ldback;
 wire draw_pt, draw_line, draw_tri, draw_quad;
 wire dont_touch_p0, dont_touch_p1, dont_touch_p2, dont_touch_p3;
+wire pt0_vld, pt1_vld, pt2_vld, pt3_vld;
 
 reg op_cen;
 reg [2:0] point_cnt;
@@ -92,8 +94,8 @@ wire [2:0] max_point_cnt;
 
 reg [3:0] st, nxt_st;
 localparam IDLE=4'h0, WAIT_FOR_VLD_WR=4'h1, WAIT_FOR_VLD_RD=4'h2, LD_OBJ=4'h3, 
-    MAT_MULT=4'h4, CALC_CENTROID = 4'h5, DO_MULT=4'h6, DO_DIV=4'h7, 
-    LDBACK_REG=4'h8, WRITEBACK = 4'h9;
+    LD_TERMS=4'h4, CALC_CENTROID = 4'h5, DO_MULT=4'h6, DO_DIV=4'h7, 
+    LDBACK_REG=4'h8, WRITEBACK = 4'h9, WAIT_FOR_COEFF = 4'hA;
 
 assign crt_cmd = (gmt_op == 4'h0)? 1'b1: 1'b0;
 assign del_cmd = (gmt_op == 4'h1)? 1'b1: 1'b0;
@@ -123,6 +125,23 @@ assign dont_touch_p2 = (trans_one && gmt_code[3:2] != 2'h2)? 1'b1 : 1'b0;
 assign dont_touch_p3 = (trans_one && gmt_code[3:2] != 2'h3)? 1'b1 : 1'b0;
 
 assign max_point_cnt = type_reg;
+assign pt0_vld = (type_reg >= 0);
+assign pt1_vld = (type_reg >= 1);
+assign pt2_vld = (type_reg >= 2);
+assign pt3_vld = (type_reg == 3);
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
+        coeff_addr <= 4'bx;
+    end else begin
+        if(get_rotl_coeff)
+            //coeff_addr <= 4*rot_amt;
+            coeff_addr <= rot_amt;
+        if(get_rotr_coeff)
+            //coeff_addr <= 32 + 4*rot_amt;
+            coeff_addr <= 8 + rot_amt;
+    end
+end
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
@@ -200,28 +219,28 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[135:128] <= obj_color;
             obj_out[143:136] <= {obj_type, 6'h0};
         end else if (writeback) begin
-            if (type_reg >= 0) begin
+            if (pt0_vld) begin
                 obj_out[15:0] <= x0;
                 obj_out[31:16] <= y0;
             end else begin
                 obj_out[15:0] <= 16'hx;
                 obj_out[31:16] <= 16'hx;
             end 
-            if (type_reg >= 1) begin
+            if (pt1_vld) begin
                 obj_out[47:32] <= x1;
                 obj_out[63:48] <= y1;
             end else begin
                 obj_out[47:32] <= 16'hx;
                 obj_out[63:48] <= 16'hx;
             end 
-            if (type_reg >= 2) begin
+            if (pt2_vld) begin
                 obj_out[79:64] <= x2;
                 obj_out[95:80] <= y2;
             end else begin
                 obj_out[79:64] <= 16'hx;
                 obj_out[95:80] <= 16'hx;
             end 
-            if (type_reg == 3) begin
+            if (pt3_vld) begin
                 obj_out[111:96] <= x3;
                 obj_out[127:112] <= y3;
             end else begin
@@ -231,28 +250,28 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[135:128] <= color_reg;
             obj_out[143:136] <= {type_reg, 6'b0};
         end else if (writeback_cen) begin
-            if (type_reg >= 0) begin
+            if (pt0_vld) begin
                 obj_out[15:0] <= x0 + x_centroid;
                 obj_out[31:16] <= y0 + y_centroid;
             end else begin
                 obj_out[15:0] <= 16'hx;
                 obj_out[31:16] <= 16'hx;
             end 
-            if (type_reg >= 1) begin
+            if (pt1_vld) begin
                 obj_out[47:32] <= x1 + x_centroid;
                 obj_out[63:48] <= y1 + y_centroid;
             end else begin
                 obj_out[47:32] <= 16'hx;
                 obj_out[63:48] <= 16'hx;
             end 
-            if (type_reg >= 2) begin
+            if (pt2_vld) begin
                 obj_out[79:64] <= x2 + x_centroid;
                 obj_out[95:80] <= y2 + y_centroid;
             end else begin
                 obj_out[79:64] <= 16'hx;
                 obj_out[95:80] <= 16'hx;
             end 
-            if (type_reg == 3) begin
+            if (pt3_vld) begin
                 obj_out[111:96] <= x3 + x_centroid;
                 obj_out[127:112] <= y3 + y_centroid;
             end else begin
@@ -265,8 +284,13 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 
-assign x_cen_tmp = (x0 + x1 + x2 + x3)/4;
-assign y_cen_tmp = (y0 + y1 + y2 + y3)/4;
+//centroid ops not supported on triangle because it'll need div-by-3
+assign x_cen_tmp = (type_reg == 2'h0) ? x0 :
+                    (type_reg == 2'h1) ? (x0 + x1)/2 :
+                    (type_reg == 2'h3) ? (x0 + x1 + x2 + x3)/4 : 16'hx;
+assign y_cen_tmp = (type_reg == 2'h0) ? y0 :
+                    (type_reg == 2'h1) ? (y0 + y1)/2 :
+                    (type_reg == 2'h3) ? (y0 + y1 + y2 + y3)/4 : 16'hx;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
@@ -289,6 +313,10 @@ assign scl_coeff_d = (gmt_code[1:0] == 2'h0) ? 2:
                 (gmt_code[1:0] == 2'h1) ? 4:
                 (gmt_code[1:0] == 2'h2) ? 2:
                 (gmt_code[1:0] == 2'h3) ? 1: 16'hx;
+assign trans_x = gmt_code[0];
+assign trans_y = gmt_code[1];
+assign rot_amt = gmt_code[2:0];
+assign rot_cen = gmt_code[3];
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
@@ -302,10 +330,10 @@ always @(posedge clk, negedge rst_n) begin
         if (ld_trans_coeff) begin //translate amt should be in pixels
             c11 <= 1;
             c12 <= 0;
-            c13 <= (gmt_code[0] == 1'b1) ? v0 : 0;
+            c13 <= trans_x ? v0 : 0;
             c21 <= 0;
             c22 <= 1;
-            c23 <= (gmt_code[1] == 1'b1) ? v0 : 0;
+            c23 <= trans_y ? v0 : 0;
         end else if (ld_scl_coeff) begin
             c11 <= scl_coeff;
             c21 <= 0;
@@ -409,19 +437,19 @@ always @(posedge clk, negedge rst_n) begin
             y2 <= y2 - y_cen_tmp;
             y3 <= y3 - y_cen_tmp;
         end else if (ldback_reg) begin //
-            if(type_reg >= 0 && !dont_touch_p0 && point_cnt == 0) begin //point
+            if(pt0_vld && !dont_touch_p0 && point_cnt == 0) begin //point
                 x0 <= mat_res_x;
                 y0 <= mat_res_y;
             end
-            if(type_reg >= 1 && !dont_touch_p1 && point_cnt == 1) begin //line
+            if(pt1_vld && !dont_touch_p1 && point_cnt == 1) begin //line
                 x1 <= mat_res_x;
                 y1 <= mat_res_y;
             end
-            if(type_reg >= 2 && !dont_touch_p2 && point_cnt == 2) begin //tri
+            if(pt2_vld && !dont_touch_p2 && point_cnt == 2) begin //tri
                 x2 <= mat_res_x;
                 y2 <= mat_res_y;
             end
-            if(type_reg == 3 && !dont_touch_p3 && point_cnt == 3) begin //quad
+            if(pt3_vld && !dont_touch_p3 && point_cnt == 3) begin //quad
                 x3 <= mat_res_x;
                 y3 <= mat_res_y;
             end
@@ -448,7 +476,8 @@ rd_en = 1'b0;
 ld_trans_coeff = 1'b0;
 ld_scl_coeff = 1'b0;
 ld_rot_coeff = 1'b0;
-coeff_addr = 5'bx;
+get_rotl_coeff = 1'b0;
+get_rotr_coeff = 1'b0;
 ld_obj_in = 1'b0;
 writeback = 1'b0;
 writeback_cen = 1'b0;
@@ -475,12 +504,12 @@ case (st)
                 del_obj = 1'b1;
                 nxt_st = IDLE;
             end else if (trans_all || trans_one || scl_cmd || rotl_cmd || rotr_cmd) begin //load the obj and prepare the coeffs
-                obj_num_out = obj_num_in;
-                ref_addr = 1'b1;
+                obj_num_out = obj_num_in; //drive obj_num to obj_unit
+                ref_addr = 1'b1;        //ask it to drive addr of this obj to mem
                 nxt_st = WAIT_FOR_VLD_RD;
             end else if (ldback) begin
-                obj_num_out = obj_num_in;
-                ref_addr = 1'b1;
+                obj_num_out = obj_num_in; //drive obj_num to obj_unit
+                ref_addr = 1'b1;        //ask it to drive addr of this obj to mem
                 loadback = 1'b1; //not sure if the matrix unit needs to wait for anything
                 nxt_st = IDLE;
             end else begin
@@ -508,37 +537,48 @@ case (st)
     LD_OBJ:
         begin
             ld_obj_in = 1'b1; //obj will be available in the next stage
-            clr_point_cnt = 1'b1;
+            clr_point_cnt = 1'b1;//reset the point_cnt to 0
             if(trans_all || trans_one) begin
-                ld_trans_coeff = 1'b1;
-                clr_op_cen = 1'b1;
-                nxt_st = MAT_MULT;
+                clr_op_cen = 1'b1; //trans ops are never w.r.t centroid
+                nxt_st = LD_TERMS;
             end else if(scl_cmd) begin
-                set_op_cen = 1'b1;
+                set_op_cen = 1'b1; //scaling is always w.r.t centroid
                 nxt_st = CALC_CENTROID;
-            end else if (rotl_cmd) begin
-                set_op_cen = 1'b1;
-                coeff_addr = 4*gmt_code[2:0]; //coeffs will be available in the next cycle
-                nxt_st = CALC_CENTROID;
-            end else if (rotr_cmd) begin
-                set_op_cen = 1'b1;
-                coeff_addr = 32 + 4*gmt_code[2:0];
-                nxt_st = CALC_CENTROID;
+            end else if (rotl_cmd || rotr_cmd) begin
+                if(rotl_cmd)
+                    get_rotl_coeff = 1'b1; //rot coeff will be loaded in the next cycle
+                if(rotr_cmd)
+                    get_rotr_coeff = 1'b1; //same as for rotl_cmd
+                if(rot_cen) begin //if rotation is w.r.t centroid
+                    set_op_cen = 1'b1;
+                    nxt_st = CALC_CENTROID;
+                end else begin //if not
+                    clr_op_cen = 1'b1;
+                    nxt_st = WAIT_FOR_COEFF;
+                end
             end
         end
     CALC_CENTROID:
         begin
-            if(scl_cmd)
-                ld_scl_coeff = 1'b1;
-            else if (rotl_cmd || rotr_cmd)
-                ld_rot_coeff = 1'b1;
-            calc_from_cen = 1'b1;
-            nxt_st = MAT_MULT;
+            calc_from_cen = 1'b1; //find x,y from the centroid and store the 
+                                    //value of centroid for later 
+            nxt_st = LD_TERMS;
         end
-    MAT_MULT:
+    WAIT_FOR_COEFF:
         begin
-            ld_point = 1'b1;
-            if(point_cnt > max_point_cnt) begin
+            nxt_st = LD_TERMS; //wait for the coeff_ROM to give back coeff
+        end
+    LD_TERMS:
+        begin
+            ld_point = 1'b1; //load x,y pt into regs for mult
+            if(trans_all || trans_one) begin //load coeffs into regs for mult
+                ld_trans_coeff = 1'b1;
+            end else if(scl_cmd) begin
+                ld_scl_coeff = 1'b1;
+            end else if (rotl_cmd || rotr_cmd) begin
+                ld_rot_coeff = 1'b1;
+            end
+            if(point_cnt > max_point_cnt) begin //if we've processed all pts of this obj
                 nxt_st = WRITEBACK;
             end else begin
                 nxt_st = DO_MULT;
@@ -546,28 +586,29 @@ case (st)
         end
     DO_MULT:
         begin
-           do_mult = 1'b1;
+           do_mult = 1'b1; //perform mult of pt and coeff
            nxt_st = DO_DIV;
         end
     DO_DIV:
         begin
-            do_div = 1'b1;
+            do_div = 1'b1; //choose which bits of the result you want
             nxt_st = LDBACK_REG;
         end
     LDBACK_REG:
         begin
-            ldback_reg = 1'b1;
-            inc_point_cnt = 1'b1;
-            nxt_st = MAT_MULT;
+            ldback_reg = 1'b1; //ld result of mult into the appropriate reg
+            inc_point_cnt = 1'b1;//move onto processing next pt
+            nxt_st = LD_TERMS;
         end
     WRITEBACK:
         begin
-            if(op_cen == 1)
-                writeback_cen = 1'b1;
-            else
-                writeback = 1'b1; 
-            obj_num_out = obj_num_in;
-            ref_addr = 1'b1;
+            if(op_cen == 1) begin //if this is a centroid operation
+                writeback_cen = 1'b1; //add with the centroid before writing
+            end else begin            //else
+                writeback = 1'b1;     //just write to mem 
+            end
+            obj_num_out = obj_num_in; //drive obj_num to obj_unit
+            ref_addr = 1'b1; //ask it to drive addr corresponding to this num
             nxt_st = WAIT_FOR_VLD_WR;
         end
 endcase

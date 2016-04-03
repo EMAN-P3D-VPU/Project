@@ -86,7 +86,17 @@ wait(busy == 1'b0);
 //rotate object  0 by 60 degrees
 obj_num_in <= 5'h0;
 gmt_op <= 4'h6; //rotl
+gmt_code[3] = 1'b1;//around centroid
 gmt_code[2:0] <= 3'h4; //45 deg
+go <= 1'b1;
+@(posedge clk) go <= 1'b0;
+wait(busy == 1'b0);
+@(posedge clk);
+//rotate object  2 by 15 degrees 
+obj_num_in <= 5'h2;
+gmt_op <= 4'h6; //rotl
+gmt_code[3] = 1'b1;//around centroid
+gmt_code[2:0] <= 3'h1; //45 deg
 go <= 1'b1;
 @(posedge clk) go <= 1'b0;
 wait(busy == 1'b0);
