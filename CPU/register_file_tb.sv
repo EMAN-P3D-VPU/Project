@@ -23,7 +23,7 @@ integer i, j, k;
 // Outputs /
 ///////////
 wire	[15:0]	reg_data_0, reg_data_1, read_V0, read_V1, read_V2, read_V3,
-				read_V4, read_V5, read_V6, read_V7;
+				read_V4, read_V5, read_V6, read_V7, read_RO;
 
 ///////////////////
 // Interconnects /
@@ -40,7 +40,7 @@ register_file regfile(// Inputs //
 					 .wrt_V4(wrt_V4), .wrt_V5(wrt_V5), .wrt_V6(wrt_V6), .wrt_V7(wrt_V7),
 					 .return_obj(return_obj),
 					 // Outputs //
-					 .reg_data_0(reg_data_0), .reg_data_1(reg_data_1),
+					 .reg_data_0(reg_data_0), .reg_data_1(reg_data_1), .read_RO(read_RO),
 					 .read_V0(read_V0), .read_V1(read_V1), .read_V2(read_V2), .read_V3(read_V3),
 					 .read_V4(read_V4), .read_V5(read_V5), .read_V6(read_V6), .read_V7(read_V7));
 

@@ -115,7 +115,7 @@ assign XOR_zero = ~|XOR_result;
 // NOT bitwise -----------------------------------------------------------------
 
 // Intermediate result //
-assign NOT_result = ~op0;
+assign NOT_result = ~op1;
 
 // Zero //
 assign NOT_zero = ~|NOT_result;

@@ -17,7 +17,7 @@ module register_file(// Inputs //
 					 wrt_V4, wrt_V5, wrt_V6, wrt_V7,
 					 return_obj,
 					 // Outputs //
-					 reg_data_0, reg_data_1,
+					 reg_data_0, reg_data_1, read_RO,
 					 read_V0, read_V1, read_V2, read_V3,
 					 read_V4, read_V5, read_V6, read_V7);
 ////////////
@@ -30,7 +30,7 @@ input		[4:0]	reg_addr_1;
 input		[4:0]	wrt_addr_0;
 input		[4:0]	wrt_addr_1;
 // Flags Register //
-input		[15:0]	cpu_flags;
+input		[2:0]	cpu_flags;		// Z, N, V
 input				cpu_flags_we;
 // Write Data from CPU //
 input		[15:0]	wrt_data_0;
@@ -56,6 +56,7 @@ input		[15:0]	return_obj; //uhhh do we need this anymore?
 output	reg	[15:0]	reg_data_0;
 output	reg	[15:0]	reg_data_1;
 // Read Data to VPU //
+output		[15:0]	read_RO;
 output		[15:0]	read_V0;
 output		[15:0]	read_V1;
 output		[15:0]	read_V2;
@@ -276,6 +277,7 @@ assign	we_19	=	(we_a19 | we_b19);
 assign	we_20	=	(we_a20 | we_b20);
 assign	we_21	=	(we_a21 | we_b21);
 // Flags Register
+// TODO: Add more logic from VPU/SPART //
 assign	we_22	=	 cpu_flags_we;
 // Return Object Register
 assign	we_23	=	 we_VPU;
@@ -313,7 +315,8 @@ assign	wrt_data_R19	= (we_a19) ? wrt_data_0 : wrt_data_1;
 assign	wrt_data_R20	= (we_a20) ? wrt_data_0 : wrt_data_1;
 assign	wrt_data_R21	= (we_a21) ? wrt_data_0 : wrt_data_1;
 // Flags Register can only be written by CPU (user restricted) //
-assign	wrt_data_R22	=  cpu_flags;
+// TODO: Update from VPU/SPART as well so it may need some extra logic //
+assign	wrt_data_R22	= {R22[15:3], cpu_flags};
 // RO Register //
 assign	wrt_data_R23	= (we_VPU) ? return_obj :
 						  (we_a23) ? wrt_data_0 : wrt_data_1;
@@ -416,6 +419,7 @@ always @(*)begin
 end
 
 // VPU data always outputed //
+assign read_RO = R23;
 assign read_V0 = R24;
 assign read_V1 = R25;
 assign read_V2 = R26;
@@ -515,7 +519,7 @@ always @(we_21, wrt_data_R21 )begin
 	if(we_21)
 		R21 <= wrt_data_R21;
 end
-// Flags Register TODO: Shouldn't really write the whole 16 bits though...
+// Flags Register
 always @(we_22, wrt_data_R22 )begin
 	if(we_22)
 		R22 <= wrt_data_R22;
