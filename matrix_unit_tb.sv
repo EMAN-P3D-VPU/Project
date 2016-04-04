@@ -7,10 +7,11 @@ reg [1:0] obj_type;
 reg [7:0] obj_color;
 reg [4:0] obj_num_in;
 reg [3:0] gmt_op, gmt_code;
-reg go, busy, lst_stored_obj_out, obj_mem_full_out;
+reg go, busy;
+wire obj_mem_full_in, obj_mem_full_out;
 //matrix-obj_unit interface
 reg crt_obj, del_obj, del_all, ref_addr, changed_in;
-reg [4:0] obj_num_out, lst_stored_obj_in, obj_mem_full_in;
+reg [4:0] obj_num_out, lst_stored_obj_in, lst_stored_obj_out;
 reg addr_vld;
 //matrix-mem_unit interface
 reg [143:0] mat_obj_in, mat_obj_out;
@@ -20,7 +21,7 @@ reg [4:0] mat_addr;
 //clipping
 reg [31:0] obj_map;
 
-matrix_unit mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2), .v3(v3), .v4(v4), .v5(v5), .v6(v6), .v7(v7),
+matrix_unit_new mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2), .v3(v3), .v4(v4), .v5(v5), .v6(v6), .v7(v7),
                 .obj_type(obj_type), .obj_color(obj_color), .obj_num_in(obj_num_in),
                 .gmt_op(gmt_op), .gmt_code(gmt_code), .obj_in(mat_obj_out), .addr_vld(addr_vld), 
                 .lst_stored_obj_in(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
@@ -73,7 +74,7 @@ go <= 1'b1;
 @(posedge clk) go <= 1'b0;
 wait(busy == 1'b0);
 @(posedge clk);
-//translate object 1 along x-axis by a 100 pixels
+//translate object 1 (tri) along x-axis by a 100 pixels
 obj_num_in <= 5'h1;
 v0 <= 100;
 gmt_op <= 4'h4;
@@ -85,7 +86,17 @@ wait(busy == 1'b0);
 //rotate object  0 by 60 degrees
 obj_num_in <= 5'h0;
 gmt_op <= 4'h6; //rotl
-gmt_code[2:0] <= 3'h4; //60 deg
+gmt_code[3] = 1'b1;//around centroid
+gmt_code[2:0] <= 3'h4; //45 deg
+go <= 1'b1;
+@(posedge clk) go <= 1'b0;
+wait(busy == 1'b0);
+@(posedge clk);
+//rotate object  2 by 15 degrees 
+obj_num_in <= 5'h2;
+gmt_op <= 4'h6; //rotl
+gmt_code[3] = 1'b1;//around centroid
+gmt_code[2:0] <= 3'h1; //45 deg
 go <= 1'b1;
 @(posedge clk) go <= 1'b0;
 wait(busy == 1'b0);

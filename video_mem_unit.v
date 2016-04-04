@@ -22,9 +22,6 @@ module video_mem_unit(input clk,
 reg [143:0] ram[31:0];
 
 always @(posedge clk) begin
-end
-
-always @(posedge clk) begin
     if(mat_wr_en)
         ram[mat_addr] <= mat_obj_in;
 end

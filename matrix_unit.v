@@ -76,7 +76,7 @@ reg [1:0] type_reg;
 reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_obj_in, calc_centroid;
 reg mat_mult, mat_mult_cen, writeback, writeback_cen;
 wire [15:0] scl_coeff, scl_coeff_d;
-wire crt_cmd, del_cmd, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
+wire crt_cmd, del_cmd, del_all, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
 wire ref_x, ref_y, ref_xy, crt_mat, use_mat, ldback;
 wire draw_pt, draw_line, draw_tri, draw_quad;
 wire dont_touch_p0, dont_touch_p1, dont_touch_p2, dont_touch_p3;
@@ -200,12 +200,11 @@ always @(posedge clk, negedge rst_n) begin
         c21 <= 16'b0;
         c22 <= 16'b0;
         c23 <= 16'b0;
-        c11_d <= 8'b1; //max divisor needed is 100
+        c11_d <= 8'b1; //max divisor needed is 100 (signed)
         c12_d <= 8'b1;
         c21_d <= 8'b1;
         c22_d <= 8'b1;
     end else begin
-        //TODO - should we multiply by a 100 here and then make the divide uniform
         if (ld_trans_coeff) begin //translate amt should be in pixels
             c11 <= 1;
             c12 <= 0;
@@ -259,7 +258,6 @@ always @(posedge clk, negedge rst_n) begin
             t2 <= y2 - y_centroid;
             t3 <= y3 - y_centroid;
         end else if (mat_mult_cen) begin
-            //TODO - the division by a 100
             if(type_reg >= 0 && !dont_touch_p0) begin //point
                 s0 <= s0*c11/c11_d + t0*c12/c12_d + c13;
                 t0 <= s0*c21/c21_d + t0*c22/c22_d + c23;
@@ -354,6 +352,7 @@ case (st)
                 end
             end else if (del_cmd) begin
                 del_obj = 1'b1;
+                nxt_st = IDLE;
             end else if (trans_all || trans_one || scl_cmd || rotl_cmd || rotr_cmd) begin //load the obj and prepare the coeffs
                 obj_num_out = obj_num_in;
                 ref_addr = 1'b1;
