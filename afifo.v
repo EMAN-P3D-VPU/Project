@@ -11,7 +11,7 @@
 
 `include "timescale.v"
 module aFifo
-  #(parameter    DATA_WIDTH    = 88,
+  #(parameter    DATA_WIDTH    = 80,
                  ADDRESS_WIDTH = 7,
                  FIFO_DEPTH    = (1 << ADDRESS_WIDTH))
      //Reading port

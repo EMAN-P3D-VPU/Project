@@ -492,7 +492,7 @@ inc_point_cnt = 1'b0;
 ldback_reg = 1'b0;
 case (st)
     IDLE:
-        if(go)begin
+        if(go && !reading)begin
             if (crt_cmd) begin
                 if(!obj_mem_full_in) begin
                     crt_obj = 1'b1;

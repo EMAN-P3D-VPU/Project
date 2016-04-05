@@ -32,7 +32,10 @@ wire mat_rd_en, mat_wr_en, loadback;
 //obj-mem interface
 wire [4:0] mat_addr;
 //clipping
+wire clip_read_en;
+wire [4:0] clip_addr;
 wire [31:0] obj_map;
+wire [143:0] clip_obj_out;
 
 matrix_unit_new mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2), .v3(v3), .v4(v4), .v5(v5), .v6(v6), .v7(v7),
                 .obj_type(obj_type), .obj_color(obj_color), .obj_num_in(obj_num_in),
@@ -44,12 +47,16 @@ matrix_unit_new mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2)
                 .loadback(loadback));
 
 video_mem_unit mem_unit(.clk(clk), .rst_n(rst_n), .mat_addr(mat_addr), .mat_obj_in(mat_obj_in), .loadback(loadback),
-                .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out));
+                .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out),
+                .clip_addr(clip_addr), .clip_rd_en(clip_rd_en), .clip_obj_out(clip_obj_out));
 
 object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all),
                 .ref_addr(ref_addr), .obj_num(obj_num_out), .changed_in(changed_in), .addr(mat_addr),
                 .addr_vld(addr_vld), .lst_stored_obj(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full(obj_mem_full_in), .obj_map(obj_map));
+
+clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .addr(clip_addr), .read_en(clip_rd_en),
+                .writing(busy));
 
 
 endmodule

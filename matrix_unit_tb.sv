@@ -1,3 +1,5 @@
+`include "timescale.v"
+
 module matrix_unit_tb();
 
 reg clk, rst_n;
@@ -14,10 +16,12 @@ reg crt_obj, del_obj, del_all, ref_addr, changed_in;
 reg [4:0] obj_num_out, lst_stored_obj_in, lst_stored_obj_out;
 reg addr_vld;
 //matrix-mem_unit interface
-reg [143:0] mat_obj_in, mat_obj_out;
+reg [143:0] mat_obj_in, mat_obj_out, clip_obj_out;
 reg mat_rd_en, mat_wr_en, loadback;
+reg clip_rd_en;
 //obj-mem interface
 reg [4:0] mat_addr;
+reg [4:0] clip_addr;
 //clipping
 reg [31:0] obj_map;
 
@@ -28,15 +32,19 @@ matrix_unit_new mat(.clk(clk), .rst_n(rst_n), .go(go), .v0(v0), .v1(v1), .v2(v2)
                 .obj_mem_full_in(obj_mem_full_in), .busy(busy), .lst_stored_obj_out(lst_stored_obj_out),
                 .obj_mem_full_out(obj_mem_full_out), .crt_obj(crt_obj), .del_obj(del_obj), .ref_addr(ref_addr),
                 .obj_num_out(obj_num_out), .obj_out(mat_obj_in), .rd_en(mat_rd_en), .wr_en(mat_wr_en),
-                .loadback(loadback));
+                .loadback(loadback), .reading(1'b0));
 
 video_mem_unit mem_unit(.clk(clk), .rst_n(rst_n), .mat_addr(mat_addr), .mat_obj_in(mat_obj_in), .loadback(loadback),
-                .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out));
+                .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out), 
+                .clip_addr(clip_addr), .clip_rd_en(clip_rd_en), .clip_obj_out(clip_obj_out));
 
 object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all),
                 .ref_addr(ref_addr), .obj_num(obj_num_out), .changed_in(changed_in), .addr(mat_addr),
                 .addr_vld(addr_vld), .lst_stored_obj(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full(obj_mem_full_in), .obj_map(obj_map));
+
+clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .addr(clip_addr), .read_en(clip_rd_en),
+                .writing(busy));
 
 
 initial begin
@@ -74,9 +82,9 @@ go <= 1'b1;
 @(posedge clk) go <= 1'b0;
 wait(busy == 1'b0);
 @(posedge clk);
-//translate object 1 (tri) along x-axis by a 100 pixels
+//translate object 1 (tri) along x-axis by a <> pixels
 obj_num_in <= 5'h1;
-v0 <= 100;
+v0 <= 500;
 gmt_op <= 4'h4;
 gmt_code[1:0] <= 2'b01;
 go <= 1'b1;
@@ -102,6 +110,9 @@ go <= 1'b1;
 wait(busy == 1'b0);
 @(posedge clk);
 
+force clipper.start_refresh = 1'b1;
+@(posedge clk);
+force clipper.start_refresh = 1'b0;
 
 end
 
