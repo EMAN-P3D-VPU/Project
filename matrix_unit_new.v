@@ -61,12 +61,14 @@ module matrix_unit_new(input clk,
             output reg writing
             );
 
-reg [4:0] coeff_addr;
+reg [3:0] coeff_addr;
 wire signed[15:0] coeff_1, coeff_2, coeff_3, coeff_4;
 coeff_ROM cff_ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
 
 reg signed [15:0] c11, c12, c13, c21, c22, c23; 
 reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3;
+wire signed [16:0] sum2_x, sum2_y;
+wire signed [17:0] sum4_x, sum4_y;
 wire signed [15:0] x_cen_tmp, y_cen_tmp;
 reg signed [15:0] x_centroid, y_centroid;
 reg signed [15:0] reg_x, reg_y;
@@ -285,12 +287,16 @@ always @(posedge clk, negedge rst_n) begin
 end
 
 //centroid ops not supported on triangle because it'll need div-by-3
+assign sum2_x = x0 + x1;
+assign sum2_y = y0 + y1;
+assign sum4_x = x0 + x1 + x2 + x3;
+assign sum4_y = y0 + y1 + y2 + y3;
 assign x_cen_tmp = (type_reg == 2'h0) ? x0 :
-                    (type_reg == 2'h1) ? (x0 + x1)/2 :
-                    (type_reg == 2'h3) ? (x0 + x1 + x2 + x3)/4 : 16'hx;
+                    (type_reg == 2'h1) ? sum2_x[16:1] :
+                    (type_reg == 2'h3) ? sum4_x[17:2] : 16'hx;
 assign y_cen_tmp = (type_reg == 2'h0) ? y0 :
-                    (type_reg == 2'h1) ? (y0 + y1)/2 :
-                    (type_reg == 2'h3) ? (y0 + y1 + y2 + y3)/4 : 16'hx;
+                    (type_reg == 2'h1) ? sum2_y[16:1] :
+                    (type_reg == 2'h3) ? sum4_y[17:2] : 16'hx;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
@@ -336,7 +342,7 @@ always @(posedge clk, negedge rst_n) begin
             c23 <= trans_y ? v0 : 0;
         end else if (ld_scl_coeff) begin
             c11 <= scl_coeff;
-            c21 <= 0;
+            c12 <= 0;
             c13 <= 0;
             c21 <= 0;
             c22 <= scl_coeff;

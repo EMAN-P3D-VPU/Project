@@ -48,74 +48,95 @@ clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj
 
 
 initial begin
-clk = 1'b0;
-rst_n = 1'b0; 
-v0 = 100;
-v1 = 100;
-v2 = 100;
-v3 = 200;
-v4 = 200;
-v5 = 200;
-v6 = 200;
-v7 = 100;
-go = 1'b0;
-@(negedge clk);
-rst_n = 1'b1;
-gmt_op <= 4'h0; //crt
-//create three objects
-//obj0 - quad
-@(posedge clk);
-obj_type <= 2'h3;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-//obj1 - tri
-@(posedge clk);
-obj_type <= 2'h2;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-//obj2 - line
-@(posedge clk);
-obj_type <= 2'h1;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-//translate object 1 (tri) along x-axis by a <> pixels
-obj_num_in <= 5'h1;
-v0 <= 500;
-gmt_op <= 4'h4;
-gmt_code[1:0] <= 2'b01;
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-//rotate object  0 by 60 degrees
-obj_num_in <= 5'h0;
-gmt_op <= 4'h6; //rotl
-gmt_code[3] = 1'b1;//around centroid
-gmt_code[2:0] <= 3'h4; //45 deg
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-//rotate object  2 by 15 degrees 
-obj_num_in <= 5'h2;
-gmt_op <= 4'h6; //rotl
-gmt_code[3] = 1'b1;//around centroid
-gmt_code[2:0] <= 3'h1; //45 deg
-go <= 1'b1;
-@(posedge clk) go <= 1'b0;
-wait(busy == 1'b0);
-@(posedge clk);
-
-force clipper.start_refresh = 1'b1;
-@(posedge clk);
-force clipper.start_refresh = 1'b0;
+    initialize(); //(100, 100), (100,200), (200,200), (200, 100)
+    //create three objects
+    create(2'h3); //obj0 - quad
+    create(2'h2); //obj1 - tri
+    create(2'h1); //obj2 - line
+    translate(1, 500);//translate object 1 (tri) along x-axis by a <> pixels
+    rotate_l(0, 4, 1); //rotate object  0 by 60 degrees around centroid
+    translate(0, -150);//translate object 0 (qua) along x-axis by a <> pixels
+    rotate_l(2, 1, 1);//rotate object  2 by 15 degrees around centroid
+    //scale(2, 3);//scale obj 2 to twice the size
+    scale(2, 2);//scale obj 2 to 1.5x the size
+    trigger_clipper();//trigger clipper
 
 end
 
 always #5 clk = ~clk;
+
+task initialize();
+    clk = 1'b0;
+    rst_n = 1'b0; 
+    v0 = 100;
+    v1 = 100;
+    v2 = 100;
+    v3 = 200;
+    v4 = 200;
+    v5 = 200;
+    v6 = 200;
+    v7 = 100;
+    go = 1'b0;
+    @(negedge clk);
+    rst_n = 1'b1;
+    @(posedge clk);
+endtask
+
+task create(input bit [1:0] typ);
+    gmt_op <= 4'h0; //crt
+    obj_type <= typ;
+    go <= 1'b1;
+    @(posedge clk) go <= 1'b0;
+    wait(busy == 1'b0);
+endtask
+
+task translate(input bit [5:0] num, input bit [15:0] amt);
+    obj_num_in <= num;
+    v0 <= amt;
+    gmt_op <= 4'h4;
+    gmt_code[1:0] <= 2'b01;
+    go <= 1'b1;
+    @(posedge clk) go <= 1'b0;
+    wait(busy == 1'b0);
+    @(posedge clk);
+endtask
+
+task rotate_l(input bit [5:0] num, input bit [2:0] amt, input bit centroid);
+    obj_num_in <= num;
+    gmt_op <= 4'h6; //rotl
+    gmt_code[3] = centroid;//around centroid
+    gmt_code[2:0] <= amt; 
+    go <= 1'b1;
+    @(posedge clk) go <= 1'b0;
+    wait(busy == 1'b0);
+    @(posedge clk);
+endtask
+
+task rotate_r(input bit [5:0] num, input bit [2:0] amt, input bit centroid);
+    obj_num_in <= num;
+    gmt_op <= 4'h7; //rotr
+    gmt_code[3] = centroid;//around centroid
+    gmt_code[2:0] <= amt; 
+    go <= 1'b1;
+    @(posedge clk) go <= 1'b0;
+    wait(busy == 1'b0);
+    @(posedge clk);
+endtask
+
+task scale(input bit [5:0] num, input bit [1:0] amt);
+    obj_num_in <= num;
+    gmt_op <= 4'h5; //scale
+    gmt_code[1:0] <= amt; 
+    go <= 1'b1;
+    @(posedge clk) go <= 1'b0;
+    wait(busy == 1'b0);
+    @(posedge clk);
+endtask
+
+task trigger_clipper();
+    force clipper.refresh_cnt = 1666667;
+    @(posedge clk);
+    release clipper.refresh_cnt;
+endtask
 
 endmodule

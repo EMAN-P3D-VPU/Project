@@ -65,7 +65,6 @@ aFifo final_fifo(
 //For keeping track of objects
 reg [1:0] point_cnt;
 wire start_refresh, end_refresh;
-wire cycle_1, cycle_2, cycle_3, cycle_4;
 reg refresh_en;
 reg [4:0] obj_num, prev_obj_num;
 reg [20:0] refresh_cnt;
@@ -83,7 +82,7 @@ reg [3:0] oc0_clip, oc1_clip;
 wire pt0_gt_ymax, pt0_lt_ymin, pt0_gt_xmax, pt0_lt_xmin;
 wire pt1_gt_ymax, pt1_lt_ymin, pt1_gt_xmax, pt1_lt_xmin;
 wire accept_line, reject_line, clip_line;
-reg latch_line, store_line, clip_en;
+reg read_fifo, store_line, clip_en;
 
 reg [2:0] cnt;
 reg clip_done;
@@ -95,8 +94,7 @@ wire signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
 wire signed [15:0] x_max_min, y_max_min;
 wire signed [15:0] mult1, mult2, divisor;
 wire signed [31:0] dividend;
-//reg signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
-wire signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
+reg signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
 
 reg [3:0] st, nxt_st;
 localparam IDLE=4'h0, WAIT_FOR_LINE=4'h1, MAKE_DECISION=4'h2,
@@ -114,7 +112,7 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 assign start_refresh = (refresh_cnt == 1666667) ? 1'b1 : 1'b0;
-assign end_refresh = (refresh_cnt == 127) ? 1'b1 : 1'b0; //it'll reset and count from 0-127(or 126?) after hitting 1666667
+assign end_refresh = (refresh_cnt == 127) ? 1'b1 : 1'b0; //it'll reset and count from 0-127 after hitting 1666667
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
@@ -138,24 +136,42 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 
+wire cycle_1, cycle_2, cycle_3, cycle_4;
 assign cycle_1 = (point_cnt == 2'b00) ? 1'b1 : 1'b0;
 //these will be low if refresh_en == 0
 assign cycle_2 = (point_cnt == 2'b01) ? 1'b1 : 1'b0;
 assign cycle_3 = (point_cnt == 2'b10) ? 1'b1 : 1'b0;
 assign cycle_4 = (point_cnt == 2'b11) ? 1'b1 : 1'b0;
 
+assign addr = obj_num;
 assign obj_vld = (refresh_en && (obj_map[obj_num] == 1'b1)) ? 1'b1 : 1'b0;
 assign prev_obj_vld = (refresh_en && (obj_map[prev_obj_num] == 1'b1)) ? 1'b1 : 1'b0;
-assign addr = obj_num;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         read_en <= 1'b0;
     end else begin
         if(cycle_2 && obj_vld) begin
-            read_en <= 1'b1; //obj will be available on bus after 2 cycles
+            read_en = 1'b1; //obj will be available on bus after 2 cycles
         end else begin
-            read_en <= 1'b0;
+            read_en = 1'b0;
+        end
+    end
+end
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
+        prev_obj_num <= 5'hx;
+        obj_num <= 5'h0;
+    end else begin
+        if(refresh_en) begin
+            if (cycle_4) begin
+                prev_obj_num <= obj_num;
+                obj_num <= obj_num +1;
+            end
+        end else begin
+            prev_obj_num <= 5'hx;
+            obj_num <= 5'h0;
         end
     end
 end
@@ -263,6 +279,12 @@ assign oc1_in[0] = (x1_in_f0 < 0)   ? 1'b1 : 1'b0;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
+    end else begin
+    end
+end
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
         st <= IDLE;
     end else begin
         st <= nxt_st;
@@ -271,9 +293,10 @@ end
 
 always @(*) begin
 f0_rd = 1'b0;
-latch_line = 1'b0;
+read_fifo = 1'b0;
 store_line = 1'b0;
 clip_en = 1'b0;
+reading = 1'b1;
 case(st)
     IDLE:
         begin
@@ -281,12 +304,13 @@ case(st)
                 f0_rd = 1'b1;
                 nxt_st = WAIT_FOR_LINE;
             end else begin
+                reading = 1'b0;
                 nxt_st = IDLE;
             end
         end
     WAIT_FOR_LINE:
         begin
-           latch_line = 1'b1; 
+           read_fifo = 1'b1; 
            nxt_st = MAKE_DECISION;
         end
     MAKE_DECISION:
@@ -299,6 +323,8 @@ case(st)
             end else if (clip_line) begin
                 clip_en = 1'b1; //not sure if this is needed
                 nxt_st = WAIT_FOR_CLIPPING;
+            end else begin
+                nxt_st = IDLE;
             end
         end
     WAIT_FOR_CLIPPING:
@@ -326,7 +352,7 @@ always @(posedge clk, negedge rst_n) begin
         oc1_clip <= 4'hx;
         color_clip <= 8'hx;
     end else begin
-        if(latch_line) begin //
+        if(read_fifo) begin //
             x0_clip <= x0_out_f0;
             y0_clip <= y0_out_f0;
             oc0_clip <= oc0_out;
@@ -462,10 +488,10 @@ assign y_b =  (ld_pt0 == 1'b1) ? y1_clip :
             assign dividend = mult1*mult2;
 
 //For simulation
-//always @ (posedge clk) begin
-//quotient <= dividend/divisor;
-//end
-divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
+always @ (posedge clk) begin
+quotient <= dividend/divisor;
+end
+//divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
 
 //For storing into final fifo
 always @(posedge clk, negedge rst_n) begin
