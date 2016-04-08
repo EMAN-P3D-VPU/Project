@@ -17,19 +17,18 @@ module matrix_unit_new(input clk,
             input [3:0] gmt_op, // 0 - create_obj,
                                         // 1 - delete single obj - TESTED
                                         // 2 - delete all
-                                        // 3 - translate single point
+                                        // 3 - translate single point - TESTED
                                         // 4 - translate all points - TESTED
-                                        // 5 - scale
+                                        // 5 - scale - TESTED
                                         // 6 - rot left, - TESTED
-                                        // 7 - rot right,
-                                        // 8 - reflect x
+                                        // 7 - rot right, - TESTED
+                                        // 8 - reflect x //TODO
                                         // 9 - reflect y
                                         // A - reflect x&y
-                                        // B - create matrix
-                                        // C - use matrix
+                                        // B - create matrix //TODO
+                                        // C - use matrix  //TODO
                                         // F - loadback
-                                        //TODO - add the option of rotating around centroid or origin
-            input [3:0] gmt_code,  //for translate_single - [3:2] bits select point, [1] - y, [0] - x
+            input [3:0] gmt_code,  //for translate_single - [3:2] bits select point, [1] - y, [0] - x - xy TESTED
                                    //for rotate and scale [2:0] - selects amount, [3] - whether around centroid - TESTED
             //FROM VIDEO MEMORY UNIT
             input [143:0] obj_in,
@@ -49,9 +48,10 @@ module matrix_unit_new(input clk,
             //TO OBJECT UNIT
             output reg crt_obj,
             output reg del_obj,
+            output reg del_all,
             output reg ref_addr,
             output reg [4:0] obj_num_out,
-            output reg changed, //TODO - implement 'changed' logic
+            output reg changed, 
             //TO VIDEO MEMORY UNIT
             output reg [143:0] obj_out,
             output reg rd_en,
@@ -71,6 +71,7 @@ wire signed [16:0] sum2_x, sum2_y;
 wire signed [17:0] sum4_x, sum4_y;
 wire signed [15:0] x_cen_tmp, y_cen_tmp;
 reg signed [15:0] x_centroid, y_centroid;
+wire signed [15:0] x0_with_cen, y0_with_cen, x1_with_cen, y1_with_cen, x2_with_cen, y2_with_cen, x3_with_cen, y3_with_cen;
 reg signed [15:0] reg_x, reg_y;
 reg signed [31:0] mult_res1_x, mult_res1_y, mult_res2_x, mult_res2_y;
 reg signed [15:0] mat_res_x, mat_res_y;
@@ -79,12 +80,12 @@ reg [7:0] color_reg;
 reg [1:0] type_reg;
 
 reg ld_trans_coeff, ld_scl_coeff, ld_rot_coeff, ld_obj_in, calc_from_cen, get_rotl_coeff, get_rotr_coeff;
-reg ld_point, inc_point_cnt, clr_point_cnt, ldback_reg, do_mult, do_div;
+reg ld_point, inc_point_cnt, clr_point_cnt, ldback_reg, do_mult, do_div, set_changed;
 reg mat_mult, writeback, writeback_cen, set_op_cen, clr_op_cen;
 wire [15:0] scl_coeff, scl_coeff_d;
 wire trans_x, trans_y, rot_cen;
 wire [2:0] rot_amt;
-wire crt_cmd, del_cmd, del_all, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
+wire crt_cmd, del_cmd, del_all_cmd, trans_one, trans_all, scl_cmd, rotl_cmd, rotr_cmd, ref_cmd;
 wire ref_x, ref_y, ref_xy, crt_mat, use_mat, ldback;
 wire draw_pt, draw_line, draw_tri, draw_quad;
 wire dont_touch_p0, dont_touch_p1, dont_touch_p2, dont_touch_p3;
@@ -101,7 +102,7 @@ localparam IDLE=4'h0, WAIT_FOR_VLD_WR=4'h1, WAIT_FOR_VLD_RD=4'h2, LD_OBJ=4'h3,
 
 assign crt_cmd = (gmt_op == 4'h0)? 1'b1: 1'b0;
 assign del_cmd = (gmt_op == 4'h1)? 1'b1: 1'b0;
-assign del_all = (gmt_op == 4'h2)? 1'b1: 1'b0;
+assign del_all_cmd = (gmt_op == 4'h2)? 1'b1: 1'b0;
 assign trans_one = (gmt_op == 4'h3)? 1'b1: 1'b0;
 assign trans_all = (gmt_op == 4'h4)? 1'b1: 1'b0;
 assign scl_cmd = (gmt_op == 4'h5)? 1'b1: 1'b0;
@@ -132,17 +133,13 @@ assign pt1_vld = (type_reg >= 1);
 assign pt2_vld = (type_reg >= 2);
 assign pt3_vld = (type_reg == 3);
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-        coeff_addr <= 4'bx;
-    end else begin
+always @(posedge clk) begin
         if(get_rotl_coeff)
             //coeff_addr <= 4*rot_amt;
             coeff_addr <= rot_amt;
         if(get_rotr_coeff)
             //coeff_addr <= 32 + 4*rot_amt;
             coeff_addr <= 8 + rot_amt;
-    end
 end
 
 always @(posedge clk, negedge rst_n) begin
@@ -175,20 +172,33 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-    end else begin
+always @(posedge clk) begin
         if(addr_vld) //stored loc can be returend when obj_unit flags addr_vld
             lst_stored_obj_out <= lst_stored_obj_in;
+end
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
+        changed <= 1'b1;
+    end else begin
+        if(set_changed)
+            changed <= 1'b1;
+        else if (clr_changed)
+            changed <= 1'b0;
     end
 end
 
 // OBJECT REGISTERS AND BUSES
+assign x0_with_cen = x0 + x_centroid;
+assign y0_with_cen = y0 + y_centroid;
+assign x1_with_cen = x1 + x_centroid;
+assign y1_with_cen = y1 + y_centroid;
+assign x2_with_cen = x2 + x_centroid;
+assign y2_with_cen = y2 + y_centroid;
+assign x3_with_cen = x3 + x_centroid;
+assign y3_with_cen = y3 + y_centroid;
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-        obj_out <= 148'h0;
-    end else begin
+always @(posedge clk) begin
         if (go && crt_cmd) begin //obj_out gets automatically created without the SM's inteference
             if (obj_type >= 0) begin
                 obj_out[15:0] <= v0;
@@ -253,29 +263,29 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[143:136] <= {type_reg, 6'b0};
         end else if (writeback_cen) begin
             if (pt0_vld) begin
-                obj_out[15:0] <= x0 + x_centroid;
-                obj_out[31:16] <= y0 + y_centroid;
+                obj_out[15:0] <= x0_with_cen;
+                obj_out[31:16] <= y0_with_cen;
             end else begin
                 obj_out[15:0] <= 16'hx;
                 obj_out[31:16] <= 16'hx;
             end 
             if (pt1_vld) begin
-                obj_out[47:32] <= x1 + x_centroid;
-                obj_out[63:48] <= y1 + y_centroid;
+                obj_out[47:32] <= x1_with_cen;
+                obj_out[63:48] <= y1_with_cen;
             end else begin
                 obj_out[47:32] <= 16'hx;
                 obj_out[63:48] <= 16'hx;
             end 
             if (pt2_vld) begin
-                obj_out[79:64] <= x2 + x_centroid;
-                obj_out[95:80] <= y2 + y_centroid;
+                obj_out[79:64] <= x2_with_cen;
+                obj_out[95:80] <= y2_with_cen;
             end else begin
                 obj_out[79:64] <= 16'hx;
                 obj_out[95:80] <= 16'hx;
             end 
             if (pt3_vld) begin
-                obj_out[111:96] <= x3 + x_centroid;
-                obj_out[127:112] <= y3 + y_centroid;
+                obj_out[111:96] <= x3_with_cen;
+                obj_out[127:112] <= y3_with_cen;
             end else begin
                 obj_out[111:96] <= 16'hx;
                 obj_out[127:112] <= 16'hx;
@@ -283,7 +293,6 @@ always @(posedge clk, negedge rst_n) begin
             obj_out[135:128] <= color_reg;
             obj_out[143:136] <= {type_reg, 6'b0};
         end
-    end
 end
 
 //centroid ops not supported on triangle because it'll need div-by-3
@@ -298,13 +307,10 @@ assign y_cen_tmp = (type_reg == 2'h0) ? y0 :
                     (type_reg == 2'h1) ? sum2_y[16:1] :
                     (type_reg == 2'h3) ? sum4_y[17:2] : 16'hx;
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-    end else begin
-        if(calc_from_cen) begin
-            x_centroid <= x_cen_tmp;
-            y_centroid <= y_cen_tmp;
-        end
+always @(posedge clk) begin
+    if(calc_from_cen) begin
+        x_centroid <= x_cen_tmp;
+        y_centroid <= y_cen_tmp;
     end
 end
 
@@ -358,9 +364,7 @@ always @(posedge clk, negedge rst_n) begin
     end
 end
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-    end else begin
+always @(posedge clk) begin
         if(ld_point) begin
             if (point_cnt == 4'h0) begin
                 reg_x <= x0;
@@ -376,7 +380,6 @@ always @(posedge clk, negedge rst_n) begin
                 reg_y <= y3;
             end
         end
-    end
 end
 
 //wire signed [31:0] mult_res1_x, mult_res1_y, mult_res2_x, mult_res2_y;
@@ -384,21 +387,19 @@ end
 //multiplier mult_y1(.clk(clk), .a(reg_y), .b(c12), .p(mult_res1_y));
 //multiplier mult_x2(.clk(clk), .a(reg_x), .b(c21), .p(mult_res2_x));
 //multiplier mult_y2(.clk(clk), .a(reg_y), .b(c22), .p(mult_res2_y));
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-    end else begin
+always @(posedge clk) begin
         if(do_mult) begin
                 mult_res1_x <= reg_x*c11;
                 mult_res1_y <= reg_y*c12;
                 mult_res2_x <= reg_x*c21;
                 mult_res2_y <= reg_y*c22;
         end
-    end
 end
 
 //calculating sum of the multiplication terms
 assign sum_1 = mult_res1_x + mult_res1_y;
 assign sum_2 = mult_res2_x + mult_res2_y;
+
 always @(posedge clk) begin
     if(do_div)
         if(trans_one || trans_all) begin
@@ -419,9 +420,7 @@ always @(posedge clk) begin
         end
 end
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-    end else begin
+always @(posedge clk) begin
         if(ld_obj_in) begin
             x0 <= obj_in[15:0];
             y0 <= obj_in[31:16];
@@ -460,7 +459,6 @@ always @(posedge clk, negedge rst_n) begin
                 y3 <= mat_res_y;
             end
         end
-    end
 end
 
 always @(posedge clk, negedge rst_n) begin
@@ -474,6 +472,7 @@ always @(*) begin
 busy = 1'b1;
 crt_obj = 1'b0;
 del_obj = 1'b0;
+del_all = 1'b0;
 obj_num_out = 5'bx; //maybe we should have a separate flop to drive obj_num to obj_unit
 ref_addr = 1'b0;
 loadback = 1'b0;
@@ -496,9 +495,11 @@ do_div = 1'b0;
 clr_point_cnt = 1'b0;
 inc_point_cnt = 1'b0;
 ldback_reg = 1'b0;
+set_changed = 1'b0;
 case (st)
     IDLE:
         if(go && !reading)begin
+            set_changed = 1'b1;
             if (crt_cmd) begin
                 if(!obj_mem_full_in) begin
                     crt_obj = 1'b1;
@@ -507,7 +508,11 @@ case (st)
                     nxt_st = IDLE;
                 end
             end else if (del_cmd) begin
+                obj_num_out = obj_num_in; //drive obj_num to obj_unit
                 del_obj = 1'b1;
+                nxt_st = IDLE;
+            end else if (del_all_cmd) begin
+                del_all = 1'b1;
                 nxt_st = IDLE;
             end else if (trans_all || trans_one || scl_cmd || rotl_cmd || rotr_cmd) begin //load the obj and prepare the coeffs
                 obj_num_out = obj_num_in; //drive obj_num to obj_unit

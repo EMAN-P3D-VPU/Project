@@ -4,16 +4,17 @@ module clipping_unit(input clk,
                     input [143:0] obj,
                     input raster_ready,
                     input writing, //from matrix_unit
-                    output reg [9:0] x0_out,
-                    output reg [9:0] y0_out,
-                    output reg [9:0] x1_out,
-                    output reg [7:0] y1_out,
-                    output reg [2:0] color_out,
+                    input changed,
+                    output [9:0] x0_out,
+                    output [9:0] y0_out,
+                    output [9:0] x1_out,
+                    output [7:0] y1_out,
+                    output [2:0] color_out,
                     output reg vld,
                     output reg end_of_obj,
                     output [4:0] addr,
                     output reg read_en,
-                    output reg clr_changed, //to matrix unit
+                    output clr_changed, //to matrix unit
                     output reg reading //to matrix_unit
                     );
 
@@ -51,7 +52,7 @@ wire [7:0] color_out_f1;
 wire f1_empty, f1_full;
 
 aFifo final_fifo(
-            .Data_out({color_out_f1, y1_out_f1, x1_out_f1, y0_out_f1, x0_out_f1}), 
+            .Data_out({color_out_f1, y1_out1, x1_out_f1, y0_out_f1, x0_out_f1}), 
             .Empty_out(f1_empty), 
             .ReadEn_in(f1_rd), 
             .RClk(clk),
@@ -82,7 +83,7 @@ reg [3:0] oc0_clip, oc1_clip;
 wire pt0_gt_ymax, pt0_lt_ymin, pt0_gt_xmax, pt0_lt_xmin;
 wire pt1_gt_ymax, pt1_lt_ymin, pt1_gt_xmax, pt1_lt_xmin;
 wire accept_line, reject_line, clip_line;
-reg read_fifo, store_line, clip_en;
+reg latch_line, store_line, clip_en;
 
 reg [2:0] cnt;
 reg clip_done;
@@ -94,7 +95,7 @@ wire signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
 wire signed [15:0] x_max_min, y_max_min;
 wire signed [15:0] mult1, mult2, divisor;
 wire signed [31:0] dividend;
-reg signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
+wire signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
 
 reg [3:0] st, nxt_st;
 localparam IDLE=4'h0, WAIT_FOR_LINE=4'h1, MAKE_DECISION=4'h2,
@@ -113,12 +114,13 @@ always @(posedge clk, negedge rst_n) begin
 end
 assign start_refresh = (refresh_cnt == 1666667) ? 1'b1 : 1'b0;
 assign end_refresh = (refresh_cnt == 127) ? 1'b1 : 1'b0; //it'll reset and count from 0-127 after hitting 1666667
+assign clr_changed = end_refresh;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         refresh_en <= 1'b0;
     end else begin
-        if(start_refresh) //after a delay of 1 cycle, refresh will be enabled
+        if(start_refresh && changed) //after a delay of 1 cycle, refresh will be enabled
             refresh_en <= 1'b1;
         else if (end_refresh)
             refresh_en <= 1'b0;
@@ -152,9 +154,9 @@ always @(posedge clk, negedge rst_n) begin
         read_en <= 1'b0;
     end else begin
         if(cycle_2 && obj_vld) begin
-            read_en = 1'b1; //obj will be available on bus after 2 cycles
+            read_en <= 1'b1; //obj will be available on bus after 2 cycles
         end else begin
-            read_en = 1'b0;
+            read_en <= 1'b0;
         end
     end
 end
@@ -177,19 +179,7 @@ always @(posedge clk, negedge rst_n) begin
 end
 
 //STAGE 1 - a new object is loaded from memory every 4th clk
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-            x0 <= 16'hx; 
-            y0 <= 16'hx; 
-            x1 <= 16'hx; 
-            y1 <= 16'hx; 
-            x2 <= 16'hx; 
-            y2 <= 16'hx; 
-            x3 <= 16'hx; 
-            y3 <= 16'hx;
-            color_reg <= 8'hx;
-            type_reg <= 2'hx;
-    end else begin
+always @(posedge clk) begin
         if(cycle_4 && obj_vld) begin
             x0 <= obj[15:0];
             y0 <= obj[31:16];
@@ -202,7 +192,6 @@ always @(posedge clk, negedge rst_n) begin
             color_reg <= obj[135:128];
             type_reg <= obj[143:142];
         end 
-    end
 end
 
 //STAGE 2 - obj is split into lines and stored in a fifo
@@ -279,12 +268,6 @@ assign oc1_in[0] = (x1_in_f0 < 0)   ? 1'b1 : 1'b0;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-    end else begin
-    end
-end
-
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
         st <= IDLE;
     end else begin
         st <= nxt_st;
@@ -293,7 +276,7 @@ end
 
 always @(*) begin
 f0_rd = 1'b0;
-read_fifo = 1'b0;
+latch_line = 1'b0;
 store_line = 1'b0;
 clip_en = 1'b0;
 reading = 1'b1;
@@ -310,7 +293,7 @@ case(st)
         end
     WAIT_FOR_LINE:
         begin
-           read_fifo = 1'b1; 
+           latch_line = 1'b1; 
            nxt_st = MAKE_DECISION;
         end
     MAKE_DECISION:
@@ -342,17 +325,8 @@ endcase
 end
 
 //Clipping logic
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-        x0_clip <= 16'hx;
-        y0_clip <= 16'hx;
-        oc0_clip <= 4'hx;
-        x1_clip <= 16'hx;
-        y1_clip <= 16'hx;
-        oc1_clip <= 4'hx;
-        color_clip <= 8'hx;
-    end else begin
-        if(read_fifo) begin //
+always @(posedge clk) begin
+        if(latch_line) begin //
             x0_clip <= x0_out_f0;
             y0_clip <= y0_out_f0;
             oc0_clip <= oc0_out;
@@ -372,7 +346,7 @@ always @(posedge clk, negedge rst_n) begin
             x1_clip <= x1_clip + quotient[15:0];
             if(pt1_gt_ymax)
                 y1_clip <= 480;
-            else if (pt0_lt_ymin)
+            else if (pt1_lt_ymin)
                 y1_clip <= 0;
             else
                 y1_clip <= 16'hx;
@@ -393,7 +367,6 @@ always @(posedge clk, negedge rst_n) begin
             else
                 x1_clip <= 16'hx;
         end
-    end
 end
 
 assign accept_line = ((oc0_clip | oc1_clip) == 4'b0) ? 1'b1 : 1'b0;
@@ -488,10 +461,10 @@ assign y_b =  (ld_pt0 == 1'b1) ? y1_clip :
             assign dividend = mult1*mult2;
 
 //For simulation
-always @ (posedge clk) begin
-quotient <= dividend/divisor;
-end
-//divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
+//always @ (posedge clk) begin
+//quotient <= dividend/divisor;
+//end
+divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
 
 //For storing into final fifo
 always @(posedge clk, negedge rst_n) begin
@@ -517,6 +490,25 @@ always @(posedge clk, negedge rst_n) begin
             x1_in_f1 <= 16'hx;
             y1_in_f1 <= 16'hx;
             f1_wr <= 1'b0;
+        end
+    end
+end
+
+assign x0_out = x0_out_f1[9:0];
+assign y0_out = y0_out_f1[9:0];
+assign x1_out = x1_out_f1[9:0];
+assign y2_out = y1_out_f1[9:0];
+assign color_out = color_out_f1[2:0]; //8-bit color path has already been designed
+                                      //lets just use 3 bits out of it
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
+        f1_rd <= 1'b0;
+    end else begin
+        if(raster_ready) begin //this will cause a 2-cycle delay in data
+            f1_rd <= 1'b1;
+        end else begin
+            f1_rd <= 1'b0;
         end
     end
 end
