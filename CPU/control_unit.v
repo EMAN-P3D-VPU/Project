@@ -6,6 +6,7 @@
 // 
 ////////////////////////////////////////////////////////////////////////////////
 module control_unit(// Inputs //
+					clk, rst_n,
 					opcode,
 					x_bit,
 					wait_time,
@@ -25,12 +26,14 @@ module control_unit(// Inputs //
 					ldu, ldl,
 					branch,
 					jump,
-					Z_we, N_we, V_we
+					Z_we, N_we, V_we,
+					halt
 					);
 ////////////
 // Inputs /
 //////////
 // From CPU //
+input			clk, rst_n;
 input			x_bit;		// Extra Opcode Bit
 input	[4:0]	opcode;
 input	[10:0]	wait_time;
@@ -43,7 +46,7 @@ input			VPU_rdy;
 /////////////
 // Outputs /
 ///////////
-output	reg		STALL_control;
+output	wire	STALL_control;
 output  reg     VPU_start;
 output  reg     alu_to_reg;
 output  reg     pcr_to_reg;
@@ -59,14 +62,18 @@ output	reg		ldl;
 output	reg		branch;
 output	reg		jump;
 output	reg		Z_we, N_we, V_we;
+output	reg		halt;
 
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
+reg				set_timer;
+reg		[10:0]	timer;
 
 ///////////////////
 // Interconnects /
 /////////////////
+wire			timer_done;
 
 /////////////
 // OPCODES /
@@ -93,6 +100,21 @@ localparam HALT = 5'b11111;
 // control_unit
 ////
 
+// Stalling Logic (Timer + VPU Ready + ... ) //
+assign STALL_control = ~timer_done | ~VPU_rdy;
+assign timer_done = ~|timer;
+
+always@(posedge clk)begin
+	if(!rst_n)
+		timer <= 11'h000;
+	else if(set_timer)
+		timer <= wait_time;
+	else if(!timer_done)
+		timer <= timer - 1;
+	else
+		timer <= timer;
+end
+
 always@(*)begin
 	// Defaults //
 	VPU_start = 0;		// Signal VPU to begin instruction
@@ -112,6 +134,8 @@ always@(*)begin
 	Z_we = 0;			// Update flags from ALU operation
 	N_we = 0;
 	V_we = 0;
+	set_timer = 0;		// Set timer for stalling/NOP 
+	halt = 0;			// Signal CPU to halt execution
 
 	// Control SM //
 	case(opcode)
@@ -180,10 +204,10 @@ always@(*)begin
         	branch = 1;
         end
         NOP:begin
-        
+        	set_timer = 1;
         end
 		HALT:begin
-
+			halt = 1;
 		end
 		// All other commands default to VPU instructions //
         default: VPU_start = 1;
