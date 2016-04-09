@@ -10,7 +10,7 @@ module object_unit(input clk,
                     input changed_in,
 
                     //TO video_memory_unit
-                    output reg[4:0] addr, // - TESTED
+                    output reg [4:0] addr, // - TESTED
                     //to matrix_unit
                     output reg addr_vld, // - TESTED
                     output reg [4:0] lst_stored_obj,
@@ -88,7 +88,7 @@ end
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        addr <= 9'b0;
+        addr <= 5'b0;
     end else begin
         if(drive_addr)
             addr <= curr_obj; //mem is 144-bit deep, so no need for multiplier
@@ -137,15 +137,16 @@ drive_ref_addr = 1'b0;
 ret_lst_stored_obj = 1'b0;
 store_in_map = 1'b0;
 del_from_map = 1'b0;
+curr_obj = 5'bx;
 case(st)
     IDLE:
         if (crt_obj) begin
             store_in_map = 1'b1; //write into the obj_map (is this synthesizable?)
             curr_obj = nxt_obj;//save this loc for driving addr later
             ret_lst_stored_obj = 1'b1;//return value of lst_stored_obj to CPU
+            drive_addr = 1'b1;
             if(nxt_obj == 31) begin //check if obj mem is full
                 set_mem_full = 1'b1;
-                drive_addr = 1'b1;
                 nxt_st = IDLE;
             end else begin //if memory is not full, set nxt_obj to the next free loc
                 inc_nxt = 1'b1;
@@ -156,7 +157,7 @@ case(st)
             del_from_map = 1'b1; //clear obj_map entry
             if(obj_num < nxt_obj) //always use the free location with lowest index for nxt_obj
                 set_nxt_obj = 1'b1;
-                nxt_st = IDLE;
+            nxt_st = IDLE;
         //end else if (del_all) begin
         //    obj_map = 32'b0; //clear the entire obj_map
         //    clr_nxt_obj = 1'b1;//reset nxt_obj
@@ -169,11 +170,11 @@ case(st)
         end
     SET_NXT_OBJ:
         if(obj_map[nxt_obj] == 1'b0) begin //if the incremented nxt_obj map entry is free
-            drive_addr = 1'b1;
+            //drive_addr = 1'b1;
             nxt_st = IDLE;
         end else if (nxt_obj == 31) begin //if its not free and we've reached the end of map
             set_mem_full = 1'b1;
-            drive_addr = 1'b1;
+           // drive_addr = 1'b1;
             nxt_st = IDLE;
         end else begin //else check the next loc in the obj_map
             inc_nxt = 1'b1;
