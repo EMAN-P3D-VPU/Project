@@ -204,7 +204,7 @@ always@(*)begin
         	branch = 1;
         end
         NOP:begin
-        	set_timer = 1;
+        	set_timer = (timer_done) ? 1 : 0;
         end
 		HALT:begin
 			halt = 1;

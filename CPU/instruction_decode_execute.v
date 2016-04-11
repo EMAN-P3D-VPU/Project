@@ -97,7 +97,7 @@ reg	[3:0]	FLAGS; // WE, Z, N, V -> flags write to RF on next cycle of ALU operat
 ///////////////////
 // Interconnects /
 /////////////////
-wire			STALL_control;
+wire			STALL_control, STALL_hazard;
 wire			X_bit;
 wire			ldu, ldl;
 wire			alu_flags_we, Z, N, V;
@@ -134,37 +134,46 @@ wire	[15:0]	load_immd;
 // instruction_decode_execute
 ////
 
-assign STALL = STALL_control;
+// Stall (VPU + Hazard + WAIT) //
+assign STALL = STALL_control | STALL_hazard;
+
+// Hazard //
+// TODO: Some instructions may have a matching address but aren't reading the
+// regfile...we'd need to add 'read reg 0/1' signals in control or just take
+// the stall penalty occasionally.
+assign STALL_hazard = 	((reg_addr_0 == DEX_dst_addr_0) & DEX_reg_we_dst_0) |
+						((reg_addr_1 == DEX_dst_addr_1) & DEX_reg_we_dst_1);
 
 // Control //
 assign X_bit = instr[10];
 assign opcode = instr[15:11];
 assign wait_time = instr[10:0];
 
-control_unit control(// Inputs //
-				   	.clk(clk), .rst_n(rst_n),
-					.opcode(opcode),
-					.x_bit(X_bit),
-					.wait_time(wait_time),
-					.VPU_rdy(VPU_rdy),
-					// Output //
-					.STALL_control(STALL_control),
-					.VPU_start(VPU_start),
-					.alu_to_reg(alu_to_reg),
-					.pcr_to_reg(pcr_to_reg),
-					.mem_to_reg(mem_to_reg),
-					.reg_we_dst_0(reg_we_dst_0),
-					.reg_we_dst_1(reg_we_dst_1),
-					.mem_we(mem_we),
-					.mem_re(mem_re),
-					.add_immd(add_immd),
-					.jump_immd(jump_immd),
-					.ldu(ldu), .ldl(ldl),
-					.branch(branch),
-					.jump(jump),
-					.Z_we(Z_we), .N_we(N_we), .V_we(V_we),
-					.halt(halt)
-					);
+control_unit control(
+    // Inputs //
+	.clk(clk), .rst_n(rst_n),
+	.opcode(opcode),
+	.x_bit(X_bit),
+	.wait_time(wait_time),
+	.VPU_rdy(VPU_rdy),
+	// Output //
+	.STALL_control(STALL_control),
+	.VPU_start(VPU_start),
+	.alu_to_reg(alu_to_reg),
+	.pcr_to_reg(pcr_to_reg),
+	.mem_to_reg(mem_to_reg),
+	.reg_we_dst_0(reg_we_dst_0),
+	.reg_we_dst_1(reg_we_dst_1),
+	.mem_we(mem_we),
+	.mem_re(mem_re),
+	.add_immd(add_immd),
+	.jump_immd(jump_immd),
+	.ldu(ldu), .ldl(ldl),
+	.branch(branch),
+	.jump(jump),
+	.Z_we(Z_we), .N_we(N_we), .V_we(V_we),
+	.halt(halt)
+);
 
 // Register File //
 assign	reg_addr_0	=	(ldu | ldl) ? {2'b00, instr[10:8]} : instr[9:5];
@@ -264,19 +273,20 @@ assign branch_offset = {{8{instr[7]}}, instr[7:0]};
 assign jump_offset = (jump_immd) ? {{5{instr[9]}}, instr[9:0]}:	// Immediate
 					  reg_data_1;								// Rt register
 
-branch_unit pc_ctr(// Inputs //
-				   .branch(branch),
-				   .jump(branch),
-				   .condition_code(condition_code),
-				   .condition_flags(FLAGS[2:0]),
-				   .PC_plus_one(pc_plus_1),
-				   .branch_offset(branch_offset),
-				   .jump_offset(jump_offset),
-				   // Outputs //
-				   .PC_select(PC_select),
-				   .PC_next(PC_next),
-				   .PC_return(PC_return)
-				   );
+branch_unit pc_ctrl(
+    // Inputs //
+	.branch(branch),
+	.jump(jump),
+	.condition_code(condition_code),
+	.condition_flags(FLAGS[2:0]),
+	.PC_plus_one(pc_plus_1),
+	.branch_offset(branch_offset),
+	.jump_offset(jump_offset),
+	// Outputs //
+	.PC_select(PC_select),
+	.PC_next(PC_next),
+	.PC_return(PC_return)
+);
 
 // Pipeline Flip-Flop //--------------------------------------------------------
 // ALU Result //
