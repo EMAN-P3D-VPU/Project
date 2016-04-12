@@ -85,17 +85,18 @@ wire pt1_gt_ymax, pt1_lt_ymin, pt1_gt_xmax, pt1_lt_xmin;
 wire accept_line, reject_line, clip_line;
 reg latch_line, store_line, clip_en;
 
-reg [2:0] cnt;
+reg [3:0] cnt;
 reg clip_done;
 reg sel_min, sel_max, x_edge, y_edge;
 wire ld_pt0, ld_pt1, ldback_x0, ldback_x1, ldback_y0, ldback_y1;
 wire signed [15:0] x_a, y_a;
 wire signed [15:0] x_b, y_b;
-wire signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
+reg signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
 wire signed [15:0] x_max_min, y_max_min;
 wire signed [15:0] mult1, mult2, divisor;
 wire signed [31:0] dividend;
-wire signed [31:0] quotient; //TODO -this might have to be wire while using coreIP
+//reg signed [31:0] quotient; 
+wire signed [31:0] quotient; 
 
 reg [3:0] st, nxt_st;
 localparam IDLE=4'h0, WAIT_FOR_LINE=4'h1, MAKE_DECISION=4'h2,
@@ -384,12 +385,15 @@ assign pt1_lt_xmin = oc1_clip[0];
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        cnt <= 3'b0;
+        cnt <= 4'b0;
     end else begin
         if(clip_en) begin
-            cnt <= cnt +1;
+            if(cnt == 4'hb)
+                cnt <= 4'h0;
+            else
+                cnt <= cnt +1;
         end else begin
-            cnt <= 3'h0;
+            cnt <= 4'h0;
         end
     end
 end
@@ -398,44 +402,45 @@ always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         clip_done <= 1'b0;
     end else begin
-        if(cnt == 3'h7)
+        if(cnt == 4'hb) //at 11
             clip_done <= 1'b1;
         else 
             clip_done <= 1'b0;
     end
 end
 
-//in the even cycles, division is done, in the odd cycles, result is loaded back
+//CLIPPING ALGORITHM -
+//order of processing is - ymax, ymin, xmax, xmin
+//each one takes 3 cycles
+//every first cycle - flopping and loadback, 2nd cycle - mult, 3rd cycle - div
 assign ld_pt0    = (clip_en && 
-                    (pt0_gt_ymax && (cnt == 3'h0)) ||
-                    (pt0_lt_ymin && (cnt == 3'h2)) ||
-                    (pt0_gt_xmax && (cnt == 3'h4)) ||
-                    (pt0_lt_xmin && (cnt == 3'h6))
+                    (pt0_gt_ymax && (cnt == 4'h0)) ||
+                    (pt0_lt_ymin && (cnt == 4'h3)) ||
+                    (pt0_gt_xmax && (cnt == 4'h6)) ||
+                    (pt0_lt_xmin && (cnt == 4'h9))
                     ) ? 1'b1 : 1'b0;
 assign ld_pt1    = (clip_en && 
-                    (pt1_gt_ymax && (cnt == 3'h0)) ||
-                    (pt1_lt_ymin && (cnt == 3'h2)) ||
-                    (pt1_gt_xmax && (cnt == 3'h4)) ||
-                    (pt1_lt_xmin && (cnt == 3'h6))
+                    (pt1_gt_ymax && (cnt == 4'h0)) ||
+                    (pt1_lt_ymin && (cnt == 4'h3)) ||
+                    (pt1_gt_xmax && (cnt == 4'h6)) ||
+                    (pt1_lt_xmin && (cnt == 4'h9))
                     ) ? 1'b1 : 1'b0;
 assign ldback_x0 = (clip_en && 
-                    (pt0_gt_ymax && (cnt == 3'h1)) ||
-                    (pt0_lt_ymin && (cnt == 3'h3))
+                    (pt0_gt_ymax && (cnt == 4'h2)) ||
+                    (pt0_lt_ymin && (cnt == 4'h5))
                     ) ? 1'b1 : 1'b0;
 assign ldback_x1 = (clip_en && 
-                    (pt1_gt_ymax && (cnt == 3'h1)) ||
-                    (pt1_lt_ymin && (cnt == 3'h3))
+                    (pt1_gt_ymax && (cnt == 4'h2)) ||
+                    (pt1_lt_ymin && (cnt == 4'h5))
                     ) ? 1'b1 : 1'b0;
 assign ldback_y0 = (clip_en && 
-                    (pt0_gt_xmax && (cnt == 3'h5)) ||
-                    (pt0_lt_xmin && (cnt == 3'h7))
+                    (pt0_gt_xmax && (cnt == 4'h8)) ||
+                    (pt0_lt_xmin && (cnt == 4'hb))
                     ) ? 1'b1 : 1'b0;
 assign ldback_y1 = (clip_en && 
-                    (pt1_gt_xmax && (cnt == 3'h5)) ||
-                    (pt1_lt_xmin && (cnt == 3'h7))
+                    (pt1_gt_xmax && (cnt == 4'h8)) ||
+                    (pt1_lt_xmin && (cnt == 4'hb))
                     ) ? 1'b1 : 1'b0;
-
-//Combinational logic for clipping tree
 assign x_max_min =  (pt0_gt_xmax || pt1_gt_xmax) ? 640 : 
                     (pt0_lt_xmin || pt1_lt_xmin) ? 0 : 16'hx;
 assign y_max_min =  (pt0_gt_ymax || pt1_gt_ymax) ? 480 : 
@@ -448,21 +453,28 @@ assign x_b =  (ld_pt0 == 1'b1) ? x1_clip :
               (ld_pt1 == 1'b1) ? x0_clip : 16'hx;
 assign y_b =  (ld_pt0 == 1'b1) ? y1_clip :
               (ld_pt1 == 1'b1) ? y0_clip : 16'hx;
-    assign x_diff = x_b - x_a;
-    assign y_diff = y_b - y_a;
-    assign x_max_min_diff = x_max_min - x_a;
-    assign y_max_min_diff = y_max_min - y_a;
-        assign mult1 =  (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) ? y_diff : //y_diff on x-edge, x_diff on y-edge
-                        (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) ? x_diff : 16'hx;
-        assign mult2 =  (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) ? x_max_min_diff : // x on x-edge, y on y-edge
-                        (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) ? y_max_min_diff : 16'hx;
-        assign divisor = (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) ? x_diff :  //x on x-edge, y on y-edge
-                         (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) ? y_diff : 16'hx;
-            assign dividend = mult1*mult2;
+
+//FLOPPING STAGE
+always @(posedge clk) begin
+    x_diff <= x_b - x_a;
+    y_diff <= y_b - y_a;
+    x_max_min_diff <= x_max_min - x_a;
+    y_max_min_diff <= y_max_min - y_a;
+    y_edge <= ((cnt == 4'h0) || (cnt == 4'h3)) ? (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) : 1'b0;
+    x_edge <= ((cnt == 4'h6) || (cnt == 4'h9)) ? (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) : 1'b0;
+end
+
+assign mult1 =  x_edge ? y_diff : //y_diff on x-edge, x_diff on y-edge
+                y_edge ? x_diff : 16'hx;
+assign mult2 =  x_edge ? x_max_min_diff : // x on x-edge, y on y-edge
+                y_edge ? y_max_min_diff : 16'hx;
+assign divisor = x_edge ? x_diff :  //x on x-edge, y on y-edge
+                 y_edge ? y_diff : 16'hx;
+assign dividend = mult1*mult2;
 
 //For simulation
 //always @ (posedge clk) begin
-//quotient <= dividend/divisor;
+//    quotient <= dividend/divisor;
 //end
 divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
 

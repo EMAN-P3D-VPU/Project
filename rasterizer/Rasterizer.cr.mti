@@ -1,0 +1,36 @@
+A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/steep_calculator.v {2 {vlog -work work -stats=none A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/steep_calculator.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module steep_calculator
+** Warning: A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/steep_calculator.v(44): (vlog-2283) Extra semicolon in $unit (global) scope.
+
+
+Top level modules:
+	steep_calculator
+
+} {} {}} A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/Raster_FSM.v {1 {vlog -work work -stats=none A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/Raster_FSM.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+
+} {} {}} A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/point_gen.v {1 {vlog -work work -stats=none A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/point_gen.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module point_gen
+
+Top level modules:
+	point_gen
+
+} {} {}} A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/Raster_Input_Stage.v {1 {vlog -work work -stats=none A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/Raster_Input_Stage.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module raster_input_stage
+
+Top level modules:
+	raster_input_stage
+
+} {} {}} A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/point_swap.v {2 {vlog -work work -stats=none A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/point_swap.v
+Model Technology ModelSim PE Student Edition vlog 10.4a Compiler 2015.03 Apr  7 2015
+-- Compiling module point_swapper
+** Warning: A:/Users/Peter/ECE_554/ECE_554/eMan/rasterizer/point_swap.v(119): (vlog-2283) Extra semicolon in $unit (global) scope.
+
+
+Top level modules:
+	point_swapper
+
+} {} {}}

@@ -1,0 +1,7 @@
+/////////////////////////////
+//FILL with objects on screen
+/////////////////////////////
+DLINE 0x0F
+WAIT 1000
+FILL 0x00
+HALT
