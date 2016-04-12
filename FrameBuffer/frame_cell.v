@@ -15,9 +15,9 @@ module frame_cell(
 
 // simple dual port RAM with a common clock
 // write width - 3
-// write detph - 307200 (640 x 480)
+// write detph - Only need, 307200 (640 x 480), use 2^19 (524288 -> just concatenate width and height)
 // initialize everything to 0
-frame_cell_block block_mem(
+frame_cell_block frame_mem(
 			.addra({write_frame_width, write_frame_height}),
 			.dina(write_data),
 			.wea(write_enable),
