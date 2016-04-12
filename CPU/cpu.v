@@ -21,7 +21,17 @@ module cpu(
     VPU_RO,
 	// Outputs // TODO: SPART interface
     halt,
+	// SPART //
+	SPART_we,
+	SPART_keys,
+	// VPU //
 	start_VPU,
+    fill_VPU,
+    obj_type_VPU,
+    obj_color_VPU,
+    op_VPU,
+    code_VPU,
+    obj_num_VPU,
     V0_VPU,
     V1_VPU,
     V2_VPU,
@@ -37,12 +47,20 @@ module cpu(
 //////////
 input				clk, rst_n;
 input				VPU_rdy, VPU_data_we;
+input				SPART_we;
+input		[3:0]	SPART_keys;
 input		[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 /////////////
 // Outputs /
 ///////////
 output				halt, start_VPU;
+output              fill_VPU;
+output      [1:0]	obj_type_VPU;
+output      [2:0]	obj_color_VPU;
+output      [3:0]	op_VPU;
+output      [3:0]	code_VPU;
+output      [4:0]	obj_num_VPU;
 output		[15:0]	V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, RO_VPU;
 
 /////////////////////////////
@@ -144,6 +162,8 @@ instruction_decode_execute DEX(
     .V6_in(VPU_V6),
     .V7_in(VPU_V7),
     .RO_in(VPU_RO),
+	.SPART_we(SPART_we),
+	.SPART_keys(SPART_keys),
     // Outputs //
     .STALL(DEX_STALL),
     .PC_select(DEX_PC_select),
@@ -183,6 +203,7 @@ VPU_register VPU_data_out(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .STALL(DEX_STALL),
     .VPU_start(DEX_VPU_start),
+	.VPU_instr(IF_instr),
     .V0_in(DEX_V0),
     .V1_in(DEX_V1),
     .V2_in(DEX_V2),
@@ -194,6 +215,12 @@ VPU_register VPU_data_out(
     .RO_in(DEX_RO),
     // Outputs //
     .VPU_start_out(start_VPU),
+	.VPU_fill(fill_VPU),
+	.VPU_obj_type(obj_type_VPU),
+	.VPU_obj_color(obj_color_VPU),
+	.VPU_op(op_VPU),
+	.VPU_code(code_VPU),
+	.VPU_obj_num(obj_num_VPU),
     .V0_out(V0_VPU),
     .V1_out(V1_VPU),
     .V2_out(V2_VPU),

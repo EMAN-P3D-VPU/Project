@@ -16,6 +16,7 @@ module register_file(// Inputs //
 					 wrt_V0, wrt_V1, wrt_V2, wrt_V3,
 					 wrt_V4, wrt_V5, wrt_V6, wrt_V7,
 					 return_obj,
+					 SPART_we, SPART_keys,
 					 // Outputs //
 					 reg_data_0, reg_data_1, read_RO,
 					 read_V0, read_V1, read_V2, read_V3,
@@ -32,6 +33,9 @@ input		[4:0]	wrt_addr_1;
 // Flags Register //
 input		[2:0]	cpu_flags;		// Z, N, V
 input				cpu_flags_we;
+// SPART (key presses) 3 - UP 2 - DOWN 1 - LEFT 0 - RIGHT
+input				SPART_we;
+input		[3:0]	SPART_keys;
 // Write Data from CPU //
 input		[15:0]	wrt_data_0;
 input		[15:0]	wrt_data_1;
@@ -277,10 +281,11 @@ assign	we_19	=	(we_a19 | we_b19);
 assign	we_20	=	(we_a20 | we_b20);
 assign	we_21	=	(we_a21 | we_b21);
 // Flags Register
-// TODO: Add more logic from VPU/SPART //
-assign	we_22	=	 cpu_flags_we;
+// SPART (key presses) 3 - UP 2 - DOWN 1 - LEFT 0 - RIGHT
+// I can remove the ability to write to Flags/RO from CPU
+assign	we_22	=	 cpu_flags_we | SPART_we | (we_a22 | we_b22);
 // Return Object Register
-assign	we_23	=	 we_VPU;
+assign	we_23	=	 we_VPU | (we_a23 | we_b23);
 // Vertex Registers
 assign	we_24	=	(we_a24 | we_b24 | we_VPU);
 assign	we_25	=	(we_a25 | we_b25 | we_VPU);
@@ -316,7 +321,9 @@ assign	wrt_data_R20	= (we_a20) ? wrt_data_0 : wrt_data_1;
 assign	wrt_data_R21	= (we_a21) ? wrt_data_0 : wrt_data_1;
 // Flags Register can only be written by CPU (user restricted) //
 // TODO: Update from VPU/SPART as well so it may need some extra logic //
-assign	wrt_data_R22	= {R22[15:3], cpu_flags};
+assign	wrt_data_R22	= (cpu_flags_we) ? {R22[15:3], cpu_flags}:
+						  (SPART_we)	 ? {R22[15:7], R22[6:3] | SPART_keys, R22[2:0]}:
+						  (we_a22)		 ?  wrt_data_0 : wrt_data_1;
 // RO Register //
 assign	wrt_data_R23	= (we_VPU) ? return_obj :
 						  (we_a23) ? wrt_data_0 : wrt_data_1;
