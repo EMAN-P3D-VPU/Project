@@ -3,7 +3,9 @@
 // Dan Wortmann
 //
 // Description:
-// 
+// Go over the basic functionality of the DEX phase prior to connecting it to
+// top level CPU system. Focus on outputs related to the specific instruction
+// as well as any interface signals that need to be asserted or left unasserted.
 ////////////////////////////////////////////////////////////////////////////////
 module instruction_decode_execute_tb();
 ////////////
@@ -334,13 +336,3010 @@ initial begin
 	// Clearing the SPART flags is up to the user with an AND operation or similar //
     SPART_we    = 1;
 	// CPU Operation Tests //------------------------------------------------------
+	// Using the basic registers R0 - R15 with the written values corresponding to
+	// the register number. This will allow for easier testing and consistent data
+	// used when probing inner signals. This would also be accurate of a typical
+	// CPU operation since the programmer should limit him or herself to those
+	// registers - only accessing other ones in special cases.
+	//
+	// To limit the complexity of this testbench, any value not particularly related
+	// to the instruction will not be check. Focus on the basic functionality, and
+	// signals that may interfere with interfaces to other modules.
+
+	// AND //
 	@(posedge clk);
 	Opcode		= AND;
+	X			= 0;
+	Rd_Rs		= R4;
+	Rt			= R8;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00100)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0004)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h0008)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// OR //
+	@(posedge clk);
+	Opcode		= OR;
+	X			= 0;
+	Rd_Rs		= R7;
+	Rt			= R8;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0007)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h0008)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// XOR //
+	@(posedge clk);
+	Opcode		= XOR;
+	X			= 0;
+	Rd_Rs		= R9;
+	Rt			= R10;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01001)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01010)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0003)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0009)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h000A)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// NOT //
+	@(posedge clk);
+	Opcode		= NOT;
+	X			= 0;
+	Rd_Rs		= R15;
+	Rt			= R15;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hFFF0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ADD //
+	@(posedge clk);
+	Opcode		= ADD;
+	X			= 0;
+	Rd_Rs		= R5;
+	Rt			= R11;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00101)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01011)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0010)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0005)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h000B)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ADDI //
+	@(posedge clk);
+	Opcode		= ADD;
+	X			= 1;
+	Rd_Rs		= R1;
+	Rt			= R5;
+	instr       = {Opcode, X, Rd_Rs, 5'b01110};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00001)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0001)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// LSL //
+	@(posedge clk);
+	Opcode		= LSL;
+	X			= 0;
+	Rd_Rs		= R4;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0100};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00100)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0040)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0004)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// LSR //
+	@(posedge clk);
+	Opcode		= SR;
+	X			= 0;
+	Rd_Rs		= R8;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0002)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0008)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ASR //
+	@(posedge clk);
+	Opcode		= SR;
+	X			= 1;
+	Rd_Rs		= R15;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0003)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ROL //
+	@(posedge clk);
+	Opcode		= ROT;
+	X			= 0;
+	Rd_Rs		= R10;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, 5'b00000};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01010)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h0014)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h000A)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ROR //
+	@(posedge clk);
+	Opcode		= ROT;
+	X			= 1;
+	Rd_Rs		= R15;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, 5'b00000};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b01111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'h8007)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// MOV //
+	@(posedge clk);
+	Opcode		= MOV;
 	X			= 0;
 	Rd_Rs		= R0;
 	Rt			= R1;
 	instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b00001)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h0001)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// SWAP //
+	@(posedge clk);
+	Opcode		= MOV;
+	X			= 1;
+	Rd_Rs		= R5;
+	Rt			= R10;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00101)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b01010)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'h0005)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'h000A)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// LDR //
+	@(posedge clk);
+	Opcode		= LDR;
+	X			= 0;
+	Rd_Rs		= R3;
+	Rt			= R8;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00011)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'h0008)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// LDU //
+	@(posedge clk);
+	Opcode		= LDU;
+	X			= 0;
+	Rd_Rs		= R7;
+	Rt			= R1;
+	instr       = {Opcode, Rd_Rs[2:0], 8'hFE};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00111)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hFE07)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// LDL //
+	@(posedge clk);
+	Opcode		= LDL;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, Rd_Rs[2:0], 8'hCD};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'b00000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'h00CD)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// ST //
+	@(posedge clk);
+	Opcode		= ST;
+	X			= 0;
+	Rd_Rs		= R2;
+	Rt			= R15;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'h0002)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// J //
+	@(posedge clk);
+	Opcode		= J;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R12;
+	instr       = {Opcode, X, 5'b00000, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != pc_plus_1 + Rt)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b10000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != pc_plus_1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// JI //
+	@(posedge clk);
+	Opcode		= J;
+	X			= 1;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, X, 10'b00_0100_1010};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != pc_plus_1 + 10'b00_0100_1010)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'b10000)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != pc_plus_1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// B //
+	@(posedge clk);
+	Opcode		= B;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, 3'b000, 8'b0000_1111};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != pc_plus_1 + 16'h000F)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// NOP //
+	@(posedge clk);
+	Opcode		= NOP;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, 11'b000_0000_0000};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	// WAIT //
+	@(posedge clk);
+	Opcode		= NOP;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, 11'b100_0000_0000};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+    if(DEX_STALL          != 1'b1)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
+        $stop;
+    end
+    if(DEX_PC_select      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_select, $time);
+        $stop;
+    end
+    if(DEX_PC_next        != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_next, $time);
+        $stop;
+    end
+    if(DEX_VPU_start      != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_VPU_start, $time);
+        $stop;
+    end
+    if(DEX_V0             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V0, $time);
+        $stop;
+    end
+    if(DEX_V1             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V1, $time);
+        $stop;
+    end
+    if(DEX_V2             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V2, $time);
+        $stop;
+    end
+    if(DEX_V3             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V3, $time);
+        $stop;
+    end
+    if(DEX_V4             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V4, $time);
+        $stop;
+    end
+    if(DEX_V5             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V5, $time);
+        $stop;
+    end
+    if(DEX_V6             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V6, $time);
+        $stop;
+    end
+    if(DEX_V7             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_V7, $time);
+        $stop;
+    end
+    if(DEX_RO             != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_RO, $time);
+        $stop;
+    end
+    if(DEX_alu_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_to_reg, $time);
+        $stop;
+    end
+    if(DEX_pcr_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_pcr_to_reg, $time);
+        $stop;
+    end
+    if(DEX_mem_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_to_reg, $time);
+        $stop;
+    end
+    if(DEX_imm_to_reg     != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_imm_to_reg, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_0   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_0, $time);
+        $stop;
+    end
+    if(DEX_reg_we_dst_1   != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_we_dst_1, $time);
+        $stop;
+    end
+    if(DEX_mem_we         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_we, $time);
+        $stop;
+    end
+    if(DEX_mem_re         != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_re, $time);
+        $stop;
+    end
+    if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_0     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_0, $time);
+        $stop;
+    end
+    if(DEX_dst_addr_1     != 5'bXXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_dst_addr_1, $time);
+        $stop;
+    end
+    if(DEX_alu_result     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_alu_result, $time);
+        $stop;
+    end
+    if(DEX_PC_return      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_PC_return, $time);
+        $stop;
+    end
+    if(DEX_mem_read_addr  != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_read_addr, $time);
+        $stop;
+    end
+    if(DEX_mem_write_data != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_mem_write_data, $time);
+        $stop;
+    end
+    if(DEX_load_immd      != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_load_immd, $time);
+        $stop;
+    end
+    if(DEX_reg_data_0     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_0, $time);
+        $stop;
+    end
+    if(DEX_reg_data_1     != 16'hXXXX)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_reg_data_1, $time);
+        $stop;
+    end
+
+	i = 0;
+	while(DEX_STALL == 1)begin
+		@(negedge clk);
+		i = i + 1;
+	end
+	if(i != 12'b0100_0000_0000)begin
+		$display("WAIT time was for %d cycles EXPECTED: %d", i, 12'b0100_0000_0000);
+		$stop;
+	end
+
+	// HALT //
+	@(posedge clk);
+	Opcode		= HALT;
+	X			= 0;
+	Rd_Rs		= R0;
+	Rt			= R1;
+	instr       = {Opcode, X, Rd_Rs, Rt};
+    pc_plus_1   = pc_plus_1 + 1;
+	@(posedge clk);
+	@(negedge clk);
+	if(DEX_halt           != 1'b0)begin
+        $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
+        $stop;
+    end
 	
 	repeat(25) @(posedge clk);
 	$stop;

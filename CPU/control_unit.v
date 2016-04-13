@@ -158,8 +158,7 @@ always@(*)begin
         ADD:begin
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
-			if(x_bit)
-				add_immd = 1;
+			add_immd = x_bit;
         end
         LSL:begin
         	alu_to_reg = 1;
@@ -175,7 +174,7 @@ always@(*)begin
         end
         MOV:begin
 			reg_we_dst_0 = 1;
-			reg_we_dst_1 = 1;
+			reg_we_dst_1 = x_bit;
         end
         LDR:begin
 			mem_re = 1;
@@ -197,8 +196,7 @@ always@(*)begin
 			jump = 1;
         	pcr_to_reg = 1;
 			reg_we_dst_1 = 1;
-			if(x_bit)
-				jump_immd = 1;
+			jump_immd = x_bit;
         end
         B  :begin
         	branch = 1;
