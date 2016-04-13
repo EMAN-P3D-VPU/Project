@@ -29,6 +29,8 @@ wire    pcr_to_reg;
 wire    mem_to_reg;
 wire    reg_we_dst_0;
 wire    reg_we_dst_1;
+wire	reg_read_0;
+wire	reg_read_1;
 wire    mem_we;
 wire    mem_re;
 wire    add_immd;
@@ -62,6 +64,8 @@ control_unit control(
 	.mem_to_reg(mem_to_reg),
 	.reg_we_dst_0(reg_we_dst_0),
 	.reg_we_dst_1(reg_we_dst_1),
+    .reg_read_0(reg_read_0),
+    .reg_read_1(reg_read_1),
 	.mem_we(mem_we),
 	.mem_re(mem_re),
 	.add_immd(add_immd),

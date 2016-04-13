@@ -130,7 +130,7 @@ instruction_fetch IF(
 cpu_memory MEMORY(
     // Inputs //
 	.clk(clk),
-    .re_0(DEX_mem_re), .re_1(DEX_mem_re), .we(DEX_mem_we),
+    .re_0(1'b1), .re_1(DEX_mem_re), .we(DEX_mem_we),
     .i_addr(IF_mem_read_addr),
     .d_addr(DEX_mem_read_addr),
     .wrt_data(DEX_mem_write_data),

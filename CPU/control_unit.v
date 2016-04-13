@@ -5,30 +5,33 @@
 // Description:
 // 
 ////////////////////////////////////////////////////////////////////////////////
-module control_unit(// Inputs //
-					clk, rst_n,
-					opcode,
-					x_bit,
-					wait_time,
-					VPU_rdy,
-					// Output //
-					STALL_control,
-					VPU_start,
-					alu_to_reg,
-					pcr_to_reg,
-					mem_to_reg,
-					reg_we_dst_0,
-					reg_we_dst_1,
-					mem_we,
-					mem_re,
-					add_immd,
-					jump_immd,
-					ldu, ldl,
-					branch,
-					jump,
-					Z_we, N_we, V_we,
-					halt
-					);
+module control_unit(
+    // Inputs //
+	clk, rst_n,
+	opcode,
+	x_bit,
+	wait_time,
+	VPU_rdy,
+	// Output //
+	STALL_control,
+	VPU_start,
+	alu_to_reg,
+	pcr_to_reg,
+	mem_to_reg,
+	reg_we_dst_0,
+	reg_we_dst_1,
+    reg_read_0,
+    reg_read_1,
+	mem_we,
+	mem_re,
+	add_immd,
+	jump_immd,
+	ldu, ldl,
+	branch,
+	jump,
+	Z_we, N_we, V_we,
+	halt
+);
 ////////////
 // Inputs /
 //////////
@@ -53,6 +56,8 @@ output  reg     pcr_to_reg;
 output  reg     mem_to_reg;
 output  reg     reg_we_dst_0;
 output  reg     reg_we_dst_1;
+output  reg     reg_read_0;
+output  reg     reg_read_1;
 output  reg     mem_we;
 output  reg     mem_re;
 output  reg     add_immd;
@@ -101,7 +106,7 @@ localparam HALT = 5'b11111;
 ////
 
 // Stalling Logic (Timer + VPU Ready + ... ) //
-assign STALL_control = ~timer_done | ~VPU_rdy;
+assign STALL_control = ~timer_done | ~VPU_rdy | halt;
 assign timer_done = ~|timer;
 
 always@(posedge clk)begin
@@ -123,6 +128,8 @@ always@(*)begin
 	mem_to_reg = 0;		// Write Memory data to register
 	reg_we_dst_0 = 0;	// Write enable port 0 in register file
 	reg_we_dst_1 = 0;	// Write enable port 1 in register file
+	reg_read_0 = 0;		// Signal we are reading port 0 in register file
+	reg_read_1 = 0;		// Signal we are reading port 1 in register file
 	mem_we = 0;			// Write to data memory
 	mem_re = 0;			// Read from data memory
 	add_immd = 0;		// Add immediate to Rs
@@ -140,60 +147,80 @@ always@(*)begin
 	// Control SM //
 	case(opcode)
         AND:begin
+			reg_read_0 = 1;
+			reg_read_1 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         OR :begin
+			reg_read_0 = 1;
+			reg_read_1 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         XOR:begin
+			reg_read_0 = 1;
+			reg_read_1 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         NOT:begin
+			reg_read_0 = 1;
+			reg_read_1 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         ADD:begin
+			reg_read_0 = 1;
+			reg_read_1 = ~x_bit;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
 			add_immd = x_bit;
         end
         LSL:begin
+			reg_read_0 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         SR :begin
+			reg_read_0 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         ROT:begin
+			reg_read_0 = 1;
         	alu_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         MOV:begin
+			reg_read_0 = 1;
+			reg_read_1 = ~x_bit;
 			reg_we_dst_0 = 1;
 			reg_we_dst_1 = x_bit;
         end
         LDR:begin
+			reg_read_1 = 1;
 			mem_re = 1;
         	mem_to_reg = 1;
 			reg_we_dst_0 = 1;
         end
         LDU:begin
+			reg_read_0 = 1;
 			reg_we_dst_0 = 1;
 			ldu = 1;
         end
         LDL:begin
+			reg_read_0 = 1;
 			reg_we_dst_0 = 1;
 			ldl = 1;
         end
         ST :begin
+			reg_read_1 = 1;
         	mem_we = 1;
         end
         J  :begin
 			jump = 1;
+			reg_read_1 = ~x_bit;
         	pcr_to_reg = 1;
 			reg_we_dst_1 = 1;
 			jump_immd = x_bit;

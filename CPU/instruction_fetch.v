@@ -21,8 +21,8 @@ module instruction_fetch(
 //////////
 input			clk, rst_n, STALL;
 // From DEX //
-input			IF_PC_next;
-input	[15:0]	IF_PC_select;
+input			IF_PC_select;
+input	[15:0]	IF_PC_next;
 // Memory Interface //
 input	[15:0]	MEM_instr;
 
@@ -36,7 +36,7 @@ output	reg	[15:0]	IF_instr;
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
-reg			PC;
+reg		[15:0]	PC;
 
 ///////////////////
 // Interconnects /

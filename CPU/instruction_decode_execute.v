@@ -112,6 +112,7 @@ wire			alu_to_reg;
 wire			pcr_to_reg;
 wire			mem_to_reg;
 wire			reg_we_dst_0, reg_we_dst_1;
+wire			reg_read_0, reg_read_1;
 wire			mem_we, mem_re;
 wire			halt;
 wire	[2:0]	ALU_op;
@@ -145,8 +146,8 @@ assign STALL = STALL_control | BUBBLE_hazard;
 // TODO: Some instructions may have a matching address but aren't reading the
 // regfile...we'd need to add 'read reg 0/1' signals in control or just take
 // the stall penalty occasionally.
-assign BUBBLE_hazard = 	(((reg_addr_0 == DEX_dst_addr_0) && we_CPU_0) ||
-						 ((reg_addr_1 == DEX_dst_addr_1) && we_CPU_1));
+assign BUBBLE_hazard = 	((reg_addr_0 == DEX_dst_addr_0) & we_CPU_0 & reg_read_0) |
+						((reg_addr_1 == DEX_dst_addr_1) & we_CPU_1 & reg_read_1);
 
 // Control //
 assign X_bit = instr[10];
@@ -168,6 +169,8 @@ control_unit control(
 	.mem_to_reg(mem_to_reg),
 	.reg_we_dst_0(reg_we_dst_0),
 	.reg_we_dst_1(reg_we_dst_1),
+    .reg_read_0(reg_read_0),
+    .reg_read_1(reg_read_1),
 	.mem_we(mem_we),
 	.mem_re(mem_re),
 	.add_immd(add_immd),
