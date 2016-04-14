@@ -1,0 +1,763 @@
+//NOT FINALIZED
+//////////////////////
+//ROL R0 X
+//////////////////////
+ROL R0 0
+ROL R0 1
+ROL R0 2
+ROL R0 3
+ROL R0 4
+ROL R0 5
+ROL R0 6
+ROL R0 7
+ROL R0 8
+ROL R0 9
+ROL R0 10
+ROL R0 11
+ROL R0 12
+ROL R0 13
+ROL R0 14
+ROL R0 15
+//////////////////////
+//ROL R1 X
+//////////////////////
+ROL R1 0
+ROL R1 1
+ROL R1 2
+ROL R1 3
+ROL R1 4
+ROL R1 5
+ROL R1 6
+ROL R1 7
+ROL R1 8
+ROL R1 9
+ROL R1 10
+ROL R1 11
+ROL R1 12
+ROL R1 13
+ROL R1 14
+ROL R1 15
+
+//////////////////////
+//ROL R2 X
+//////////////////////
+ROL R2 0
+ROL R2 1
+ROL R2 2
+ROL R2 3
+ROL R2 4
+ROL R2 5
+ROL R2 6
+ROL R2 7
+ROL R2 8
+ROL R2 9
+ROL R2 10
+ROL R2 11
+ROL R2 12
+ROL R2 13
+ROL R2 14
+ROL R2 15
+//////////////////////
+//ROL R3 X
+//////////////////////
+ROL R3 0
+ROL R3 1
+ROL R3 2
+ROL R3 3
+ROL R3 4
+ROL R3 5
+ROL R3 6
+ROL R3 7
+ROL R3 8
+ROL R3 9
+ROL R3 10
+ROL R3 11
+ROL R3 12
+ROL R3 13
+ROL R3 14
+ROL R3 15
+//////////////////////
+//ROL R4 X
+//////////////////////
+ROL R4 0
+ROL R4 1
+ROL R4 2
+ROL R4 3
+ROL R4 4
+ROL R4 5
+ROL R4 6
+ROL R4 7
+ROL R4 8
+ROL R4 9
+ROL R4 10
+ROL R4 11
+ROL R4 12
+ROL R4 13
+ROL R4 14
+ROL R4 15
+//////////////////////
+//ROL R5 X
+//////////////////////
+ROL R5 0
+ROL R5 1
+ROL R5 2
+ROL R5 3
+ROL R5 4
+ROL R5 5
+ROL R5 6
+ROL R5 7
+ROL R5 8
+ROL R5 9
+ROL R5 10
+ROL R5 11
+ROL R5 12
+ROL R5 13
+ROL R5 14
+ROL R5 15
+//////////////////////
+//ROL R6 X
+//////////////////////
+ROL R6 0
+ROL R6 1
+ROL R6 2
+ROL R6 3
+ROL R6 4
+ROL R6 5
+ROL R6 6
+ROL R6 7
+ROL R6 8
+ROL R6 9
+ROL R6 10
+ROL R6 11
+ROL R6 12
+ROL R6 13
+ROL R6 14
+ROL R6 15
+//////////////////////
+//ROL R7 X
+//////////////////////
+ROL R7 0
+ROL R7 1
+ROL R7 2
+ROL R7 3
+ROL R7 4
+ROL R7 5
+ROL R7 6
+ROL R7 7
+ROL R7 8
+ROL R7 9
+ROL R7 10
+ROL R7 11
+ROL R7 12
+ROL R7 13
+ROL R7 14
+ROL R7 15
+//////////////////////
+//ROL R8 X
+//////////////////////
+ROL R8 0
+ROL R8 1
+ROL R8 2
+ROL R8 3
+ROL R8 4
+ROL R8 5
+ROL R8 6
+ROL R8 7
+ROL R8 8
+ROL R8 9
+ROL R8 10
+ROL R8 11
+ROL R8 12
+ROL R8 13
+ROL R8 14
+ROL R8 15
+//////////////////////
+//ROL R9 X
+//////////////////////
+ROL R9 0
+ROL R9 1
+ROL R9 2
+ROL R9 3
+ROL R9 4
+ROL R9 5
+ROL R9 6
+ROL R9 7
+ROL R9 8
+ROL R9 9
+ROL R9 10
+ROL R9 11
+ROL R9 12
+ROL R9 13
+ROL R9 14
+ROL R9 15
+//////////////////////
+//ROL R10 X
+//////////////////////
+ROL R10 0
+ROL R10 1
+ROL R10 2
+ROL R10 3
+ROL R10 4
+ROL R10 5
+ROL R10 6
+ROL R10 7
+ROL R10 8
+ROL R10 9
+ROL R10 10
+ROL R10 11
+ROL R10 12
+ROL R10 13
+ROL R10 14
+ROL R10 15
+//////////////////////
+//ROL R11 X
+//////////////////////
+ROL R11 0
+ROL R11 1
+ROL R11 2
+ROL R11 3
+ROL R11 4
+ROL R11 5
+ROL R11 6
+ROL R11 7
+ROL R11 8
+ROL R11 9
+ROL R11 10
+ROL R11 11
+ROL R11 12
+ROL R11 13
+ROL R11 14
+ROL R11 15
+//////////////////////
+//ROL R12 X
+//////////////////////
+ROL R12 0
+ROL R12 1
+ROL R12 2
+ROL R12 3
+ROL R12 4
+ROL R12 5
+ROL R12 6
+ROL R12 7
+ROL R12 8
+ROL R12 9
+ROL R12 10
+ROL R12 11
+ROL R12 12
+ROL R12 13
+ROL R12 14
+ROL R12 15
+//////////////////////
+//ROL R13 X
+//////////////////////
+ROL R13 0
+ROL R13 1
+ROL R13 2
+ROL R13 3
+ROL R13 4
+ROL R13 5
+ROL R13 6
+ROL R13 7
+ROL R13 8
+ROL R13 9
+ROL R13 10
+ROL R13 11
+ROL R13 12
+ROL R13 13
+ROL R13 14
+ROL R13 15
+//////////////////////
+//ROL R14 X
+//////////////////////
+ROL R14 0
+ROL R14 1
+ROL R14 2
+ROL R14 3
+ROL R14 4
+ROL R14 5
+ROL R14 6
+ROL R14 7
+ROL R14 8
+ROL R14 9
+ROL R14 10
+ROL R14 11
+ROL R14 12
+ROL R14 13
+ROL R14 14
+ROL R14 15
+//////////////////////
+//ROL R15 X
+//////////////////////
+ROL R15 0
+ROL R15 1
+ROL R15 2
+ROL R15 3
+ROL R15 4
+ROL R15 5
+ROL R15 6
+ROL R15 7
+ROL R15 8
+ROL R15 9
+ROL R15 10
+ROL R15 11
+ROL R15 12
+ROL R15 13
+ROL R15 14
+ROL R15 15
+//////////////////////
+//ROL R16 X
+//////////////////////
+ROL R16 0
+ROL R16 1
+ROL R16 2
+ROL R16 3
+ROL R16 4
+ROL R16 5
+ROL R16 6
+ROL R16 7
+ROL R16 8
+ROL R16 9
+ROL R16 10
+ROL R16 11
+ROL R16 12
+ROL R16 13
+ROL R16 14
+ROL R16 15
+//////////////////////
+//ROL R17 X
+//////////////////////
+ROL R17 0
+ROL R17 1
+ROL R17 2
+ROL R17 3
+ROL R17 4
+ROL R17 5
+ROL R17 6
+ROL R17 7
+ROL R17 8
+ROL R17 9
+ROL R17 10
+ROL R17 11
+ROL R17 12
+ROL R17 13
+ROL R17 14
+ROL R17 15
+//////////////////////
+//ROL R18 X
+//////////////////////
+ROL R18 R0
+ROL R18 1
+ROL R18 2
+ROL R18 3
+ROL R18 4
+ROL R18 5
+ROL R18 6
+ROL R18 7
+ROL R18 8
+ROL R18 9
+ROL R18 10
+ROL R18 11
+ROL R18 12
+ROL R18 13
+ROL R18 14
+ROL R18 15
+//////////////////////
+//ROL R19 X
+//////////////////////
+ROL R19 0
+ROL R19 1
+ROL R19 2
+ROL R19 3
+ROL R19 4
+ROL R19 5
+ROL R19 6
+ROL R19 7
+ROL R19 8
+ROL R19 9
+ROL R19 10
+ROL R19 11
+ROL R19 12
+ROL R19 13
+ROL R19 14
+ROL R19 15
+//////////////////////
+//ROR R0 X
+//////////////////////
+ROR R0 0
+ROR R0 1
+ROR R0 2
+ROR R0 3
+ROR R0 4
+ROR R0 5
+ROR R0 6
+ROR R0 7
+ROR R0 8
+ROR R0 9
+ROR R0 10
+ROR R0 11
+ROR R0 12
+ROR R0 13
+ROR R0 14
+ROR R0 15
+//////////////////////
+//ROR R1 X
+//////////////////////
+ROR R1 0
+ROR R1 1
+ROR R1 2
+ROR R1 3
+ROR R1 4
+ROR R1 5
+ROR R1 6
+ROR R1 7
+ROR R1 8
+ROR R1 9
+ROR R1 10
+ROR R1 11
+ROR R1 12
+ROR R1 13
+ROR R1 14
+ROR R1 15
+
+//////////////////////
+//ROR R2 X
+//////////////////////
+ROR R2 0
+ROR R2 1
+ROR R2 2
+ROR R2 3
+ROR R2 4
+ROR R2 5
+ROR R2 6
+ROR R2 7
+ROR R2 8
+ROR R2 9
+ROR R2 10
+ROR R2 11
+ROR R2 12
+ROR R2 13
+ROR R2 14
+ROR R2 15
+//////////////////////
+//ROR R3 X
+//////////////////////
+ROR R3 0
+ROR R3 1
+ROR R3 2
+ROR R3 3
+ROR R3 4
+ROR R3 5
+ROR R3 6
+ROR R3 7
+ROR R3 8
+ROR R3 9
+ROR R3 10
+ROR R3 11
+ROR R3 12
+ROR R3 13
+ROR R3 14
+ROR R3 15
+//////////////////////
+//ROR R4 X
+//////////////////////
+ROR R4 0
+ROR R4 1
+ROR R4 2
+ROR R4 3
+ROR R4 4
+ROR R4 5
+ROR R4 6
+ROR R4 7
+ROR R4 8
+ROR R4 9
+ROR R4 10
+ROR R4 11
+ROR R4 12
+ROR R4 13
+ROR R4 14
+ROR R4 15
+//////////////////////
+//ROR R5 X
+//////////////////////
+ROR R5 0
+ROR R5 1
+ROR R5 2
+ROR R5 3
+ROR R5 4
+ROR R5 5
+ROR R5 6
+ROR R5 7
+ROR R5 8
+ROR R5 9
+ROR R5 10
+ROR R5 11
+ROR R5 12
+ROR R5 13
+ROR R5 14
+ROR R5 15
+//////////////////////
+//ROR R6 X
+//////////////////////
+ROR R6 0
+ROR R6 1
+ROR R6 2
+ROR R6 3
+ROR R6 4
+ROR R6 5
+ROR R6 6
+ROR R6 7
+ROR R6 8
+ROR R6 9
+ROR R6 10
+ROR R6 11
+ROR R6 12
+ROR R6 13
+ROR R6 14
+ROR R6 15
+//////////////////////
+//ROR R7 X
+//////////////////////
+ROR R7 0
+ROR R7 1
+ROR R7 2
+ROR R7 3
+ROR R7 4
+ROR R7 5
+ROR R7 6
+ROR R7 7
+ROR R7 8
+ROR R7 9
+ROR R7 10
+ROR R7 11
+ROR R7 12
+ROR R7 13
+ROR R7 14
+ROR R7 15
+//////////////////////
+//ROR R8 X
+//////////////////////
+ROR R8 0
+ROR R8 1
+ROR R8 2
+ROR R8 3
+ROR R8 4
+ROR R8 5
+ROR R8 6
+ROR R8 7
+ROR R8 8
+ROR R8 9
+ROR R8 10
+ROR R8 11
+ROR R8 12
+ROR R8 13
+ROR R8 14
+ROR R8 15
+//////////////////////
+//ROR R9 X
+//////////////////////
+ROR R9 0
+ROR R9 1
+ROR R9 2
+ROR R9 3
+ROR R9 4
+ROR R9 5
+ROR R9 6
+ROR R9 7
+ROR R9 8
+ROR R9 9
+ROR R9 10
+ROR R9 11
+ROR R9 12
+ROR R9 13
+ROR R9 14
+ROR R9 15
+//////////////////////
+//ROR R10 X
+//////////////////////
+ROR R10 0
+ROR R10 1
+ROR R10 2
+ROR R10 3
+ROR R10 4
+ROR R10 5
+ROR R10 6
+ROR R10 7
+ROR R10 8
+ROR R10 9
+ROR R10 10
+ROR R10 11
+ROR R10 12
+ROR R10 13
+ROR R10 14
+ROR R10 15
+//////////////////////
+//ROR R11 X
+//////////////////////
+ROR R11 0
+ROR R11 1
+ROR R11 2
+ROR R11 3
+ROR R11 4
+ROR R11 5
+ROR R11 6
+ROR R11 7
+ROR R11 8
+ROR R11 9
+ROR R11 10
+ROR R11 11
+ROR R11 12
+ROR R11 13
+ROR R11 14
+ROR R11 15
+//////////////////////
+//ROR R12 X
+//////////////////////
+ROR R12 0
+ROR R12 1
+ROR R12 2
+ROR R12 3
+ROR R12 4
+ROR R12 5
+ROR R12 6
+ROR R12 7
+ROR R12 8
+ROR R12 9
+ROR R12 10
+ROR R12 11
+ROR R12 12
+ROR R12 13
+ROR R12 14
+ROR R12 15
+//////////////////////
+//ROR R13 X
+//////////////////////
+ROR R13 0
+ROR R13 1
+ROR R13 2
+ROR R13 3
+ROR R13 4
+ROR R13 5
+ROR R13 6
+ROR R13 7
+ROR R13 8
+ROR R13 9
+ROR R13 10
+ROR R13 11
+ROR R13 12
+ROR R13 13
+ROR R13 14
+ROR R13 15
+//////////////////////
+//ROR R14 X
+//////////////////////
+ROR R14 0
+ROR R14 1
+ROR R14 2
+ROR R14 3
+ROR R14 4
+ROR R14 5
+ROR R14 6
+ROR R14 7
+ROR R14 8
+ROR R14 9
+ROR R14 10
+ROR R14 11
+ROR R14 12
+ROR R14 13
+ROR R14 14
+ROR R14 15
+//////////////////////
+//ROR R15 X
+//////////////////////
+ROR R15 0
+ROR R15 1
+ROR R15 2
+ROR R15 3
+ROR R15 4
+ROR R15 5
+ROR R15 6
+ROR R15 7
+ROR R15 8
+ROR R15 9
+ROR R15 10
+ROR R15 11
+ROR R15 12
+ROR R15 13
+ROR R15 14
+ROR R15 15
+//////////////////////
+//ROR R16 X
+//////////////////////
+ROR R16 0
+ROR R16 1
+ROR R16 2
+ROR R16 3
+ROR R16 4
+ROR R16 5
+ROR R16 6
+ROR R16 7
+ROR R16 8
+ROR R16 9
+ROR R16 10
+ROR R16 11
+ROR R16 12
+ROR R16 13
+ROR R16 14
+ROR R16 15
+//////////////////////
+//ROR R17 X
+//////////////////////
+ROR R17 0
+ROR R17 1
+ROR R17 2
+ROR R17 3
+ROR R17 4
+ROR R17 5
+ROR R17 6
+ROR R17 7
+ROR R17 8
+ROR R17 9
+ROR R17 10
+ROR R17 11
+ROR R17 12
+ROR R17 13
+ROR R17 14
+ROR R17 15
+//////////////////////
+//ROR R18 X
+//////////////////////
+ROR R18 R0
+ROR R18 1
+ROR R18 2
+ROR R18 3
+ROR R18 4
+ROR R18 5
+ROR R18 6
+ROR R18 7
+ROR R18 8
+ROR R18 9
+ROR R18 10
+ROR R18 11
+ROR R18 12
+ROR R18 13
+ROR R18 14
+ROR R18 15
+//////////////////////
+//ROR R19 X
+//////////////////////
+ROR R19 0
+ROR R19 1
+ROR R19 2
+ROR R19 3
+ROR R19 4
+ROR R19 5
+ROR R19 6
+ROR R19 7
+ROR R19 8
+ROR R19 9
+ROR R19 10
+ROR R19 11
+ROR R19 12
+ROR R19 13
+ROR R19 14
+ROR R19 15
