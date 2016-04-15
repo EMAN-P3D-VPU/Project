@@ -88,6 +88,7 @@ localparam GETOBJ   = 5'b11001;
 // Decode VPU_op and _code //
 always@(*)begin
 	// Defaults //
+	fill = 0;
 	op = 4'h0;
 	code = {VPU_instr[1:0], VPU_instr[3:2]}; // [3:2] Point [1:0] Y,X Direction (TRANSLATE)
 
@@ -147,6 +148,19 @@ always@(posedge clk)begin
 		VPU_fill 	  <= fill;
 	else
 		VPU_fill	  <= VPU_fill;
+end
+
+always@(posedge clk)begin
+	if(!rst_n)begin
+		VPU_op 	  <= 4'h0;
+		VPU_code  <= 4'h0;
+	end else if(~STALL)begin
+		VPU_op 	  <= op;
+		VPU_code  <= code;
+	end else begin 
+		VPU_op 	  <= VPU_op;
+		VPU_code  <= VPU_code;
+	end
 end
 
 always@(posedge clk)begin
