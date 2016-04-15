@@ -1,4 +1,4 @@
-module matrix_unit_new(input clk,
+module matrix_unit(input clk,
             input rst_n,
             //FROM CPU
             //inputs should hold steady for the duration of the operation

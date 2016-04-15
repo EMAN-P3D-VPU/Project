@@ -1,6 +1,6 @@
 `include "timescale.v"
 
-module matrix_unit_tb();
+module vpu_tb();
 
 reg clk, rst_n;
 //CPU inputs

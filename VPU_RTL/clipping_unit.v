@@ -14,6 +14,8 @@ module clipping_unit(input clk,
                     output reg end_of_obj,
                     output [4:0] addr,
                     output reg read_en,
+                    output reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1,
+                    output f1_wr_test,
                     output clr_changed, //to matrix unit
                     output reg reading //to matrix_unit
                     );
@@ -29,6 +31,7 @@ wire [7:0] color_out_f0;
 wire [3:0] oc0_out, oc1_out;
 wire f0_empty, f0_full;
 
+
 //not sure if this fifo needs to be 128-deep
 aFifo initial_fifo(
             .Data_out({oc1_out, oc0_out, color_out_f0, y1_out_f0, x1_out_f0, y0_out_f0, x0_out_f0}), 
@@ -43,7 +46,7 @@ aFifo initial_fifo(
             );
 
 //fifo inputs, not sure if they should be wires
-reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
+//reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
 reg [7:0] color_in_f1;
 reg f1_rd, f1_wr, clr_f1;
 //fifo outputs
@@ -62,6 +65,8 @@ aFifo final_fifo(
             .WClk(clk), 
             .Clear_in(clr_f1)
             );
+
+assign f1_wr_test = f1_wr;
 
 //For keeping track of objects
 reg [1:0] point_cnt;
