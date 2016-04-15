@@ -25,7 +25,7 @@ wire    [15:0]	V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, R
 // Interconnects /
 /////////////////
 //CPU inputs
-wire obj_mem_full_out;
+wire busy, obj_mem_full_out;
 wire [4:0] lst_stored_obj_out;
 //matrix-obj_unit interface
 wire crt_obj, del_obj, del_all, ref_addr, changed_in, obj_mem_full_in, addr_vld;
@@ -63,13 +63,15 @@ cpu CPU(
     .V5_VPU(V5_VPU), .V6_VPU(V6_VPU), .V7_VPU(V7_VPU), .RO_VPU(RO_VPU)
 );
 
+assign VPU_rdy = !busy;
+
 matrix_unit mat(.clk(clk), .rst_n(rst_n), .go(start_VPU), .v0(V0_VPU), .v1(V1_VPU), .v2(V2_VPU), .v3(V3_VPU), 
                 .v4(V4_VPU), .v5(V5_VPU), .v6(V6_VPU), .v7(V7_VPU),
                 .obj_type(obj_type_VPU), .obj_color({5'b0,obj_color_VPU}), .obj_num_in(obj_num_VPU),
                 .gmt_op(op_VPU), .gmt_code(code_VPU), .obj_in(mat_obj_out), .addr_vld(addr_vld), 
                 .lst_stored_obj_in(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full_in(obj_mem_full_in), .clr_changed(clr_changed), .reading(reading),
-                .busy(VPU_rdy), .lst_stored_obj_out(lst_stored_obj_out), .obj_mem_full_out(obj_mem_full_out), 
+                .busy(busy), .lst_stored_obj_out(lst_stored_obj_out), .obj_mem_full_out(obj_mem_full_out), 
                 .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all), .ref_addr(ref_addr),
                 .obj_num_out(obj_num_out), .changed(changed_in), .obj_out(mat_obj_in), .rd_en(mat_rd_en), .wr_en(mat_wr_en),
                 .loadback(loadback), .writing(writing));
@@ -99,7 +101,10 @@ always
 
 // Fill Memory for Software Tests //
 initial begin
-    $readmemh("CPU_instr_1.hex", CPU.MEMORY.RAM);
+    $readmemh("/userspace/d/dsingh/ece554/EMAN/VPU_TB/CPU_instr_1.hex", CPU.MEMORY.RAM);
+end
+
+initial begin
     #10000; //after 10us, trigger clipper
     trigger_clipper();//trigger clipper
 end

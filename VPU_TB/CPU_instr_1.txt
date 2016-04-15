@@ -1,0 +1,22 @@
+//contains description of instructions in CPU_instr_1.hex
+8700 - create quad (with joining all points), as obj0
+8500 - create tri, as obj1
+8300 - create line, as obj2
+B80A - rotate_r, obj0, by 30deg, around centroid
+582C - load lower byte of 300 (2C) into R0 (for the purposes of translation by 300)
+5001 - load upper byte of 300 (01) into R0
+4300 - mv R0 to V0
+A428 - translate obj1 along y axis
+9820 - del obj1
+8500 - create tri, as obj1
+586A - load lower byte of -150 (6A) into R0
+50FF - load upper byte of -150 (FF) into R0
+4300 - mv R0 to V0
+A40C - translate obj0 along both x & y axes
+5832 - load lower byte of 50 (32) into R0
+5000 - load upper byte of 50 (00) into R0
+4300 - mv R0 into V0
+A005 - tranlate obj0, pt2, along x axis
+BC24 - rotate_l, obj1, by 60 deg, around origin
+B84B - rotate_r, obj2, by 45 deg, around origin
+
