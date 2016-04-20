@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module frame_cell(
 				// General Inputs
 				input clk,
@@ -22,7 +23,7 @@ frame_cell_block frame_mem(
 			.dina(write_data),
 			.wea(write_enable),
 			.clka(clk),
-			.addrb({read_frame_width, read_frame_height}),
+			.addrb(write_enable ? 19'bX : {read_frame_width, read_frame_height}),
 			.clkb(clk),
 			.doutb(read_data));
 
