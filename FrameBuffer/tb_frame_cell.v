@@ -42,8 +42,8 @@ initial begin
 	// ensure write and read address are always different
 	write_frame_width = 10'b0;
 	write_frame_height = 9'b0;
-	read_frame_width = !write_frame_width;
-	read_frame_height = !write_frame_height;
+	read_frame_width = 10'b0;
+	read_frame_height = 9'b0;
 
 	// begin writing pixels in
 	$display("Writing to RAM");
@@ -52,8 +52,12 @@ initial begin
 			#10
 			// increment write_data by 1 every address
 			write_data = write_data + 3'd1;
-			write_frame_width = !write_frame_width;
-			write_frame_height = !write_frame_height;
+
+			// check if conflicts occur when read and write address is the same
+			write_frame_width = width_counter;
+			write_frame_height = height_counter;
+			read_frame_width = width_counter;
+			read_frame_height = height_counter;
 		end
 	end
 
@@ -74,6 +78,8 @@ initial begin
 
 			// increment write_data by 1 every address
 			write_data = write_data + 3'd1;
+			write_frame_width = width_counter;
+			write_frame_height = height_counter;
 			read_frame_width = width_counter;
 			read_frame_height = height_counter;
 		end
