@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module frame_buffer(
 				// General Inputs
 				input clk,
@@ -38,7 +39,7 @@ assign read_rast_pixel_rdy = mode == next_mode;
 
 // last pixel to write
 wire last_pixel;
-assign last_pixel = (rast_width == 10'd639 && rast_height == 9'd479);
+assign last_pixel = (dvi_width == 10'd639 && dvi_height == 9'd479);
 
 // wires to read and write enable for frame_cell
 wire frame0_write_enable;
@@ -59,6 +60,8 @@ always @(posedge clk) begin
 		mode <= 1'b0;
 	end else if((next_mode != mode) && last_pixel) begin
 		mode <= next_mode;
+	end else if (next_frame_switch && rast_done && last_pixel) begin
+		mode <= !mode;
 	end else begin
 		mode <= mode;
 	end
@@ -115,6 +118,7 @@ frame_cell frame0(
 		.write_frame_height(rast_height),
 		.write_enable(frame0_write_enable),
 		.write_data(rast_color_input),
+		.read_enable(mode == 1'b1),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame0_read_data));
@@ -125,6 +129,7 @@ frame_cell frame1(
 		.write_frame_height(rast_height),
 		.write_enable(frame1_write_enable),
 		.write_data(rast_color_input),
+		.read_enable(mode == 1'b0),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame1_read_data));
