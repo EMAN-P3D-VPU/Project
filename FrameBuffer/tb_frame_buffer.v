@@ -121,7 +121,7 @@ initial begin
 		end
 	end
 
-
+	// test the other frame
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
 			#10
@@ -131,7 +131,7 @@ initial begin
 			end
 		end
 	end
-	
+
 	$finish();
 end
 
