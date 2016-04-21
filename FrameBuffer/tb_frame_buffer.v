@@ -101,7 +101,7 @@ initial begin
 	end
 
 	// check again
-	rast_color_ionput = 3'b0;
+	rast_color_input = 3'b0;
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
 			
