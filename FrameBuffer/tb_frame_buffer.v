@@ -75,11 +75,11 @@ initial begin
 				next_frame_switch = 1'b0;
 			end
 
-			rast_color_input = rast_color_input + 3'd1;
-			rast_width = width_counter;
-			rast_height = height_counter;
-
 			#10
+			
+			rast_color_input = rast_color_input + 3'd1;
+			rast_width = width_counter + 1;
+			rast_height = height_counter + 1;
 		end
 	end
 
@@ -98,8 +98,8 @@ initial begin
 		end
 	end
 
+	$stop();
 end
-
 
 always
 	#5 clk = ~clk;
