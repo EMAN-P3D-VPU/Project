@@ -65,23 +65,18 @@ initial begin
 	// begin writing to RAM
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
-
-			// change frame
-			if (height_counter == 479 && width_counter == 639) begin
-				rast_done = 1'b1;
-				next_frame_switch = 1'b1;
-			end else begin
-				rast_done = 1'b0;
-				next_frame_switch = 1'b0;
-			end
-
 			#10
-
 			rast_color_input = rast_color_input + 3'd1;
-			rast_width = width_counter + 1;
-			rast_height = height_counter + 1;
+			rast_width = width_counter;
+			rast_height = height_counter;
 		end
 	end
+
+	// Check last pixel
+	// Switch frames
+	rast_done = 1'b1;
+	next_frame_switch = 1'b1;
+	#10
 
 	// check reading
 	rast_color_input = 3'b0;
@@ -96,6 +91,13 @@ initial begin
 
 			rast_color_input = rast_color_input + 3'd1;
 		end
+	end
+
+	// Check last pixel
+	#10
+	if(rast_color_input != dvi_color_out) begin
+		$display("For w: %d h: %d, data is %d but should be %d",
+			width_counter, height_counter, dvi_color_out, rast_color_input);
 	end
 
 	$finish();
