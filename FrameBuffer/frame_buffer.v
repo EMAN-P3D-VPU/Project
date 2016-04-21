@@ -39,7 +39,7 @@ assign read_rast_pixel_rdy = mode == next_mode;
 
 // last pixel to write
 wire last_pixel;
-assign last_pixel = (rast_width == 10'd639 && rast_height == 9'd479);
+assign last_pixel = (dvi_width == 10'd639 && dvi_height == 9'd479);
 
 // wires to read and write enable for frame_cell
 wire frame0_write_enable;
