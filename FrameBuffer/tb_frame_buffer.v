@@ -51,7 +51,7 @@ initial begin
 
 	// Rasterizer
 	rast_pixel_rdy = 1'b1;
-	rast_color_input 3'b0;
+	rast_color_input = 3'b0;
 	rast_width = 10'b0;
 	rast_height = 9'b0;
 	rast_done = 1'b0;
@@ -89,6 +89,7 @@ initial begin
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
 			rast_color_input = rast_color_input + 3'd1;
+			
 			#10
 			if(rast_color_input != dvi_color_out) begin
 				$display("For w: %d h: %d, data is %d but should be %d",
