@@ -59,11 +59,10 @@ initial begin
 			#10
 			// increment write_data by 1 every address
 			write_data = write_data + 3'd1;
-			
+
 		end
 	end
 
-	#10
 	// begin reading
 	write_enable = 1'b0;
 	write_data = 3'b0;
