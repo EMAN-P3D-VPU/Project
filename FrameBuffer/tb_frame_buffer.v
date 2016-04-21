@@ -76,7 +76,7 @@ initial begin
 			end
 
 			#10
-			
+
 			rast_color_input = rast_color_input + 3'd1;
 			rast_width = width_counter + 1;
 			rast_height = height_counter + 1;
@@ -88,17 +88,17 @@ initial begin
 
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
-			rast_color_input = rast_color_input + 3'd1;
-			
 			#10
 			if(rast_color_input != dvi_color_out) begin
 				$display("For w: %d h: %d, data is %d but should be %d",
 					width_counter, height_counter, dvi_color_out, rast_color_input);
 			end
+
+			rast_color_input = rast_color_input + 3'd1;
 		end
 	end
 
-	$stop();
+	$finish();
 end
 
 always
