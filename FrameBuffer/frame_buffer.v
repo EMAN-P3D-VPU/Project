@@ -60,6 +60,8 @@ always @(posedge clk) begin
 		mode <= 1'b0;
 	end else if((next_mode != mode) && last_pixel) begin
 		mode <= next_mode;
+	end else if (next_frame_switch && rast_done && last_pixel) begin
+		mode <= !mode;
 	end else begin
 		mode <= mode;
 	end
