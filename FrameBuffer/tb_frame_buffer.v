@@ -80,8 +80,10 @@ initial begin
 		end
 	end
 
+	// ensures that the mode stays the same
 	rast_done = 1'b0;
-	next_frame_switch = 1'b0;
+	next_frame_switch = 1'b1;
+	rast_pixel_rdy = 1'b0;
 
 	// check reading
 	rast_color_input = 3'b0;
@@ -90,7 +92,7 @@ initial begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
 			#10
 			if(rast_color_input != dvi_color_out) begin
-				$display("For w: %d h: %d, data is %d but should be %d",
+				$display("FIRST ITERATION: For w: %d h: %d, data is %d but should be %d",
 					width_counter, height_counter, dvi_color_out, rast_color_input);
 			end
 
@@ -98,6 +100,38 @@ initial begin
 		end
 	end
 
+	// check again
+	rast_color_ionput = 3'b0;
+	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
+		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
+			
+			// switch frames
+			if(height_counter == 470 && width_counter == 639) begin
+				rast_done = 1'b1;
+				next_frame_switch = 1'b1;	
+			end
+
+			#10
+			if(rast_color_input != dvi_color_out) begin
+				$display("SECOND ITERATION: For w: %d h: %d, data is %d but should be %d",
+					width_counter, height_counter, dvi_color_out, rast_color_input);
+			end
+
+			rast_color_input = rast_color_input + 3'd1;
+		end
+	end
+
+
+	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
+		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
+			#10
+			if(3'b0 != dvi_color_out) begin
+				$display("Check other frame: For w: %d h: %d, data is %d but should be %d",
+					width_counter, height_counter, dvi_color_out, rast_color_input);
+			end
+		end
+	end
+	
 	$finish();
 end
 
