@@ -118,6 +118,7 @@ frame_cell frame0(
 		.write_frame_height(rast_height),
 		.write_enable(frame0_write_enable),
 		.write_data(rast_color_input),
+		.read_enable(mode == 1'b1),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame0_read_data));
@@ -128,6 +129,7 @@ frame_cell frame1(
 		.write_frame_height(rast_height),
 		.write_enable(frame1_write_enable),
 		.write_data(rast_color_input),
+		.read_enable(mode == 1'b0),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame1_read_data));

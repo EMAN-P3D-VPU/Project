@@ -10,6 +10,9 @@ module frame_cell(
 				input [2:0] write_data,
 
 				// Reading
+				// used to determine whether or not to input
+				// something to the read address
+				input read_enable,
 				input [9:0] read_frame_width,
 				input [8:0] read_frame_height,
 				output [2:0] read_data);
@@ -23,7 +26,7 @@ frame_cell_block frame_mem(
 			.dina(write_data),
 			.wea(write_enable),
 			.clka(clk),
-			.addrb(write_enable ? 19'bX : {read_frame_width, read_frame_height}),
+			.addrb(read_enable ? {read_frame_width, read_frame_height} : 19'bX),
 			.clkb(clk),
 			.doutb(read_data));
 
