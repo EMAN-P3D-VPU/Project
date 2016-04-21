@@ -65,6 +65,11 @@ initial begin
 	// begin writing to RAM
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
+			
+			// set width and height
+			rast_width = width_counter;
+			rast_height = height_counter;
+
 			if(height_counter == 479 && width_counter == 639) begin
 				rast_done = 1'b1;
 				next_frame_switch = 1'b1;
@@ -72,8 +77,6 @@ initial begin
 
 			#10
 			rast_color_input = rast_color_input + 3'd1;
-			rast_width = width_counter;
-			rast_height = height_counter;
 		end
 	end
 

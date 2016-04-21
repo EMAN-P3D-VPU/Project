@@ -50,15 +50,16 @@ initial begin
 	$display("Writing to RAM");
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
-			#10
-			// increment write_data by 1 every address
-			write_data = write_data + 3'd1;
-
 			// check if conflicts occur when read and write address is the same
 			write_frame_width = width_counter;
 			write_frame_height = height_counter;
 			read_frame_width = width_counter;
 			read_frame_height = height_counter;
+
+			#10
+			// increment write_data by 1 every address
+			write_data = write_data + 3'd1;
+			
 		end
 	end
 
@@ -70,6 +71,12 @@ initial begin
 	$display("Reading from RAM");
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
 		for(width_counter = 0; width_counter < 640; width_counter = width_counter + 1) begin
+			
+			write_frame_width = width_counter;
+			write_frame_height = height_counter;
+			read_frame_width = width_counter;
+			read_frame_height = height_counter;
+
 			#10
 
 			if (write_data != read_data) begin
@@ -79,18 +86,7 @@ initial begin
 
 			// increment write_data by 1 every address
 			write_data = write_data + 3'd1;
-			write_frame_width = width_counter;
-			write_frame_height = height_counter;
-			read_frame_width = width_counter;
-			read_frame_height = height_counter;
 		end
-	end
-
-	// check last pixel
-	#10
-	if (write_data != read_data) begin
-		$display("For w: %d h: %d, data is %d but should be %d",
-			width_counter, height_counter, read_data, write_data);
 	end
 
 	$stop();
