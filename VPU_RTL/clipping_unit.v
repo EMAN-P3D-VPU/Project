@@ -90,17 +90,23 @@ wire pt1_gt_ymax, pt1_lt_ymin, pt1_gt_xmax, pt1_lt_xmin;
 wire accept_line, reject_line, clip_line;
 reg latch_line, store_line, clip_en;
 
-reg [3:0] cnt;
+reg [7:0] cnt;
 reg clip_done;
-reg sel_min, sel_max, x_edge, y_edge;
 wire ld_pt0, ld_pt1, ldback_x0, ldback_x1, ldback_y0, ldback_y1;
 wire signed [15:0] x_a, y_a;
 wire signed [15:0] x_b, y_b;
 reg signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
+reg x_edge, y_edge;
+//wire signed [15:0] x_diff, y_diff, x_max_min_diff, y_max_min_diff;
+//wire x_edge, y_edge;
 wire signed [15:0] x_max_min, y_max_min;
-wire signed [15:0] mult1, mult2, divisor;
+wire signed [15:0] mult1, mult2;
+wire rfd;
+reg nd;
 wire signed [31:0] dividend;
-//reg signed [31:0] quotient; 
+wire signed [15:0] divisor;
+//reg signed [31:0] dividend;
+//reg signed [15:0] divisor;
 wire signed [31:0] quotient; 
 
 reg [3:0] st, nxt_st;
@@ -388,17 +394,21 @@ assign pt1_lt_ymin = oc1_clip[2];
 assign pt1_gt_xmax = oc1_clip[1];
 assign pt1_lt_xmin = oc1_clip[0];
 
+wire cnt_stop;
+wire proc_ymax_cnt, proc_ymin_cnt, proc_xmax_cnt, proc_xmin_cnt;
+wire ldback_ymax_cnt, ldback_ymin_cnt, ldback_xmax_cnt, ldback_xmin_cnt;
+
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        cnt <= 4'b0;
+        cnt <= 8'b0;
     end else begin
         if(clip_en) begin
-            if(cnt == 4'hb)
-                cnt <= 4'h0;
+            if(cnt_stop)
+                cnt <= 8'h0;
             else
                 cnt <= cnt +1;
         end else begin
-            cnt <= 4'h0;
+            cnt <= 8'h0;
         end
     end
 end
@@ -407,7 +417,7 @@ always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         clip_done <= 1'b0;
     end else begin
-        if(cnt == 4'hb) //at 11
+        if (cnt_stop) //at 11
             clip_done <= 1'b1;
         else 
             clip_done <= 1'b0;
@@ -416,35 +426,52 @@ end
 
 //CLIPPING ALGORITHM -
 //order of processing is - ymax, ymin, xmax, xmin
-//each one takes 3 cycles
-//every first cycle - flopping and loadback, 2nd cycle - mult, 3rd cycle - div
+//each one takes stage cycles
+//every first stage - flopping and loadback, 2nd  - mult, 3rd  - div
+parameter DIV_CYCLES =30;
+assign proc_ymax_cnt = (cnt == 0) ? 1'b1 : 1'b0;
+assign proc_ymin_cnt = (cnt == (1*(DIV_CYCLES +2))) ? 1'b1 : 1'b0;
+assign proc_xmax_cnt = (cnt == (2*(DIV_CYCLES +2))) ? 1'b1 : 1'b0;
+assign proc_xmin_cnt = (cnt == (3*(DIV_CYCLES +2))) ? 1'b1 : 1'b0;
+assign ldback_ymax_cnt = (cnt == (1*(DIV_CYCLES +2) -1)) ? 1'b1 : 1'b0;
+assign ldback_ymin_cnt = (cnt == (2*(DIV_CYCLES +2) -1)) ? 1'b1 : 1'b0;
+assign ldback_xmax_cnt = (cnt == (3*(DIV_CYCLES +2) -1)) ? 1'b1 : 1'b0;
+assign ldback_xmin_cnt = (cnt == (4*(DIV_CYCLES +2) -1)) ? 1'b1 : 1'b0;
+assign cnt_stop = (cnt == (4*(DIV_CYCLES +2) -1)) ? 1'b1 : 1'b0;
+
+always @(posedge clk)
+    if (ld_pt0 || ld_pt1)
+        nd <= 1'b1;
+    else
+        nd <= 1'b0;
+
 assign ld_pt0    = (clip_en && 
-                    (pt0_gt_ymax && (cnt == 4'h0)) ||
-                    (pt0_lt_ymin && (cnt == 4'h3)) ||
-                    (pt0_gt_xmax && (cnt == 4'h6)) ||
-                    (pt0_lt_xmin && (cnt == 4'h9))
+                    (pt0_gt_ymax && proc_ymax_cnt) ||
+                    (pt0_lt_ymin && proc_ymin_cnt) ||
+                    (pt0_gt_xmax && proc_xmax_cnt) ||
+                    (pt0_lt_xmin && proc_xmin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign ld_pt1    = (clip_en && 
-                    (pt1_gt_ymax && (cnt == 4'h0)) ||
-                    (pt1_lt_ymin && (cnt == 4'h3)) ||
-                    (pt1_gt_xmax && (cnt == 4'h6)) ||
-                    (pt1_lt_xmin && (cnt == 4'h9))
+                    (pt1_gt_ymax && proc_ymax_cnt) ||
+                    (pt1_lt_ymin && proc_ymin_cnt) ||
+                    (pt1_gt_xmax && proc_xmax_cnt) ||
+                    (pt1_lt_xmin && proc_xmin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign ldback_x0 = (clip_en && 
-                    (pt0_gt_ymax && (cnt == 4'h2)) ||
-                    (pt0_lt_ymin && (cnt == 4'h5))
+                    (pt0_gt_ymax && ldback_ymax_cnt) || //x has to be loaded back on a ymax violation etc
+                    (pt0_lt_ymin && ldback_ymin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign ldback_x1 = (clip_en && 
-                    (pt1_gt_ymax && (cnt == 4'h2)) ||
-                    (pt1_lt_ymin && (cnt == 4'h5))
+                    (pt1_gt_ymax && ldback_ymax_cnt) ||
+                    (pt1_lt_ymin && ldback_ymin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign ldback_y0 = (clip_en && 
-                    (pt0_gt_xmax && (cnt == 4'h8)) ||
-                    (pt0_lt_xmin && (cnt == 4'hb))
+                    (pt0_gt_xmax && ldback_xmax_cnt) ||
+                    (pt0_lt_xmin && ldback_xmin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign ldback_y1 = (clip_en && 
-                    (pt1_gt_xmax && (cnt == 4'h8)) ||
-                    (pt1_lt_xmin && (cnt == 4'hb))
+                    (pt1_gt_xmax && ldback_xmax_cnt) ||
+                    (pt1_lt_xmin && ldback_xmin_cnt)
                     ) ? 1'b1 : 1'b0;
 assign x_max_min =  (pt0_gt_xmax || pt1_gt_xmax) ? 640 : 
                     (pt0_lt_xmin || pt1_lt_xmin) ? 0 : 16'hx;
@@ -465,23 +492,36 @@ always @(posedge clk) begin
     y_diff <= y_b - y_a;
     x_max_min_diff <= x_max_min - x_a;
     y_max_min_diff <= y_max_min - y_a;
-    y_edge <= ((cnt == 4'h0) || (cnt == 4'h3)) ? (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) : 1'b0;
-    x_edge <= ((cnt == 4'h6) || (cnt == 4'h9)) ? (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) : 1'b0;
+    y_edge <= (proc_ymax_cnt || proc_ymin_cnt) ? (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) : 1'b0;
+    x_edge <= (proc_xmax_cnt || proc_xmin_cnt) ? (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) : 1'b0;
 end
+//assign x_diff = x_b - x_a;
+//assign y_diff = y_b - y_a;
+//assign x_max_min_diff = x_max_min - x_a;
+//assign y_max_min_diff = y_max_min - y_a;
+//assign y_edge = (proc_ymax_cnt || proc_ymin_cnt) ? (pt0_gt_ymax || pt1_gt_ymax  || pt0_lt_ymin || pt1_lt_ymin) : 1'b0;
+//assign x_edge = (proc_xmax_cnt || proc_xmin_cnt) ? (pt0_gt_xmax || pt1_gt_xmax  || pt0_lt_xmin || pt1_lt_xmin) : 1'b0;
 
 assign mult1 =  x_edge ? y_diff : //y_diff on x-edge, x_diff on y-edge
                 y_edge ? x_diff : 16'hx;
 assign mult2 =  x_edge ? x_max_min_diff : // x on x-edge, y on y-edge
                 y_edge ? y_max_min_diff : 16'hx;
+
 assign divisor = x_edge ? x_diff :  //x on x-edge, y on y-edge
                  y_edge ? y_diff : 16'hx;
 assign dividend = mult1*mult2;
+
+//always @(posedge clk) begin
+//    divisor <= x_edge ? x_diff :  //x on x-edge, y on y-edge
+//              y_edge ? y_diff : 16'hx;
+//    dividend <= mult1*mult2;
+//end
 
 //For simulation
 //always @ (posedge clk) begin
 //    quotient <= dividend/divisor;
 //end
-divider div(.rfd(), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
+divider div(.rfd(rfd), .nd(nd), .clk(clk), .dividend(dividend), .quotient(quotient), .divisor(divisor));
 
 //For storing into final fifo
 always @(posedge clk, negedge rst_n) begin
@@ -514,7 +554,7 @@ end
 assign x0_out = x0_out_f1[9:0];
 assign y0_out = y0_out_f1[9:0];
 assign x1_out = x1_out_f1[9:0];
-assign y2_out = y1_out_f1[9:0];
+assign y1_out = y1_out_f1[9:0];
 assign color_out = color_out_f1[2:0]; //8-bit color path has already been designed
                                       //lets just use 3 bits out of it
 
