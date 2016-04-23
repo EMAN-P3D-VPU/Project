@@ -117,6 +117,7 @@ wire    [15:0]	MWB_reg_1_wrt_data;
 instruction_fetch IF(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .STALL(DEX_STALL),
+	.VPU_start(DEX_VPU_start),
     .IF_PC_next(DEX_PC_next),
     .IF_PC_select(DEX_PC_select),
     .MEM_instr(MEM_instr),
@@ -203,6 +204,7 @@ VPU_register VPU_data_out(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .STALL(DEX_STALL),
     .VPU_start(DEX_VPU_start),
+	.VPU_rdy(VPU_rdy),
 	.VPU_instr(IF_instr),
     .V0_in(DEX_V0),
     .V1_in(DEX_V1),
