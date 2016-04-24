@@ -26,7 +26,7 @@ frame_cell_block frame_mem(
 			.dina(write_data),
 			.wea(write_enable),
 			.clka(clk),
-			.addrb(read_enable ? {read_frame_width, read_frame_height} : 19'bX),
+			.addrb(read_enable ? {read_frame_width, read_frame_height} : 19'bz),
 			.clkb(clk),
 			.doutb(read_data));
 
