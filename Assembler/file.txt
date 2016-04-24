@@ -1,6 +1,6 @@
-_Label  AND R1  R2    # comment
+_Label1  AND R1  R2    # comment
         OR  R3  R1
-        J   _Label     //comment that is a couple words
+        J   _Label1     //comment that is a couple words
 
 _var1   .FILL   0x1234  # First variable
 
@@ -10,6 +10,10 @@ _var1   .FILL   0x1234  # First variable
 _Label2 OR  R5  R5
         OR  R9  R10
         JR  R6
+        J   _Label2     //another comment
 
-_var2   .FILL   0x2345 # Second variable
-_var3   .FILL   0x3456 # Third variable
+_var2   .FILL   dp2345 # Second variable
+_var3   .FILL   dn-5 # Third variable
+_var4   .FILL   du-15 # Third variable
+_var5   .FILL   dl15 # Third variable
+_var6   .FILL   i10101 # Third variable
