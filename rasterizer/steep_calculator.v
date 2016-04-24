@@ -1,7 +1,7 @@
-module steep_calculator(line_cap_reg, dy, dx, slope_steep);
+module steep_calculator(line_cap_reg, dy, dx, steep_octant);
 
 input [45:0] line_cap_reg;
-output [1:0] slope_steep;
+output [1:0] steep_octant;
 output [10:0] dy, dx;
 
 wire [9:0] x_0, y_0, x_1, y_1;
@@ -9,6 +9,7 @@ wire [10:0] dy_, dx_;
 wire [10:0] abs_dy, abs_dx; //2'sc for slope/steep determination
 wire [1:0] steep_octant;
 wire [1:0] octant_select;
+wire [1:0] slope_steep;
 wire slope_polarity; 
 
 

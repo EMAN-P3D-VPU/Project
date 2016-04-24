@@ -1,23 +1,30 @@
-module point_gen(x_i, y_i, dy, p_or_n, Xn, Yn);
 
-input [9:0] x_i, y_i;
-input [10:0] dy;
+module point_gen(x_i, y_i, dy, dx, p_or_n, Xn, Yn);
+
+input signed [9:0] x_i, y_i;
+input signed [10:0] dy, dx;
 input p_or_n;
-output [9:0] Xn, Yn;
+output signed [9:0] Xn, Yn;
 
 
 //21 bits for entire range of algorithm
-wire [21:0] del_X, del_Y, del_Yf, del_sel;
+wire signed [21:0] del_X, del_Xf, del_Y, y_dir, dy_xi, dx_yi, diff, Yn_sel;
 
 assign del_X = x_i + x_i + 2;
-assign del_Y = y_i + y_i + 1;
-assign del_Yf = (p_or_n) ? (del_Y):(~del_Y + 1);
-assign del_sel = (dy * del_X) + del_Yf;
+assign del_Xf = (~del_X + 1);
+assign del_Y = (p_or_n)? (y_i + y_i - 1):(y_i + y_i + 1);
+assign dy_xi = (dy * del_Xf);
+assign dx_yi = (dx * del_Y);
+assign diff =  dy_xi + dx_yi;
 
 //always step forward in the x direction
 assign Xn = x_i + 1;
+assign Yn_sel = {p_or_n, diff[21]};
 //select if you want y_i or y_i+1
 //algorithm equals dx(d1-d2)
-assign Yn = (del_sel[21]) ? y_i:(y_i + 1);
+
+assign Yn = (Yn_sel == 1) ? (y_i + 1):
+			(Yn_sel == 2) ? (y_i - 1):
+							      y_i;
 
 endmodule
