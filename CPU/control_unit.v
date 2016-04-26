@@ -235,7 +235,9 @@ always@(*)begin
 			halt = 1;
 		end
 		// All other commands default to VPU instructions //
-        default: VPU_start = 1;
+        default:begin
+			VPU_start = 1;
+		end
 	endcase
 end
 

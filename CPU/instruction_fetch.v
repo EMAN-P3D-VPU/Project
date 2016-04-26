@@ -8,6 +8,7 @@
 module instruction_fetch(
     // Inputs //
     clk, rst_n, STALL,
+	VPU_start,
     IF_PC_next,
     IF_PC_select,
     MEM_instr,
@@ -21,6 +22,7 @@ module instruction_fetch(
 //////////
 input			clk, rst_n, STALL;
 // From DEX //
+input			VPU_start;
 input			IF_PC_select;
 input	[15:0]	IF_PC_next;
 // Memory Interface //
@@ -70,6 +72,8 @@ assign IF_mem_read_addr = PC;
 // Instruction //
 always@(posedge clk)begin
 	if(!rst_n)
+		IF_instr <= 16'h0;
+	else if(VPU_start)
 		IF_instr <= 16'h0;
 	else if(~STALL)
 		IF_instr <= MEM_instr;

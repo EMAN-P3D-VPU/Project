@@ -10,6 +10,7 @@ module VPU_register(
     clk, rst_n, STALL,
 	VPU_instr,
     VPU_start,
+	VPU_rdy,
     V0_in,
     V1_in,
     V2_in,
@@ -42,23 +43,25 @@ module VPU_register(
 //////////
 input				clk, rst_n, STALL;
 input				VPU_start;
+input				VPU_rdy;
 input		[15:0]	VPU_instr;
 input		[15:0]	V0_in, V1_in, V2_in, V3_in, V4_in, V5_in, V6_in, V7_in, RO_in;
 /////////////
 // Outputs /
 ///////////
-output	reg			VPU_start_out;
+output	wire		VPU_start_out;
 output	reg			VPU_fill;
 output	reg	[1:0]	VPU_obj_type;
 output	reg	[2:0]	VPU_obj_color;
-output	reg	[3:0]	VPU_op;//
-output	reg	[3:0]	VPU_code;//
+output	reg	[3:0]	VPU_op;
+output	reg	[3:0]	VPU_code;
 output	reg	[4:0]	VPU_obj_num;
 output	reg	[15:0]	V0_out, V1_out, V2_out, V3_out, V4_out, V5_out, V6_out, V7_out, RO_out;
 
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
+reg			VPU_start_r;
 
 ///////////////////
 // Interconnects /
@@ -88,8 +91,8 @@ localparam GETOBJ   = 5'b11001;
 // Decode VPU_op and _code //
 always@(*)begin
 	// Defaults //
-	fill = 0;
 	op = 4'h0;
+	fill = 0;
 	code = {VPU_instr[1:0], VPU_instr[3:2]}; // [3:2] Point [1:0] Y,X Direction (TRANSLATE)
 
 	// VPU_op //
@@ -118,9 +121,9 @@ always@(*)begin
 			code = VPU_instr[3:0];// [3] Centroid [2:0] Amount (ROT/SCALE)
 		end
         REFLECT:begin
-			op = (VPU_instr[1:0] == 2'h1) ? 2'h8:
-				 (VPU_instr[1:0] == 2'h2) ? 2'h9:
-											2'hA;
+			op = (VPU_instr[1:0] == 2'h1) ? 4'h8:
+				 (VPU_instr[1:0] == 2'h2) ? 4'h9:
+											4'hA;
 		end
         MAT    :begin
 			op = (VPU_instr[10]) ? 4'hC : 4'hB;
@@ -134,21 +137,16 @@ end
 // Flop VPU signals + registers //
 always@(posedge clk)begin
 	if(!rst_n)
-		VPU_start_out <= 1'h0;
+		VPU_start_r <= 1'h0;
+	else if(~VPU_rdy)
+		VPU_start_r <= 1'h0;
 	else if(~STALL)
-		VPU_start_out <= VPU_start & ~fill;
+		VPU_start_r <= VPU_start & ~fill;
 	else
-		VPU_start_out <= VPU_start_out;
+		VPU_start_r <= VPU_start_r;
 end
 
-always@(posedge clk)begin
-	if(!rst_n)
-		VPU_fill 	  <= 1'h0;
-	else if(~STALL)
-		VPU_fill 	  <= fill;
-	else
-		VPU_fill	  <= VPU_fill;
-end
+assign VPU_start_out = VPU_start_r; // Single Cycle for VPU_start
 
 always@(posedge clk)begin
 	if(!rst_n)begin
@@ -161,6 +159,15 @@ always@(posedge clk)begin
 		VPU_op 	  <= VPU_op;
 		VPU_code  <= VPU_code;
 	end
+end
+
+always@(posedge clk)begin
+	if(!rst_n)
+		VPU_fill 	  <= 1'h0;
+	else if(~STALL)
+		VPU_fill 	  <= fill;
+	else
+		VPU_fill	  <= VPU_fill;
 end
 
 always@(posedge clk)begin
