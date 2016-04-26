@@ -122,7 +122,7 @@ def hex_to_binary(hex):
     """
     binary = ''
     for h in hex:
-        binary += bcd[h]
+        binary += bcd[h.upper()]
 
     # Sign Extend #
     binary = binary[0] * (16 - len(binary)) + binary
@@ -564,14 +564,14 @@ instructions_list = {
                            },
                           ]
          },
-'RMVR'  :{'opcode'      : '10011' + '1',
+'RMVR'  :{'opcode'      : '10011' + '0',
           'params'      : [{'type'   : 'reg',
                             'start'  : 9,
                             'size'   : 5,
                            },
                           ]
          },
-'RMVALL':{'opcode'      : '10011' + '0',
+'RMVALL':{'opcode'      : '10011' + '1',
           'params'      : [
                           ]
          },
