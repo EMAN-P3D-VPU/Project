@@ -59,6 +59,8 @@ assign PC_next = (IF_PC_select) ? IF_PC_next:
 always@(posedge clk)begin
 	if(!rst_n)
 		PC <= 16'h0000;
+	else if(VPU_start)
+		PC <= PC;
 	else if(~STALL)
 		PC <= PC_next;
 	else
