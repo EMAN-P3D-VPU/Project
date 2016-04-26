@@ -340,8 +340,8 @@ instructions_list = {
                             'size'   : 5,
                            },
                            {'type'   : 'reg',
-                            'start'  : 4,
-                            'size'   : 5,
+                            'start'  : 3,
+                            'size'   : 4,
                            },
                           ]
          },
