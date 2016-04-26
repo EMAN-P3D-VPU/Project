@@ -19,7 +19,6 @@ module display_top_level(input clk_input,
 					inout sda_tri);
 
 wire comp_sync;
-wire clk_output;
 wire clk_input_buf;
 wire locked_dcm;
 
@@ -57,7 +56,7 @@ dvi_ifc u_dvi(  .Clk           (clk_25mhz),
             );
 
 // Add your logic for the VGA mini project
-vga_clk vga_clk_gen1(clk_input, rst, clk_25mhz, clk_output, clk_input_buf, locked_dcm);
+vga_clk_gen vga_clk_gen1(clk_input, rst, clk_25mhz, clk_output, clk_input_buf, locked_dcm);
 
 // FIFO, data written in from 100 Mhz side and read from 25 Mhz side 
 fifo_xclk fifo (
