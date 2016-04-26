@@ -1,7 +1,0 @@
-//module checks the distances between testpoints and real point
-//outputs which delt is closer to the real point
-module delta_select();
-
-
-
-endmodule
