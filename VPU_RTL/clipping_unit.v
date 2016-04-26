@@ -280,6 +280,15 @@ assign oc1_in[0] = (x1_in_f0 < 0)   ? 1'b1 : 1'b0;
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
+        end_of_obj <= 1'b0;
+    end else begin
+        if(start_refresh)
+            end_of_obj <= 1'b0;
+    end
+end
+
+always @(posedge clk, negedge rst_n) begin
+    if(!rst_n) begin
         st <= IDLE;
     end else begin
         st <= nxt_st;
@@ -569,5 +578,8 @@ always @(posedge clk, negedge rst_n) begin
         end
     end
 end
+
+always @(posedge clk)
+    vld <= f1_rd; //data will be valid in the next cycle of vld
 
 endmodule

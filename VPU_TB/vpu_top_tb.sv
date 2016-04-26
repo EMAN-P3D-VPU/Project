@@ -12,7 +12,7 @@ always #5 clkin = ~clkin;
 initial begin
     clkin = 1'b0;
     rst_n = 1'b0;
-    force vpu.clipper.refresh_cnt = 0;
+    force vpu.clipper.timing.refresh_cnt = 0;
     @(posedge clkin);
     @(negedge clkin);
     rst_n = 1'b1;
@@ -21,9 +21,9 @@ initial begin
 end
 
 task trigger_clipper();
-    force vpu.clipper.refresh_cnt = 1666667;
+    force vpu.clipper.timing.refresh_cnt = 1666667;
     @(posedge clkin);
-    release vpu.clipper.refresh_cnt;
+    release vpu.clipper.timing.refresh_cnt;
 endtask
 
 endmodule
