@@ -2,7 +2,7 @@
 module frame_buffer(
 				// General Inputs
 				input clk,
-				input rst_n,
+				input rst,
 
 				// DVI Inputs
 				input dvi_fifo_full,
@@ -54,14 +54,17 @@ assign frame1_write_enable = mode == 1'b1 && rast_pixel_rdy && read_rast_pixel_r
 assign dvi_color_out = mode == 1'b1 ? frame0_read_data : frame1_read_data;
 assign dvi_fifo_write_enable = !dvi_fifo_full;
 
+wire switch_mode;
+assign switch_mode = rast_done ? !mode : mode;
+
 // mode is determined by switching modes
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		mode <= 1'b0;
-	end else if((next_mode != mode) && last_pixel) begin
-		mode <= next_mode;
 	end else if (next_frame_switch && rast_done && last_pixel) begin
-		mode <= mode + 1'b1;
+		mode <= !mode;
+	end else if (last_pixel) begin
+		mode <= next_mode;
 	end else begin
 		mode <= mode;
 	end
@@ -69,14 +72,11 @@ end
 
 // next mode - needed because next frame switch can happen before the frame is done outputting to dvi fifo
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		next_mode <= 1'b0;
 	// should only happen once before switching to the next frmae
-	end else if (next_frame_switch && rast_done) begin
-		next_mode <= next_mode + 1'b1;
-	// repeat last frame since rasterizer is not done drawing
-	end else if (next_frame_switch && ~rast_done) begin
-		next_mode <= mode;
+	end else if (next_frame_switch) begin
+		next_mode <= switch_mode;
 	end else begin
 		next_mode <= next_mode;
 	end
@@ -85,7 +85,7 @@ end
 // figure out what the read address should be
 // width
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		dvi_width <= 10'd0;
 	end else if (dvi_fifo_full) begin
 		dvi_width <= dvi_width;
@@ -98,7 +98,7 @@ end
 
 // height
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		dvi_height <= 9'd0;
 	end else if (dvi_fifo_full) begin
 		dvi_height <= dvi_height;

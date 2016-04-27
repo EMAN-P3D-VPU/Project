@@ -38,13 +38,8 @@ wire dvi_fifo_write_enable;
 // display outputs
 wire dvi_fifo_full;
 
-// not reset
-wire rst_n;
-
-assign rst_n = ~rst;
-
 frame_buffer fb(.clk(clk_output),
-			.rst_n(rst_n),
+			.rst(rst),
 			.dvi_fifo_full(dvi_fifo_full),
 			.dvi_color_out(dvi_color_out),
 			.dvi_fifo_write_enable(dvi_fifo_write_enable),

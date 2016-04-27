@@ -5,7 +5,7 @@ module tb_frame_buffer();
 
 //inputs
 reg clk;
-reg rst_n;
+reg rst;
 
 //DVI
 reg dvi_fifo_full;
@@ -27,7 +27,7 @@ wire read_rast_pixel_rdy;
 
 frame_buffer tb_frame_buffer(
 				.clk(clk),
-				.rst_n(rst_n),
+				.rst(rst),
 				.dvi_fifo_full(dvi_fifo_full),
 				.dvi_color_out(dvi_color_out),
 				.dvi_fifo_write_enable(dvi_fifo_write_enable),
@@ -44,7 +44,7 @@ integer height_counter;
 
 initial begin
 	clk = 1'b0;
-	rst_n = 1'b0;
+	rst = 1'b1;
 	
 	// DVI
 	dvi_fifo_full = 1'b0;
@@ -60,7 +60,7 @@ initial begin
 	next_frame_switch = 1'b0;
 
 	#10
-	rst_n = 1'b1;
+	rst = 1'b0;
 
 	// begin writing to RAM
 	for (height_counter = 0; height_counter < 480; height_counter = height_counter + 1) begin
