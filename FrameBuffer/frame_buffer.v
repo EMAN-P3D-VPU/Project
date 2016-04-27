@@ -61,7 +61,7 @@ always @(posedge clk) begin
 	end else if((next_mode != mode) && last_pixel) begin
 		mode <= next_mode;
 	end else if (next_frame_switch && rast_done && last_pixel) begin
-		mode <= mode == 1'b0 ? 1'b1 : 1'b0;
+		mode <= mode + 1'b1;
 	end else begin
 		mode <= mode;
 	end
@@ -73,9 +73,9 @@ always @(posedge clk) begin
 		next_mode <= 1'b0;
 	// should only happen once before switching to the next frmae
 	end else if (next_frame_switch && rast_done) begin
-		next_mode <= mode == 1'b0 ? 1'b1 : 1'b0;
+		next_mode <= next_mode + 1'b1;
 	// repeat last frame since rasterizer is not done drawing
-	end else if (next_frame_switch && !rast_done) begin
+	end else if (next_frame_switch && ~rast_done) begin
 		next_mode <= mode;
 	end else begin
 		next_mode <= next_mode;
