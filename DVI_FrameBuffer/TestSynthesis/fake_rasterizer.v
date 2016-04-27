@@ -16,10 +16,10 @@ reg [26:0] counter;
 
 // determines if we are in the corner of the screen
 wire last_pixel;
-assign last_pixel = rast_height == 10'd639 && rast_width == 9'd479;
+assign last_pixel = (rast_height == 10'd639) && (rast_width == 9'd479);
 
 // switch frames when counter == 1 sec (100000000) and on the last pixel
-assign rast_done = last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter >= one_second;
+assign rast_done = last_pixel & read_rast_pixel_rdy & (counter == one_second);
 assign next_frame_switch = rast_done;
 
 assign rast_pixel_rdy = 1'b1;
@@ -61,13 +61,13 @@ end
 always @(posedge clk) begin
 	if(rst) begin
 		counter <= 26'd0;
-		rast_color_input <= 3'b0;
-	end else if (last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter >= one_second) begin
+		rast_color_input <= 3'd2;
+	end else if (last_pixel & read_rast_pixel_rdy & (counter == one_second)) begin
 		counter <= 26'd0;
-		
+
 		// the colors should alternate through all
-		rast_color_input <= rast_color_input + 3'b001;
-	end else if (last_pixel && read_rast_pixel_rdy == 1'b1) begin
+		rast_color_input <= rast_color_input + 3'b1;
+	end else if (last_pixel & read_rast_pixel_rdy) begin
 		counter <= counter + 26'd1;
 		rast_color_input <= rast_color_input;
 	end else begin
