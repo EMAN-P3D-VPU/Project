@@ -44,7 +44,7 @@ module instruction_decode_execute(
     DEX_mem_write_data,
     DEX_load_immd,
 	DEX_reg_data_0,
-	DEX_reg_data_1,
+	DEX_reg_data_1
 );
 ////////////
 // Inputs /
@@ -57,7 +57,7 @@ input			VPU_rdy;
 input			we_CPU_0;
 input			we_CPU_1;
 input			SPART_we;
-input	[3:0]	SPART_keys;
+input	[4:0]	SPART_keys;
 input	[4:0]	wrt_addr_0;
 input	[4:0]	wrt_addr_1;
 input	[15:0]	wrt_data_0;
@@ -190,6 +190,7 @@ assign	mem_write_data = reg_data_0;
 
 register_file regfile(
     // Inputs //
+	.clk(clk), .rst_n(rst_n),
     .reg_addr_0(reg_addr_0),
     .reg_addr_1(reg_addr_1),
     .wrt_addr_0(wrt_addr_0),

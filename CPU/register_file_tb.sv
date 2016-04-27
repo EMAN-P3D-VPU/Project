@@ -13,8 +13,8 @@ module register_file_tb();
 // Inputs /
 //////////
 logic 			clk, rst_n;
-logic			cpu_flags_we, we_CPU_0, we_CPU_1, we_VPU;
-logic	[4:0]	reg_addr_0, reg_addr_1, wrt_addr_0, wrt_addr_1;
+logic			cpu_flags_we, we_CPU_0, we_CPU_1, we_VPU, SPART_we;
+logic	[4:0]	reg_addr_0, reg_addr_1, wrt_addr_0, wrt_addr_1, SPART_keys;
 logic	[15:0]	cpu_flags, wrt_data_0, wrt_data_1, wrt_V0, wrt_V1, wrt_V2,
 				wrt_V3, wrt_V4, wrt_V5, wrt_V6, wrt_V7, return_obj;
 
@@ -33,12 +33,14 @@ wire	[15:0]	reg_data_0, reg_data_1, read_V0, read_V1, read_V2, read_V3,
 // Instantiations /
 //////////////////
 register_file regfile(// Inputs //
+					 .clk(clk), .rst_n(rst_n),
 					 .reg_addr_0(reg_addr_0), .reg_addr_1(reg_addr_1), .wrt_addr_0(wrt_addr_0), .wrt_addr_1(wrt_addr_1),
 					 .cpu_flags(cpu_flags), .cpu_flags_we(cpu_flags_we), .we_VPU(we_VPU),
 					 .wrt_data_0(wrt_data_0), .wrt_data_1(wrt_data_1), .we_CPU_0(we_CPU_0), .we_CPU_1(we_CPU_1),
 					 .wrt_V0(wrt_V0), .wrt_V1(wrt_V1), .wrt_V2(wrt_V2), .wrt_V3(wrt_V3),
 					 .wrt_V4(wrt_V4), .wrt_V5(wrt_V5), .wrt_V6(wrt_V6), .wrt_V7(wrt_V7),
 					 .return_obj(return_obj),
+					 .SPART_we(SPART_we), .SPART_keys(SPART_keys),
 					 // Outputs //
 					 .reg_data_0(reg_data_0), .reg_data_1(reg_data_1), .read_RO(read_RO),
 					 .read_V0(read_V0), .read_V1(read_V1), .read_V2(read_V2), .read_V3(read_V3),

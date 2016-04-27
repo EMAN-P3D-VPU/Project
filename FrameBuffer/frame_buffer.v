@@ -2,7 +2,7 @@
 module frame_buffer(
 				// General Inputs
 				input clk,
-				input rst_n,
+				input rst,
 
 				// DVI Inputs
 				input dvi_fifo_full,
@@ -35,33 +35,36 @@ reg [8:0] dvi_height;
 
 // check if the rasterizer is indicating it is for the other frame
 // that is currently in read mode
-assign read_rast_pixel_rdy = mode == next_mode; 
+assign read_rast_pixel_rdy = (mode == next_mode); 
 
 // last pixel to write
 wire last_pixel;
-assign last_pixel = (dvi_width == 10'd639 && dvi_height == 9'd479);
+assign last_pixel = ((dvi_width == 10'd639) & (dvi_height == 9'd479));
 
 // wires to read and write enable for frame_cell
 wire frame0_write_enable;
 wire [2:0] frame0_read_data;
-assign frame0_write_enable = mode == 1'b0 && rast_pixel_rdy && read_rast_pixel_rdy;
+assign frame0_write_enable = (mode == 1'b0) & rast_pixel_rdy & read_rast_pixel_rdy;
 
 wire frame1_write_enable;
 wire [2:0] frame1_read_data;
-assign frame1_write_enable = mode == 1'b1 && rast_pixel_rdy && read_rast_pixel_rdy;
+assign frame1_write_enable = (mode == 1'b1) & rast_pixel_rdy & read_rast_pixel_rdy;
 
 // dvi color output is determined by which frame cell is currently being read
-assign dvi_color_out = mode == 1'b1 ? frame0_read_data : frame1_read_data;
-assign dvi_fifo_write_enable = !dvi_fifo_full;
+assign dvi_color_out = (mode == 1'b1) ? frame0_read_data : frame1_read_data;
+assign dvi_fifo_write_enable = ~dvi_fifo_full;
+
+wire switch_mode;
+assign switch_mode = (rast_done) ? ~mode : mode;
 
 // mode is determined by switching modes
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		mode <= 1'b0;
-	end else if((next_mode != mode) && last_pixel) begin
+	end else if (next_frame_switch & rast_done & last_pixel) begin
+		mode <= ~mode;
+	end else if (last_pixel) begin
 		mode <= next_mode;
-	end else if (next_frame_switch && rast_done && last_pixel) begin
-		mode <= !mode;
 	end else begin
 		mode <= mode;
 	end
@@ -69,14 +72,11 @@ end
 
 // next mode - needed because next frame switch can happen before the frame is done outputting to dvi fifo
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		next_mode <= 1'b0;
 	// should only happen once before switching to the next frmae
-	end else if (next_frame_switch && rast_done) begin
-		next_mode <= !mode;
-	// repeat last frame since rasterizer is not done drawing
-	end else if (next_frame_switch && !rast_done) begin
-		next_mode <= mode;
+	end else if (next_frame_switch) begin
+		next_mode <= switch_mode;
 	end else begin
 		next_mode <= next_mode;
 	end
@@ -85,7 +85,7 @@ end
 // figure out what the read address should be
 // width
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		dvi_width <= 10'd0;
 	end else if (dvi_fifo_full) begin
 		dvi_width <= dvi_width;
@@ -98,11 +98,11 @@ end
 
 // height
 always @(posedge clk) begin
-	if (!rst_n) begin
+	if (rst) begin
 		dvi_height <= 9'd0;
 	end else if (dvi_fifo_full) begin
 		dvi_height <= dvi_height;
-	end else if (dvi_height == 9'd479 && dvi_width == 10'd639) begin
+	end else if ((dvi_height == 9'd479) && (dvi_width == 10'd639)) begin
 		dvi_height <= 9'd0;
 	end else if (dvi_width == 10'd639) begin
 		dvi_height <= dvi_height + 9'd1;
@@ -118,7 +118,6 @@ frame_cell frame0(
 		.write_frame_height(rast_height),
 		.write_enable(frame0_write_enable),
 		.write_data(rast_color_input),
-		.read_enable(mode == 1'b1),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame0_read_data));
@@ -129,7 +128,6 @@ frame_cell frame1(
 		.write_frame_height(rast_height),
 		.write_enable(frame1_write_enable),
 		.write_data(rast_color_input),
-		.read_enable(mode == 1'b0),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame1_read_data));

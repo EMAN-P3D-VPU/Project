@@ -7,7 +7,6 @@ module spart_top_level(
 	input [1:0] br_cfg, // Baud Rate Configuration, Tied to dip switches 2 and 3
 
 	// cpu interface
-	input cpu_read,
 	output [4:0] bit_mask,
 	output bit_mask_ready);
 	
@@ -47,7 +46,6 @@ module spart_top_level(
 					.rst(rst),
 					.rda(rda),
 					.databus(databus),
-					.cpu_read(cpu_read),
 					.bit_mask(bit_mask),
 					.bit_mask_ready(bit_mask_ready));
 

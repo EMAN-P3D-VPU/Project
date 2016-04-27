@@ -1,5 +1,36 @@
-FILL 0x00
+///////////////////////////////////////
+//ECE 554 Final Demo Program
+///////////////////////////////////////
+FILL 0x00 //start with blank screen
 WAIT 0x500
-DPOLY 0x00 0x07
+/////////////////////////////
+//CUBE INIT
+/////////////////////////////
+// init right side of cube
+DPOLY 0x01 0x07
+MOV R0 RO //R0 holds right side of cube
+ADDI V0 0xFF
+TRN R0 0x01 0x03
+ROTR R0 0x00 0x06
 WAIT 0x500
-ADDI R0 124
+//init left side of cube
+DPOLY 0x01 0x07
+MOV R1 RO //R1 holds left side of cube
+ROTL R1 0x00 0x06
+WAIT 0x500
+//init front side of cube
+DPOLY 0x01 0x07
+MOV R2 RO //R2 holds front side of cube
+//init back side of cube
+DPOLY 0x01 0x07
+MOV R3 RO //R3 holds back side of cube
+// init top of cube
+DPOLY 0x01 0x07
+MOV R4 RO //R4 holds right side of cube
+ROTR R0 0x00 0x06
+WAIT 0x500
+// init top of cube
+DPOLY 0x01 0x07
+MOV R0 RO //R5 holds bottom of cube
+ROTR R0 0x00 0x06
+WAIT 0x500

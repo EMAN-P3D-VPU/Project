@@ -28,7 +28,7 @@ module memory_writeback(
     dst_addr_0,
     dst_addr_1,
     reg_0_wrt_data,
-    reg_1_wrt_data,
+    reg_1_wrt_data
 );
 ////////////
 // Inputs /

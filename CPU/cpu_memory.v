@@ -35,7 +35,7 @@ output	[15:0]	read_data;
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
-reg	[15:0]	RAM	[65535:0];
+reg	[15:0]	RAM	[63:0];
 
 ///////////////////
 // Interconnects /
@@ -44,6 +44,12 @@ reg	[15:0]	RAM	[65535:0];
 ////////////////////////////////////////////////////////////////////////////////
 // cpu_memory (Xilinx User Guide)
 ////
+//HACK//
+initial begin
+    $readmemh("CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+    //$readmemh("/userspace/d/dsingh/ece554/EMAN/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+end
+
 
 // Write //
 always@(posedge clk)begin
