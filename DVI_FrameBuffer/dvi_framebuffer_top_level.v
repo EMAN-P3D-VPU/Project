@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module dvi_framebuffer_top_level(
 	// generic
 	input clk_input,
