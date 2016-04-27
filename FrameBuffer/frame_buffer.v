@@ -35,7 +35,7 @@ reg [8:0] dvi_height;
 
 // check if the rasterizer is indicating it is for the other frame
 // that is currently in read mode
-assign read_rast_pixel_rdy = mode == next_mode; 
+assign read_rast_pixel_rdy = (mode == next_mode); 
 
 // last pixel to write
 wire last_pixel;
@@ -51,18 +51,18 @@ wire [2:0] frame1_read_data;
 assign frame1_write_enable = (mode == 1'b1) & rast_pixel_rdy & read_rast_pixel_rdy;
 
 // dvi color output is determined by which frame cell is currently being read
-assign dvi_color_out = mode == 1'b1 ? frame0_read_data : frame1_read_data;
-assign dvi_fifo_write_enable = !dvi_fifo_full;
+assign dvi_color_out = (mode == 1'b1) ? frame0_read_data : frame1_read_data;
+assign dvi_fifo_write_enable = ~dvi_fifo_full;
 
 wire switch_mode;
-assign switch_mode = rast_done ? !mode : mode;
+assign switch_mode = (rast_done) ? ~mode : mode;
 
 // mode is determined by switching modes
 always @(posedge clk) begin
 	if (rst) begin
 		mode <= 1'b0;
 	end else if (next_frame_switch & rast_done & last_pixel) begin
-		mode <= !mode;
+		mode <= ~mode;
 	end else if (last_pixel) begin
 		mode <= next_mode;
 	end else begin
@@ -102,7 +102,7 @@ always @(posedge clk) begin
 		dvi_height <= 9'd0;
 	end else if (dvi_fifo_full) begin
 		dvi_height <= dvi_height;
-	end else if (dvi_height == 9'd479 && dvi_width == 10'd639) begin
+	end else if ((dvi_height == 9'd479) && (dvi_width == 10'd639)) begin
 		dvi_height <= 9'd0;
 	end else if (dvi_width == 10'd639) begin
 		dvi_height <= dvi_height + 9'd1;

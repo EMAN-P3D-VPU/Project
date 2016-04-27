@@ -16,7 +16,7 @@ reg [26:0] counter;
 
 // determines if we are in the corner of the screen
 wire last_pixel;
-assign last_pixel = (rast_height == 10'd639) && (rast_width == 9'd479);
+assign last_pixel = (rast_height == 10'd479) && (rast_width == 9'd639);
 
 // switch frames when counter == 1 sec (100000000) and on the last pixel
 assign rast_done = last_pixel & read_rast_pixel_rdy & (counter == one_second);
