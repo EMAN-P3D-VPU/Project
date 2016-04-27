@@ -6,6 +6,21 @@ _var1   .FILL   0x1234  # First variable
 
 // Just a line containing a comment //
 # and another line with just a comment #
+        DPT 0x1   0x3
+        DLINE   0x0   0x7
+        DTRI    0x1   0x1
+        DPOLY   0x1   0x2
+        FILL    0x2
+        RMVI    dp4
+        RMVR    R17
+        RMVALL
+        TRNALL  R8  0x2
+        TRN     0xA 0x2 0x1
+        ROTR    R22 0x1 0x3
+        ROTL    R30 0x0 0x2
+        SCALE   dp12    0x0 0x4
+        REFLECT V0  0x1
+        HALT
 
 _Label2 OR  R5  R5
         OR  R9  R10
