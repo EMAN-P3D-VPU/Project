@@ -12,7 +12,7 @@ module LINE_GENERATOR(/*global inputs*/      clk, rst,
 //GLOBAL INPUTS
 input clk, rst;
 //RASTER INPUTS/OUTPUTS
-input [58:0] fifo_data;
+input [68:0] fifo_data;
 input fifo_empty;
 output fifo_rd_en;
 //CLIPPER INPUTS/OUTPUTS
@@ -46,7 +46,7 @@ wire valid;
 wire new_x, new_y;
 wire final_line_point;
 //mathmodules****
-point_gen POINT_GEN(.x_i(CAP_REG[58:49]), .x_y(CAP_REG[48:39]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
+point_gen POINT_GEN(.x_i(CAP_REG[58:49]), .y_i(CAP_REG[48:39]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
 //see if you hit the final point
 assign final_line_point = ((CAP_REG[58:49] == CAP_REG[38:29]) & (CAP_REG[48:39] == CAP_REG[28:19]));
 
@@ -71,6 +71,7 @@ assign valid = CAP_REG[4];
 reg [9:0] x, y;
 reg clr_coords;
 reg update_coords;
+reg stall_coords;
 //As x goes 0 to 640 
 always @(posedge clk, negedge rst) begin
 	if(~rst) begin
@@ -78,8 +79,8 @@ always @(posedge clk, negedge rst) begin
 	end else 
 	if(clr_coords) begin
 		x <= 0;
-	end
-	if(x == 640) begin
+	end else
+	if(x == 640 & ~stall_coords) begin
 		x <= 0;
 	end else
 	if(update_coords) begin
@@ -95,15 +96,21 @@ always @(posedge clk or negedge rst) begin
 	if(~rst) begin
 		y <= 0;
 	end else 
+	if(stall_coords)
+	begin
+		y <= y;
+	end
 	if(clr_coords) begin
 		y <= 0;
-	end
-	if(x == 640) begin
+	end else
+	if((x == 640) & ~stall_coords) begin
 		y <= y + 1;
 	end else
-	if(y == 480) begin
+	if((y == 480) & (x == 640))begin
 		y <= 0;
 	end
+	else
+	begin
 		y <= y ;
 	end
 end
@@ -117,7 +124,7 @@ assign frame_x = (clr_color)? x:CAP_REG[58:49];
 assign frame_y = (clr_color)? y:CAP_REG[48:39];
 
 wire last_px;
-assign last_px = ((x == 640) & (y == 480)) 1:0;
+assign last_px = ((x == 640) & (y == 480)) ? 1:0;
 
 
 //frame and fifo enable regs
@@ -133,7 +140,7 @@ assign raster_done = draw_complete;
 reg [2:0] state, nxt_state;
 always @(posedge clk, negedge rst)
 	begin
-		if(rst)
+		if(~rst)
 			state <= IDLE;
 		else
 			state <= nxt_state;
@@ -152,6 +159,7 @@ always @(*)
 	draw_complete = 0;
 	clr_coords    = 0;
 	update_coords = 0;
+	stall_coords  = 0;
 
 	load_line     = 0;
 	load_next_point = 0;
@@ -182,6 +190,7 @@ always @(*)
 						//last coordinates stay the same
 						clr_coords = 0;
 						update_coords = 0;
+						stall_coords = 1;
 						//don't draw what was last latched
 						draw_px = 0;
 						//keep background color
