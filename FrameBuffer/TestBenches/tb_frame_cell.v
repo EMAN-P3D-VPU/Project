@@ -25,7 +25,6 @@ frame_cell tb_frame_cell(
 			.write_frame_height(write_frame_height),
 			.write_enable(write_enable),
 			.write_data(write_data),
-			.read_enable(!write_enable),
 			.read_frame_width(read_frame_width),
 			.read_frame_height(read_frame_height),
 			.read_data(read_data));

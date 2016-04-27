@@ -1,25 +1,31 @@
 `timescale 1ns / 1ps
-module display_top_level(input clk_input,
+module display_top_level(
+					// generic inputs
+					input clk_input,
 					input rst,
-					input [2:0] frame_buffer_color_in,
-					input frame_buffer_fifo_write_enable,
-					output [7:0] pixel_r,
-					output [7:0] pixel_g,
-					output [7:0] pixel_b,
+
+					// display specific outputs
 					output hsync,
 					output vsync,
 					output blank,
-					output clk_25mhz,
-					output clk_25mhz_n,
 					output [11:0] D,
 					output dvi_rst,
-					output clk_output,
-					output fifo_full,
+					output clk_25mhz,
+					output clk_25mhz_n,
 					inout scl_tri,
-					inout sda_tri);
+					inout sda_tri,
+
+					// output clock to all other modules
+					output clk_output,
+
+					// rasterizer input
+					input [2:0] frame_buffer_color_in,
+					input frame_buffer_fifo_write_enable,
+
+					// rasterizer output
+					output fifo_full);
 
 wire comp_sync;
-wire clk_output;
 wire clk_input_buf;
 wire locked_dcm;
 
@@ -42,6 +48,11 @@ wire [23:0] color_translated;
 wire stall;
 wire fifo_read_enable;
 
+// colors
+wire [7:0] pixel_r;
+wire [7:0] pixel_g;
+wire [7:0] pixel_b;
+
 assign dvi_rst = ~(rst|~locked_dcm);
 assign D = (clk_25mhz)? {pixel_g[3:0], pixel_b} : {pixel_r, pixel_g[7:4]};
 assign sda_tri = (sda)? 1'bz: 1'b0;
@@ -57,7 +68,7 @@ dvi_ifc u_dvi(  .Clk           (clk_25mhz),
             );
 
 // Add your logic for the VGA mini project
-vga_clk vga_clk_gen1(clk_input, rst, clk_25mhz, clk_output, clk_input_buf, locked_dcm);
+vga_clk_gen vga_clk_gen1(clk_input, rst, clk_25mhz, clk_output, clk_input_buf, locked_dcm);
 
 // FIFO, data written in from 100 Mhz side and read from 25 Mhz side 
 fifo_xclk fifo (

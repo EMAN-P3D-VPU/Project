@@ -48,7 +48,7 @@ module cpu(
 input				clk, rst_n;
 input				VPU_rdy, VPU_data_we;
 input				SPART_we;
-input		[3:0]	SPART_keys;
+input		[4:0]	SPART_keys;
 input		[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 /////////////
