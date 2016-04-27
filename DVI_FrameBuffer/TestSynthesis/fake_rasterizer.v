@@ -2,14 +2,14 @@
 module fake_rasterizer(input clk,
 				input rst,
 				input read_rast_pixel_rdy,
+				input dont_change,
 				output next_frame_switch,
-				output rast_pixel_rdy,
 				output reg [2:0] rast_color_input,
 				output reg [9:0] rast_width,
 				output reg [8:0] rast_height,
 				output rast_done);
 
-parameter one_second = 27'd100000000;
+parameter one_second = 27'd100;
 
 // helper functions
 reg [26:0] counter;
@@ -19,10 +19,8 @@ wire last_pixel;
 assign last_pixel = (rast_height == 10'd479) && (rast_width == 9'd639);
 
 // switch frames when counter == 1 sec (100000000) and on the last pixel
-assign rast_done = last_pixel & read_rast_pixel_rdy & (counter == one_second);
+assign rast_done = last_pixel & read_rast_pixel_rdy & (counter == one_second) & (dont_change == 1'b0);
 assign next_frame_switch = rast_done;
-
-assign rast_pixel_rdy = 1'b1;
 
 // width
 always @(posedge clk) begin

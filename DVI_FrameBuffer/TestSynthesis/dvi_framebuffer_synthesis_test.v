@@ -3,6 +3,8 @@ module dvi_framebuffer_synthesis_test(
 	// generic
 	input clk_input,
 	input rst,
+	input dont_change,
+	input rast_pixel_rdy,
 
 	// display outputs
 	output hsync,
@@ -19,7 +21,6 @@ module dvi_framebuffer_synthesis_test(
 wire next_frame_switch;
 
 // rasterizer inputs
-wire rast_pixel_rdy;
 wire [2:0] rast_color_input;
 wire [9:0] rast_width;
 wire [8:0] rast_height;
@@ -34,9 +35,9 @@ wire clk_100mhz;
 // fake rasterizer
 fake_rasterizer fr(.clk(clk_100mhz),
 			.rst(rst),
+			.dont_change(dont_change),
 			.read_rast_pixel_rdy(read_rast_pixel_rdy),
 			.next_frame_switch(next_frame_switch),
-			.rast_pixel_rdy(rast_pixel_rdy),
 			.rast_color_input(rast_color_input),
 			.rast_width(rast_width),
 			.rast_height(rast_height),
