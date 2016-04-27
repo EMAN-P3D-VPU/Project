@@ -16,14 +16,14 @@ module dvi_framebuffer_synthesis_test(
 	inout sda_tri);
 
 // clipping unit input
-reg next_frame_switch;
+wire next_frame_switch;
 
 // rasterizer inputs
-reg rast_pixel_rdy;
-reg [2:0] rast_color_input;
-reg [9:0] rast_width;
-reg [8:0] rast_height;
-reg rast_done;
+wire rast_pixel_rdy;
+wire [2:0] rast_color_input;
+wire [9:0] rast_width;
+wire [8:0] rast_height;
+wire rast_done;
 
 // rasterizer outputs
 wire read_rast_pixel_rdy;
@@ -31,8 +31,19 @@ wire read_rast_pixel_rdy;
 // clock output
 wire clk_100mhz;
 
+// fake rasterizer
+fake_rasterizer fr(.clk(clk_100mhz),
+			.rst(rst),
+			.read_rast_pixel_rdy(read_rast_pixel_rdy),
+			.next_frame_switch(next_frame_switch),
+			.rast_pixel_rdy(rast_pixel_rdy),
+			.rast_color_input(rast_color_input),
+			.rast_width(rast_width),
+			.rast_height(rast_height),
+			.rast_done(rast_done));
+
 // dvi framebuffer top level
-dvi_framebuffer_top_level(
+dvi_framebuffer_top_level dfb_tl(
 		.clk_input(clk_input),
 		.rst(rst),
 		.next_frame_switch(next_frame_switch),
