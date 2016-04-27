@@ -10,6 +10,7 @@
 // write to many registers at once, independent of the clock.
 ////////////////////////////////////////////////////////////////////////////////
 module register_file(// Inputs //
+					 clk, rst_n,
 					 reg_addr_0, reg_addr_1, wrt_addr_0, wrt_addr_1,
 					 cpu_flags, cpu_flags_we,
 					 wrt_data_0, wrt_data_1, we_CPU_0, we_CPU_1, we_VPU,
@@ -24,6 +25,7 @@ module register_file(// Inputs //
 ////////////
 // Inputs /
 //////////
+input 				clk, rst_n;
 // Read Address //
 input		[4:0]	reg_addr_0;
 input		[4:0]	reg_addr_1;
@@ -502,200 +504,200 @@ assign read_V7 = R31;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Write (D-Latch)
-always @(we_0, wrt_data_R0 )begin
+always @(posedge clk)begin
 	if(we_0)
 		R0 <= wrt_data_R0;
     else
-        R0 <= wrt_data_R0;
+        R0 <= R0;
 end
-always @(we_1, wrt_data_R1 )begin
+always @(posedge clk)begin
 	if(we_1)
 		R1 <= wrt_data_R1;
     else
-        R1 <= wrt_data_R1;
+        R1 <= R1;
 end
-always @(we_2, wrt_data_R2 )begin
+always @(posedge clk)begin
 	if(we_2)
 		R2 <= wrt_data_R2;
     else
-        R2 <= wrt_data_R2;
+        R2 <= R2;
 end
-always @(we_3, wrt_data_R3 )begin
+always @(posedge clk)begin
 	if(we_3)
 		R3 <= wrt_data_R3;
     else
-        R3 <= wrt_data_R3;
+        R3 <= R3;
 end
-always @(we_4, wrt_data_R4 )begin
+always @(posedge clk)begin
 	if(we_4)
 		R4 <= wrt_data_R4;
     else
-        R4 <= wrt_data_R4;
+        R4 <= R4;
 end
-always @(we_5, wrt_data_R5 )begin
+always @(posedge clk)begin
 	if(we_5)
 		R5 <= wrt_data_R5;
     else
-        R5 <= wrt_data_R5;
+        R5 <= R5;
 end
-always @(we_6, wrt_data_R6 )begin
+always @(posedge clk)begin
 	if(we_6)
 		R6 <= wrt_data_R6;
     else
-        R6 <= wrt_data_R6;
+        R6 <= R6;
 end
-always @(we_7, wrt_data_R7 )begin
+always @(posedge clk)begin
 	if(we_7)
 		R7 <= wrt_data_R7;
     else
-        R7 <= wrt_data_R7;
+        R7 <= R7;
 end
-always @(we_8, wrt_data_R8 )begin
+always @(posedge clk)begin
 	if(we_8)
 		R8 <= wrt_data_R8;
     else
-        R8 <= wrt_data_R8;
+        R8 <= R8;
 end
-always @(we_9, wrt_data_R9 )begin
+always @(posedge clk)begin
 	if(we_9)
 		R9 <= wrt_data_R9;
     else
-        R9 <= wrt_data_R9;
+        R9 <= R9;
 end
-always @(we_10, wrt_data_R10 )begin
+always @(posedge clk)begin
 	if(we_10)
 		R10 <= wrt_data_R10;
     else
-        R10 <= wrt_data_R10;
+        R10 <= R10;
 end
-always @(we_11, wrt_data_R11 )begin
+always @(posedge clk)begin
 	if(we_11)
 		R11 <= wrt_data_R11;
     else
-        R11 <= wrt_data_R11;
+        R11 <= R11;
 end
-always @(we_12, wrt_data_R12 )begin
+always @(posedge clk)begin
 	if(we_12)
 		R12 <= wrt_data_R12;
     else
-        R12 <= wrt_data_R12;
+        R12 <= R12;
 end
-always @(we_13, wrt_data_R13 )begin
+always @(posedge clk)begin
 	if(we_13)
 		R13 <= wrt_data_R13;
     else
-        R13 <= wrt_data_R13;
+        R13 <= R13;
 end
-always @(we_14, wrt_data_R14 )begin
+always @(posedge clk)begin
 	if(we_14)
 		R14 <= wrt_data_R14;
     else
-        R14 <= wrt_data_R14;
+        R14 <= R14;
 end
-always @(we_15, wrt_data_R15 )begin
+always @(posedge clk)begin
 	if(we_15)
 		R15 <= wrt_data_R15;
     else
-        R15 <= wrt_data_R15;
+        R15 <= R15;
 end
-always @(we_16, wrt_data_R16 )begin
+always @(posedge clk)begin
 	if(we_16)
 		R16 <= wrt_data_R16;
     else
-        R16 <= wrt_data_R16;
+        R16 <= R16;
 end
-always @(we_17, wrt_data_R17 )begin
+always @(posedge clk)begin
 	if(we_17)
 		R17 <= wrt_data_R17;
     else
-        R17 <= wrt_data_R17;
+        R17 <= R17;
 end
-always @(we_18, wrt_data_R18 )begin
+always @(posedge clk)begin
 	if(we_18)
 		R18 <= wrt_data_R18;
     else
-        R18 <= wrt_data_R18;
+        R18 <= R18;
 end
-always @(we_19, wrt_data_R19 )begin
+always @(posedge clk)begin
 	if(we_19)
 		R19 <= wrt_data_R19;
     else
-        R19 <= wrt_data_R19;
+        R19 <= R19;
 end
-always @(we_20, wrt_data_R20 )begin
+always @(posedge clk)begin
 	if(we_20)
 		R20 <= wrt_data_R20;
     else
-        R20 <= wrt_data_R20;
+        R20 <= R20;
 end
-always @(we_21, wrt_data_R21 )begin
+always @(posedge clk)begin
 	if(we_21)
 		R21 <= wrt_data_R21;
     else
-        R21 <= wrt_data_R21;
+        R21 <= R21;
 end
 // Flags Register
-always @(we_22, wrt_data_R22 )begin
+always @(posedge clk)begin
 	if(we_22)
 		R22 <= wrt_data_R22;
     else
-        R22 <= wrt_data_R22;
+        R22 <= R22;
 end
 // Return Object Register
-always @(we_23, wrt_data_R23 )begin
+always @(posedge clk)begin
 	if(we_23)
 		R23 <= wrt_data_R23;
     else
-        R23 <= wrt_data_R23;
+        R23 <= R23;
 end
 // Vertex Registers
-always @(we_24, wrt_data_R24 )begin
+always @(posedge clk)begin
 	if(we_24)
 		R24 <= wrt_data_R24;
     else
-        R24 <= wrt_data_R24;
+        R24 <= R24;
 end
-always @(we_25, wrt_data_R25 )begin
+always @(posedge clk)begin
 	if(we_25)
 		R25 <= wrt_data_R25;
     else
-        R25 <= wrt_data_R25;
+        R25 <= R25;
 end
-always @(we_26, wrt_data_R26 )begin
+always @(posedge clk)begin
 	if(we_26)
 		R26 <= wrt_data_R26;
     else
-        R26 <= wrt_data_R26;
+        R26 <= R26;
 end
-always @(we_27, wrt_data_R27 )begin
+always @(posedge clk)begin
 	if(we_27)
 		R27 <= wrt_data_R27;
     else
-        R27 <= wrt_data_R27;
+        R27 <= R27;
 end
-always @(we_28, wrt_data_R28 )begin
+always @(posedge clk)begin
 	if(we_28)
 		R28 <= wrt_data_R28;
     else
-        R28 <= wrt_data_R28;
+        R28 <= R28;
 end
-always @(we_29, wrt_data_R29 )begin
+always @(posedge clk)begin
 	if(we_29)
 		R29 <= wrt_data_R29;
     else
-        R29 <= wrt_data_R29;
+        R29 <= R29;
 end
-always @(we_30, wrt_data_R30 )begin
+always @(posedge clk)begin
 	if(we_30)
 		R30 <= wrt_data_R30;
     else
-        R30 <= wrt_data_R30;
+        R30 <= R30;
 end
-always @(we_31, wrt_data_R31 )begin
+always @(posedge clk)begin
 	if(we_31)
 		R31 <= wrt_data_R31;
     else
-        R31 <= wrt_data_R31;
+        R31 <= R31;
 end
 
 endmodule

@@ -190,6 +190,7 @@ assign	mem_write_data = reg_data_0;
 
 register_file regfile(
     // Inputs //
+	.clk(clk), .rst_n(rst_n),
     .reg_addr_0(reg_addr_0),
     .reg_addr_1(reg_addr_1),
     .wrt_addr_0(wrt_addr_0),
