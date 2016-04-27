@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module fake_rasterizer(input clk,
 				input rst,
 				input read_rast_pixel_rdy,
@@ -8,14 +9,18 @@ module fake_rasterizer(input clk,
 				output reg [8:0] rast_height,
 				output rast_done);
 
-parameter one_second = 26'd100000000;
+parameter one_second = 27'd100000000;
+
+// helper functions
+reg mode;
+reg [26:0] counter;
 
 // determines if we are in the corner of the screen
 wire last_pixel;
 assign last_pixel = rast_height == 10'd639 && rast_width == 9'd479;
 
-// switch frames when counter == 1 sec (100000000)
-assign rast_done = counter == one_second;
+// switch frames when counter == 1 sec (100000000) and on the last pixel
+assign rast_done = last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter >= one_second;
 assign next_frame_switch = rast_done;
 
 assign rast_pixel_rdy = 1'b1;
@@ -23,9 +28,6 @@ assign rast_pixel_rdy = 1'b1;
 // depending on mode, switch between two colors
 // the colors should be red and blue
 assign rast_color_input = mode == 1'b0 ? 3'd1 : 3'd5;
-
-reg mode;
-reg [26:0] counter;
 
 // width
 always @(posedge clk) begin
@@ -65,7 +67,7 @@ always @(posedge clk) begin
 	if(rst) begin
 		counter <= 26'd0;
 		mode <= 1'b0;
-	end else if (last_pixel && read_rast_pixel_rdy == 1'b1 && counter >= one_second) begin
+	end else if (last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter >= one_second) begin
 		counter <= 26'd0;
 		mode <= !mode;
 	end else if (last_pixel && read_rast_pixel_rdy == 1'b1) begin

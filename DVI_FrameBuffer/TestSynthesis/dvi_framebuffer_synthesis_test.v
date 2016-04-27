@@ -34,7 +34,7 @@ wire clk_100mhz;
 // fake rasterizer
 fake_rasterizer fr(.clk(clk_100mhz),
 			.rst(rst),
-			.read_rast_pixel_rdy(read_rast_pixel_rdy)
+			.read_rast_pixel_rdy(read_rast_pixel_rdy),
 			.next_frame_switch(next_frame_switch),
 			.rast_pixel_rdy(rast_pixel_rdy),
 			.rast_color_input(rast_color_input),
