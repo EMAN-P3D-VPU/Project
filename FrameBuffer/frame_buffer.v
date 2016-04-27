@@ -39,16 +39,16 @@ assign read_rast_pixel_rdy = mode == next_mode;
 
 // last pixel to write
 wire last_pixel;
-assign last_pixel = (dvi_width == 10'd639 && dvi_height == 9'd479);
+assign last_pixel = ((dvi_width == 10'd639) & (dvi_height == 9'd479));
 
 // wires to read and write enable for frame_cell
 wire frame0_write_enable;
 wire [2:0] frame0_read_data;
-assign frame0_write_enable = mode == 1'b0 && rast_pixel_rdy && read_rast_pixel_rdy;
+assign frame0_write_enable = (mode == 1'b0) & rast_pixel_rdy & read_rast_pixel_rdy;
 
 wire frame1_write_enable;
 wire [2:0] frame1_read_data;
-assign frame1_write_enable = mode == 1'b1 && rast_pixel_rdy && read_rast_pixel_rdy;
+assign frame1_write_enable = (mode == 1'b1) & rast_pixel_rdy & read_rast_pixel_rdy;
 
 // dvi color output is determined by which frame cell is currently being read
 assign dvi_color_out = mode == 1'b1 ? frame0_read_data : frame1_read_data;
@@ -61,7 +61,7 @@ assign switch_mode = rast_done ? !mode : mode;
 always @(posedge clk) begin
 	if (rst) begin
 		mode <= 1'b0;
-	end else if (next_frame_switch && rast_done && last_pixel) begin
+	end else if (next_frame_switch & rast_done & last_pixel) begin
 		mode <= !mode;
 	end else if (last_pixel) begin
 		mode <= next_mode;
