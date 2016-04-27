@@ -80,7 +80,7 @@ initial begin
 	rda = 1'b1;
 
 	#10
-	if (bit_mask != 5'b10001 && bit_mask_ready != 1'b1) begin
+	if (bit_mask != 5'b00001 && bit_mask_ready != 1'b1) begin
 		$display("Incorrect bitmask: %d, bit_mask_ready %d", bit_mask, bit_mask_ready);
 	end
 

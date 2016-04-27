@@ -18,8 +18,6 @@ parameter d = 8'h64;
 parameter j = 8'h6A;
 
 // boolean wires determining when databus is wasdj
-wire [4:0] bit_mask;
-
 assign bit_mask[4] = (databus == w);
 assign bit_mask[3] = (databus == a);
 assign bit_mask[2] = (databus == s);
@@ -36,7 +34,6 @@ find_rising_edge rda_find_rising_edge(.clk(clk),
 					.rising_edge(rda_edge));
 
 // outputs a 1 when a key we care about is pressed
-wire bit_mask_ready;
 assign bit_mask_ready = rda_edge & (bit_mask != 5'b0);
 
 endmodule;
