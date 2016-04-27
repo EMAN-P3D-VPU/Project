@@ -76,7 +76,7 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
                 .addr_vld(addr_vld), .lst_stored_obj(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full(obj_mem_full_in), .obj_map(obj_map), .changed_out(changed));
 
-clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
+clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
                 .reading(reading), .f1_wr_test(f1_wr_test),
                 .x0_in_f1(x0_in_f1), .y0_in_f1(y0_in_f1), .x1_in_f1(x1_in_f1), .y1_in_f1(y1_in_f1));

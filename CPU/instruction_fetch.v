@@ -59,6 +59,8 @@ assign PC_next = (IF_PC_select) ? IF_PC_next:
 always@(posedge clk)begin
 	if(!rst_n)
 		PC <= 16'h0000;
+        else if(VPU_start)
+                PC <= PC;
 	else if(~STALL)
 		PC <= PC_next;
 	else
@@ -74,7 +76,7 @@ always@(posedge clk)begin
 	if(!rst_n)
 		IF_instr <= 16'h0;
 	else if(VPU_start)
-		IF_instr <= 16'h0;
+		IF_instr <= 16'h7800;
 	else if(~STALL)
 		IF_instr <= MEM_instr;
 	else

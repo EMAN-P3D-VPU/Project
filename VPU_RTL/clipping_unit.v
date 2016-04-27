@@ -8,7 +8,7 @@ module clipping_unit(input clk,
                     output [9:0] x0_out,
                     output [9:0] y0_out,
                     output [9:0] x1_out,
-                    output [7:0] y1_out,
+                    output [9:0] y1_out,
                     output [2:0] color_out,
                     output reg vld,
                     output reg end_of_obj,
@@ -55,7 +55,7 @@ wire [7:0] color_out_f1;
 wire f1_empty, f1_full;
 
 aFifo final_fifo(
-            .Data_out({color_out_f1, y1_out1, x1_out_f1, y0_out_f1, x0_out_f1}), 
+            .Data_out({color_out_f1, y1_out_f1, x1_out_f1, y0_out_f1, x0_out_f1}), 
             .Empty_out(f1_empty), 
             .ReadEn_in(f1_rd), 
             .RClk(clk),
