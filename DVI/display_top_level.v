@@ -1,22 +1,29 @@
 `timescale 1ns / 1ps
-module display_top_level(input clk_input,
+module display_top_level(
+					// generic inputs
+					input clk_input,
 					input rst,
-					input [2:0] frame_buffer_color_in,
-					input frame_buffer_fifo_write_enable,
-					output [7:0] pixel_r,
-					output [7:0] pixel_g,
-					output [7:0] pixel_b,
+
+					// display specific outputs
 					output hsync,
 					output vsync,
 					output blank,
-					output clk_25mhz,
-					output clk_25mhz_n,
 					output [11:0] D,
 					output dvi_rst,
-					output clk_output,
-					output fifo_full,
+					output clk_25mhz,
+					output clk_25mhz_n,
 					inout scl_tri,
-					inout sda_tri);
+					inout sda_tri,
+
+					// output clock to all other modules
+					output clk_output,
+
+					// rasterizer input
+					input [2:0] frame_buffer_color_in,
+					input frame_buffer_fifo_write_enable,
+
+					// rasterizer output
+					output fifo_full);
 
 wire comp_sync;
 wire clk_input_buf;
@@ -40,6 +47,11 @@ wire [23:0] color_translated;
 // outputs of time generator
 wire stall;
 wire fifo_read_enable;
+
+// colors
+wire [7:0] pixel_r;
+wire [7:0] pixel_g;
+wire [7:0] pixel_b;
 
 assign dvi_rst = ~(rst|~locked_dcm);
 assign D = (clk_25mhz)? {pixel_g[3:0], pixel_b} : {pixel_r, pixel_g[7:4]};
