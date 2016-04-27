@@ -41,18 +41,14 @@ module frame_cell_block(
   wea,
   addra,
   dina,
-  clkb,
-  addrb,
-  doutb
+  douta
 );
 
 input clka;
 input [0 : 0] wea;
 input [18 : 0] addra;
 input [2 : 0] dina;
-input clkb;
-input [18 : 0] addrb;
-output [2 : 0] doutb;
+output [2 : 0] douta;
 
 // synthesis translate_off
 
@@ -64,7 +60,7 @@ output [2 : 0] doutb;
     .C_AXI_SLAVE_TYPE(0),
     .C_AXI_TYPE(1),
     .C_BYTE_SIZE(9),
-    .C_COMMON_CLK(1),
+    .C_COMMON_CLK(0),
     .C_DEFAULT_DATA("0"),
     .C_DISABLE_WARN_BHV_COLL(0),
     .C_DISABLE_WARN_BHV_RANGE(0),
@@ -90,11 +86,11 @@ output [2 : 0] doutb;
     .C_INITB_VAL("0"),
     .C_INTERFACE_TYPE(0),
     .C_LOAD_INIT_FILE(0),
-    .C_MEM_TYPE(1),
+    .C_MEM_TYPE(0),
     .C_MUX_PIPELINE_STAGES(0),
     .C_PRIM_TYPE(1),
-    .C_READ_DEPTH_A(524288),
-    .C_READ_DEPTH_B(524288),
+    .C_READ_DEPTH_A(307200),
+    .C_READ_DEPTH_B(307200),
     .C_READ_WIDTH_A(3),
     .C_READ_WIDTH_B(3),
     .C_RST_PRIORITY_A("CE"),
@@ -111,8 +107,8 @@ output [2 : 0] doutb;
     .C_USE_SOFTECC(0),
     .C_WEA_WIDTH(1),
     .C_WEB_WIDTH(1),
-    .C_WRITE_DEPTH_A(524288),
-    .C_WRITE_DEPTH_B(524288),
+    .C_WRITE_DEPTH_A(307200),
+    .C_WRITE_DEPTH_B(307200),
     .C_WRITE_MODE_A("WRITE_FIRST"),
     .C_WRITE_MODE_B("WRITE_FIRST"),
     .C_WRITE_WIDTH_A(3),
@@ -124,18 +120,18 @@ output [2 : 0] doutb;
     .WEA(wea),
     .ADDRA(addra),
     .DINA(dina),
-    .CLKB(clkb),
-    .ADDRB(addrb),
-    .DOUTB(doutb),
+    .DOUTA(douta),
     .RSTA(),
     .ENA(),
     .REGCEA(),
-    .DOUTA(),
+    .CLKB(),
     .RSTB(),
     .ENB(),
     .REGCEB(),
     .WEB(),
+    .ADDRB(),
     .DINB(),
+    .DOUTB(),
     .INJECTSBITERR(),
     .INJECTDBITERR(),
     .SBITERR(),

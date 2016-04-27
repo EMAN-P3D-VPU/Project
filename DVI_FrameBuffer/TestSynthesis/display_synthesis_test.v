@@ -29,7 +29,7 @@ assign frame_buffer_fifo_write_enable = fifo_full != 1'b1;
 
 display_top_level dtl(.clk_input(clk_input),
 					.rst(rst),
-					.hysnc(hsync),
+					.hsync(hsync),
 					.vsync(vsync),
 					.blank(blank),
 					.D(D),

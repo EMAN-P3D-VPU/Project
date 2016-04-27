@@ -61,7 +61,7 @@ always @(posedge clk) begin
 	end else if((next_mode != mode) && last_pixel) begin
 		mode <= next_mode;
 	end else if (next_frame_switch && rast_done && last_pixel) begin
-		mode <= !mode;
+		mode <= mode == 1'b0 ? 1'b1 : 1'b0;
 	end else begin
 		mode <= mode;
 	end
@@ -73,7 +73,7 @@ always @(posedge clk) begin
 		next_mode <= 1'b0;
 	// should only happen once before switching to the next frmae
 	end else if (next_frame_switch && rast_done) begin
-		next_mode <= !mode;
+		next_mode <= mode == 1'b0 ? 1'b1 : 1'b0;
 	// repeat last frame since rasterizer is not done drawing
 	end else if (next_frame_switch && !rast_done) begin
 		next_mode <= mode;
@@ -118,7 +118,6 @@ frame_cell frame0(
 		.write_frame_height(rast_height),
 		.write_enable(frame0_write_enable),
 		.write_data(rast_color_input),
-		.read_enable(mode == 1'b1),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame0_read_data));
@@ -129,7 +128,6 @@ frame_cell frame1(
 		.write_frame_height(rast_height),
 		.write_enable(frame1_write_enable),
 		.write_data(rast_color_input),
-		.read_enable(mode == 1'b0),
 		.read_frame_width(dvi_width),
 		.read_frame_height(dvi_height),
 		.read_data(frame1_read_data));

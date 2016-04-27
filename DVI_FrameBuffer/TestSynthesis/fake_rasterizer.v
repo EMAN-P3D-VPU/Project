@@ -4,7 +4,7 @@ module fake_rasterizer(input clk,
 				input read_rast_pixel_rdy,
 				output next_frame_switch,
 				output rast_pixel_rdy,
-				output [2:0] rast_color_input,
+				output reg [2:0] rast_color_input,
 				output reg [9:0] rast_width,
 				output reg [8:0] rast_height,
 				output rast_done);
@@ -12,7 +12,6 @@ module fake_rasterizer(input clk,
 parameter one_second = 27'd100000000;
 
 // helper functions
-reg mode;
 reg [26:0] counter;
 
 // determines if we are in the corner of the screen
@@ -24,10 +23,6 @@ assign rast_done = last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter 
 assign next_frame_switch = rast_done;
 
 assign rast_pixel_rdy = 1'b1;
-
-// depending on mode, switch between two colors
-// the colors should be red and blue
-assign rast_color_input = mode == 1'b0 ? 3'd1 : 3'd5;
 
 // width
 always @(posedge clk) begin
@@ -66,16 +61,18 @@ end
 always @(posedge clk) begin
 	if(rst) begin
 		counter <= 26'd0;
-		mode <= 1'b0;
+		rast_color_input <= 3'b0;
 	end else if (last_pixel == 1'b1 && read_rast_pixel_rdy == 1'b1 && counter >= one_second) begin
 		counter <= 26'd0;
-		mode <= !mode;
+		
+		// the colors should alternate through all
+		rast_color_input <= rast_color_input + 3'b001;
 	end else if (last_pixel && read_rast_pixel_rdy == 1'b1) begin
 		counter <= counter + 26'd1;
-		mode <= mode;
+		rast_color_input <= rast_color_input;
 	end else begin
 		counter <= counter;
-		mode <= mode;
+		rast_color_input <= rast_color_input;
 	end
 end
 
