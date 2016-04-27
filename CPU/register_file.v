@@ -504,196 +504,196 @@ assign read_V7 = R31;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Write (D-Latch)
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_0)
 		R0 <= wrt_data_R0;
     else
         R0 <= R0;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_1)
 		R1 <= wrt_data_R1;
     else
         R1 <= R1;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_2)
 		R2 <= wrt_data_R2;
     else
         R2 <= R2;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_3)
 		R3 <= wrt_data_R3;
     else
         R3 <= R3;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_4)
 		R4 <= wrt_data_R4;
     else
         R4 <= R4;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_5)
 		R5 <= wrt_data_R5;
     else
         R5 <= R5;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_6)
 		R6 <= wrt_data_R6;
     else
         R6 <= R6;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_7)
 		R7 <= wrt_data_R7;
     else
         R7 <= R7;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_8)
 		R8 <= wrt_data_R8;
     else
         R8 <= R8;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_9)
 		R9 <= wrt_data_R9;
     else
         R9 <= R9;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_10)
 		R10 <= wrt_data_R10;
     else
         R10 <= R10;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_11)
 		R11 <= wrt_data_R11;
     else
         R11 <= R11;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_12)
 		R12 <= wrt_data_R12;
     else
         R12 <= R12;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_13)
 		R13 <= wrt_data_R13;
     else
         R13 <= R13;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_14)
 		R14 <= wrt_data_R14;
     else
         R14 <= R14;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_15)
 		R15 <= wrt_data_R15;
     else
         R15 <= R15;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_16)
 		R16 <= wrt_data_R16;
     else
         R16 <= R16;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_17)
 		R17 <= wrt_data_R17;
     else
         R17 <= R17;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_18)
 		R18 <= wrt_data_R18;
     else
         R18 <= R18;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_19)
 		R19 <= wrt_data_R19;
     else
         R19 <= R19;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_20)
 		R20 <= wrt_data_R20;
     else
         R20 <= R20;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_21)
 		R21 <= wrt_data_R21;
     else
         R21 <= R21;
 end
 // Flags Register
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_22)
 		R22 <= wrt_data_R22;
     else
         R22 <= R22;
 end
 // Return Object Register
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_23)
 		R23 <= wrt_data_R23;
     else
         R23 <= R23;
 end
 // Vertex Registers
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_24)
 		R24 <= wrt_data_R24;
     else
         R24 <= R24;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_25)
 		R25 <= wrt_data_R25;
     else
         R25 <= R25;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_26)
 		R26 <= wrt_data_R26;
     else
         R26 <= R26;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_27)
 		R27 <= wrt_data_R27;
     else
         R27 <= R27;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_28)
 		R28 <= wrt_data_R28;
     else
         R28 <= R28;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_29)
 		R29 <= wrt_data_R29;
     else
         R29 <= R29;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_30)
 		R30 <= wrt_data_R30;
     else
         R30 <= R30;
 end
-always @(posedge clk)begin
+always @(negedge clk)begin
 	if(we_31)
 		R31 <= wrt_data_R31;
     else
@@ -701,4 +701,3 @@ always @(posedge clk)begin
 end
 
 endmodule
-

@@ -1,13 +1,21 @@
 `include "timescale.v"
-module cpu_vpu_tb();
+module cpu_vpu_top(input clkin,
+                    input rst_n,
+                    input [15:0]        VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO,
+                    output f1_wr_test,
+                    output [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1
+                    );
 ////////////
 // Inputs /
 //////////
-reg			clk, rst_n;
-reg			VPU_rdy, VPU_data_we;
-logic			SPART_we;
-logic	[3:0]	SPART_keys;
-reg	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
+wire clk;
+clkgen clk_gen(.CLKIN_IN(clkin), .RST_IN(1'b0), .CLK0_OUT(clk), .LOCKED_OUT());
+
+wire			VPU_rdy;
+wire                    VPU_data_we;
+//logic			SPART_we;
+//logic	[3:0]	SPART_keys;
+//reg	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 //////////////////////
 // CPU-VPU Interface /
@@ -38,7 +46,7 @@ wire [4:0] mat_addr;
 //clipping-matrix
 wire writing, reading, changed, clr_changed;
 //clipping-mem
-wire clip_read_en;
+wire clip_rd_en;
 wire [4:0] clip_addr;
 wire [143:0] clip_obj_out;
 //clipping-obj
@@ -48,6 +56,8 @@ wire [31:0] obj_map;
 ////////////////////
 // Instantiations /
 //////////////////
+
+assign VPU_data_we = 1'b0;
 cpu CPU(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .VPU_data_we(VPU_data_we), .VPU_rdy(VPU_rdy),
@@ -56,7 +66,7 @@ cpu CPU(
     // Outputs // TODO: SPART interface
     .halt(halt),
     // SPART //
-    .SPART_we(SPART_we), .SPART_keys(SPART_keys), // VPU //
+    .SPART_we(1'b0), .SPART_keys(3'b0), // VPU //
     .start_VPU(start_VPU), .fill_VPU(fill_VPU), .obj_type_VPU(obj_type_VPU),
     .obj_color_VPU(obj_color_VPU), .op_VPU(op_VPU), .code_VPU(code_VPU), .obj_num_VPU(obj_num_VPU),
     .V0_VPU(V0_VPU), .V1_VPU(V1_VPU), .V2_VPU(V2_VPU), .V3_VPU(V3_VPU), .V4_VPU(V4_VPU), 
@@ -87,60 +97,9 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
 
 clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
-                .reading(reading));
+                .reading(reading), .f1_wr_test(f1_wr_test),
+                .x0_in_f1(x0_in_f1), .y0_in_f1(y0_in_f1), .x1_in_f1(x1_in_f1), .y1_in_f1(y1_in_f1));
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-// cpu_tb
-////
-
-// Clock //
-always
-	#5 clk = ~clk;
-
-// Fill Memory for Software Tests //
-initial begin
-    $readmemh("/userspace/d/dsingh/ece554/EMAN/VPU_TB/CPU_instr_1.hex", CPU.MEMORY.RAM);
-end
-
-initial begin
-    #10000; //after 10us, trigger clipper
-    trigger_clipper();//trigger clipper
-end
-
-
-// Main Test Loop //
-initial begin
-	clk = 0;
-	rst_n = 0;
-    force clipper.refresh_cnt = 0;
-	// SPART //
-    SPART_we     = 1'h0;
-    SPART_keys   = 3'h0;
-	// VPU //
-    //VPU_rdy      = 1'h1;	// CPU stalls when VPU is not ready!
-    VPU_data_we  = 1'h1;
-    //VPU_V0       = 16'd100;
-    //VPU_V1       = 16'd100;
-    //VPU_V2       = 16'd100;
-    //VPU_V3       = 16'd200;
-    //VPU_V4       = 16'd200;
-    //VPU_V5       = 16'd200;
-    //VPU_V6       = 16'd200;
-    //VPU_V7       = 16'd100;
-    //VPU_RO       = 16'h0;
-    $display("rst assert\n");
-    @(negedge clk) rst_n = 1;
-    VPU_data_we  = 1'h0;
-    $display("rst deassert\n");
-end
-
-task trigger_clipper();
-    force clipper.refresh_cnt = 1666667;
-    @(posedge clk);
-    release clipper.refresh_cnt;
-endtask
 
 
 endmodule

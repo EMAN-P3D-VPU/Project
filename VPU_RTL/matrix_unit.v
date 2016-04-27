@@ -63,7 +63,7 @@ module matrix_unit(input clk,
 
 reg [3:0] coeff_addr;
 wire signed[15:0] coeff_1, coeff_2, coeff_3, coeff_4;
-coeff_ROM_sim cff_ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
+coeff_ROM cff_ROM(.clk(clk), .addr(coeff_addr), .c1(coeff_1), .c2(coeff_2), .c3(coeff_3), .c4(coeff_4));
 
 reg signed [15:0] c11, c12, c13, c21, c22, c23; 
 reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3;

@@ -44,7 +44,7 @@ module instruction_decode_execute(
     DEX_mem_write_data,
     DEX_load_immd,
 	DEX_reg_data_0,
-	DEX_reg_data_1,
+	DEX_reg_data_1
 );
 ////////////
 // Inputs /
