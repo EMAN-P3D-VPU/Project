@@ -12,6 +12,7 @@ CODE_ADDRESS_SPACE_START = 0x0000
 p = pprint.PrettyPrinter(indent=2)
 
 global_labels = {}
+curr_opcode = ''
 
 bcd = {
 '0' : '0000',
@@ -125,7 +126,11 @@ def hex_to_binary(hex):
         binary += bcd[h.upper()]
 
     # Sign Extend #
-    binary = binary[0] * (16 - len(binary)) + binary
+    if curr_opcode == 'LDU' or curr_opcode == 'LDL':
+        binary = '0' * (16 - len(binary)) + binary
+    else:
+        binary = binary[0] * (16 - len(binary)) + binary
+
     return binary
 
 def decimal_to_binary(type, decimal, size):
@@ -188,7 +193,10 @@ def parse_immd(param, size):
     else:
         print("***ERROR*** Invalid immediate type: " + param)
 
-    return list(param)[-size:]
+    if curr_opcode == 'LDU':
+        return list(param)[:size]
+    else:
+        return list(param)[-size:]
 
 def parse_label(param, size):
     """
@@ -416,7 +424,7 @@ instructions_list = {
                            },
                           ]
          },
-'LDR'   :{'opcode'      : '01100',
+'ST'   :{'opcode'      : '01100',
           'params'      : [{'type'   : 'reg',
                             'start'  : 9,
                             'size'   : 5,
@@ -781,6 +789,7 @@ fill_space_to_print_bin  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 print('\nSECOND PASS\n')
 for instr in instructions:
     # Parse entire instruction now #
+    curr_opcode = instr['instr']
     (parsed_hex, parsed_bin) = parse_instruction(instr)
     if instr['instr'] == '.FILL':
         fill_space_to_print_hex += '\n' + parsed_hex

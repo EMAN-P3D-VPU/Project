@@ -11,62 +11,62 @@ module instruction_decode_execute_tb();
 ////////////
 // Inputs /
 //////////
-logic 			clk, rst_n;
-logic	[15:0]	instr;
-logic	[15:0]	pc_plus_1;
-logic			VPU_data_we;
-logic			VPU_rdy;
-logic			we_CPU_0;
-logic			we_CPU_1;
-logic			SPART_we;
-logic	[3:0]	SPART_keys; // [UP,DOWN,LEFT,RIGHT]
-logic	[4:0]	wrt_addr_0;
-logic	[4:0]	wrt_addr_1;
-logic	[15:0]	wrt_data_0;
-logic	[15:0]	wrt_data_1;
-logic	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
+logic           clk, rst_n;
+logic   [15:0]  instr;
+logic   [15:0]  pc_plus_1;
+logic           VPU_data_we;
+logic           VPU_rdy;
+logic           we_CPU_0;
+logic           we_CPU_1;
+logic           SPART_we;
+logic   [3:0]   SPART_keys; // [UP,DOWN,LEFT,RIGHT]
+logic   [4:0]   wrt_addr_0;
+logic   [4:0]   wrt_addr_1;
+logic   [15:0]  wrt_data_0;
+logic   [15:0]  wrt_data_1;
+logic   [15:0]  VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 /////////////
 // Outputs /
 ///////////
-wire    		DEX_STALL;
-wire    		DEX_PC_select;
-wire    [15:0]	DEX_PC_next;
-wire    		DEX_VPU_start;
-wire    [15:0]	DEX_V0, DEX_V1, DEX_V2, DEX_V3, DEX_V4, DEX_V5, DEX_V6, DEX_V7, DEX_RO;
-wire    		DEX_alu_to_reg;
-wire    		DEX_pcr_to_reg;
-wire    		DEX_mem_to_reg;
-wire    		DEX_imm_to_reg;
-wire    		DEX_reg_we_dst_0;
-wire    		DEX_reg_we_dst_1;
-wire    		DEX_mem_we;
-wire    		DEX_mem_re;
-wire    		DEX_halt;
-wire    [4:0]	DEX_dst_addr_0;
-wire    [4:0]	DEX_dst_addr_1;
-wire    [15:0]	DEX_alu_result;
-wire    [15:0]	DEX_PC_return;
-wire    [15:0]	DEX_mem_read_addr;
-wire    [15:0]	DEX_mem_write_data;
-wire    [15:0]	DEX_load_immd;
-wire    [15:0]	DEX_reg_data_0;
-wire    [15:0]	DEX_reg_data_1;
+wire            DEX_STALL;
+wire            DEX_PC_select;
+wire    [15:0]  DEX_PC_next;
+wire            DEX_VPU_start;
+wire    [15:0]  DEX_V0, DEX_V1, DEX_V2, DEX_V3, DEX_V4, DEX_V5, DEX_V6, DEX_V7, DEX_RO;
+wire            DEX_alu_to_reg;
+wire            DEX_pcr_to_reg;
+wire            DEX_mem_to_reg;
+wire            DEX_imm_to_reg;
+wire            DEX_reg_we_dst_0;
+wire            DEX_reg_we_dst_1;
+wire            DEX_mem_we;
+wire            DEX_mem_re;
+wire            DEX_halt;
+wire    [4:0]   DEX_dst_addr_0;
+wire    [4:0]   DEX_dst_addr_1;
+wire    [15:0]  DEX_alu_result;
+wire    [15:0]  DEX_PC_return;
+wire    [15:0]  DEX_mem_read_addr;
+wire    [15:0]  DEX_mem_write_data;
+wire    [15:0]  DEX_load_immd;
+wire    [15:0]  DEX_reg_data_0;
+wire    [15:0]  DEX_reg_data_1;
 
 ///////////////////
 // Interconnects /
 /////////////////
 integer i, j, k;
-logic			X;
-logic	[4:0]	Opcode;
-logic	[4:0]	Rd_Rs, Rt;
+logic           X;
+logic   [4:0]   Opcode;
+logic   [4:0]   Rd_Rs, Rt;
 
 ////////////////////
 // Instantiations /
 //////////////////
 instruction_decode_execute DEX(
-	// Inputs //
-	.clk(clk), .rst_n(rst_n),
+    // Inputs //
+    .clk(clk), .rst_n(rst_n),
     .instr(instr),
     .pc_plus_1(pc_plus_1),
     .we_VPU(VPU_data_we),
@@ -105,7 +105,7 @@ instruction_decode_execute DEX(
     .DEX_alu_to_reg(DEX_alu_to_reg),
     .DEX_pcr_to_reg(DEX_pcr_to_reg),
     .DEX_mem_to_reg(DEX_mem_to_reg),
-	.DEX_imm_to_reg(DEX_imm_to_reg),
+    .DEX_imm_to_reg(DEX_imm_to_reg),
     .DEX_reg_we_dst_0(DEX_reg_we_dst_0),
     .DEX_reg_we_dst_1(DEX_reg_we_dst_1),
     .DEX_mem_we(DEX_mem_we),
@@ -118,8 +118,8 @@ instruction_decode_execute DEX(
     .DEX_mem_read_addr(DEX_mem_read_addr),
     .DEX_mem_write_data(DEX_mem_write_data),
     .DEX_load_immd(DEX_load_immd),
-	.DEX_reg_data_0(DEX_reg_data_0),
-	.DEX_reg_data_1(DEX_reg_data_1)
+    .DEX_reg_data_0(DEX_reg_data_0),
+    .DEX_reg_data_1(DEX_reg_data_1)
 );
 
 /////////////
@@ -185,31 +185,31 @@ localparam  R31 = 5'b11111;
 
 // Clock //
 always
-	#2 clk = ~clk;
+    #2 clk = ~clk;
 
 // Fail Safe Stop //
 initial
-	#1000000 $stop;
+    #1000000 $stop;
 
 // Main Test Loop //
 initial begin
-	clk = 0;
-	rst_n = 0;
-	i = 0; j = 0; k = 0;
+    clk = 0;
+    rst_n = 0;
+    i = 0; j = 0; k = 0;
     // CPU - IF //
     instr       = 16'h0000;
     pc_plus_1   = 16'h0000;
-	// CPU - MWB //
+    // CPU - MWB //
     we_CPU_0    = 0;
     we_CPU_1    = 0;
     wrt_addr_0  = 5'b00000;
     wrt_addr_1  = 5'b00000;
     wrt_data_0  = 16'h0000;
     wrt_data_1  = 16'h0000;
-	// SPART //
+    // SPART //
     SPART_we    = 0;
     SPART_keys  = 4'h0;
-	// VPU //
+    // VPU //
     VPU_data_we = 0;
     VPU_rdy     = 1;
     VPU_V0      = 16'h0000;
@@ -222,57 +222,57 @@ initial begin
     VPU_V7      = 16'h0000;
     VPU_RO      = 16'h0000;
 
-	$display("rst assert\n");
-	@(negedge clk) rst_n = 1;
-	$display("rst deassert\n");
+    $display("rst assert\n");
+    @(negedge clk) rst_n = 1;
+    $display("rst deassert\n");
 
-	// CPU/VPU/SPART I/O interface regarding writing/reading the register file //--
-	// Write Data to each register (PORT 0) //
-	we_CPU_0    = 1;
-	for(i = 0; i < 32; i = i + 1)begin
-		@(posedge clk);
-		wrt_addr_0 = i;
-		wrt_data_0 = 2*i;
-	end
+    // CPU/VPU/SPART I/O interface regarding writing/reading the register file //--
+    // Write Data to each register (PORT 0) //
+    we_CPU_0    = 1;
+    for(i = 0; i < 32; i = i + 1)begin
+        @(posedge clk);
+        wrt_addr_0 = i;
+        wrt_data_0 = 2*i;
+    end
 
-	// Check if Data was set //
-	for(i = 0; i < 32; i = i + 1)begin 
-		@(posedge clk);
-		force DEX.reg_addr_0 = i;
-		@(negedge clk);
-		if(DEX.reg_data_0 !== 2*i)begin
-			$display("Register%d data does not match: %h EXPECTED: %h",
-						i, DEX.reg_data_0, 2*i);
-			$stop;
-		end
-		release DEX.reg_addr_0;
-	end
+    // Check if Data was set //
+    for(i = 0; i < 32; i = i + 1)begin 
+        @(posedge clk);
+        force DEX.reg_addr_0 = i;
+        @(negedge clk);
+        if(DEX.reg_data_0 !== 2*i)begin
+            $display("Register%d data does not match: %h EXPECTED: %h",
+                        i, DEX.reg_data_0, 2*i);
+            $stop;
+        end
+        release DEX.reg_addr_0;
+    end
 
-	we_CPU_0    = 0;
-	// Write Data to each register (PORT 1) //
-	we_CPU_1    = 1;
-	for(i = 0; i < 32; i = i + 1)begin
-		@(posedge clk);
-		wrt_addr_1 = i;
-		wrt_data_1 = i;
-	end
+    we_CPU_0    = 0;
+    // Write Data to each register (PORT 1) //
+    we_CPU_1    = 1;
+    for(i = 0; i < 32; i = i + 1)begin
+        @(posedge clk);
+        wrt_addr_1 = i;
+        wrt_data_1 = i;
+    end
 
-	// Check if Data was set //
-	for(i = 0; i < 32; i = i + 1)begin 
-		@(posedge clk);
-		force DEX.reg_addr_1 = i;
-		@(negedge clk);
-		if(DEX.reg_data_1 !== i)begin
-			$display("Register%d data does not match: %h EXPECTED: %h",
-						i, DEX.reg_data_1, i);
-			$stop;
-		end
-		release DEX.reg_addr_1;
-	end
+    // Check if Data was set //
+    for(i = 0; i < 32; i = i + 1)begin 
+        @(posedge clk);
+        force DEX.reg_addr_1 = i;
+        @(negedge clk);
+        if(DEX.reg_data_1 !== i)begin
+            $display("Register%d data does not match: %h EXPECTED: %h",
+                        i, DEX.reg_data_1, i);
+            $stop;
+        end
+        release DEX.reg_addr_1;
+    end
 
-	we_CPU_1    = 0;
-	// VPU Interface //
-	@(posedge clk);
+    we_CPU_1    = 0;
+    // VPU Interface //
+    @(posedge clk);
     VPU_data_we = 1;
     VPU_V0      = 16'h000A;
     VPU_V1      = 16'h000B;
@@ -284,78 +284,78 @@ initial begin
     VPU_V7      = 16'h00BB;
     VPU_RO      = 16'h00CC;
 
-	@(negedge clk);
-	if(DEX_V0 !== VPU_V0)begin
-		$display("Vertex Register V0 incorrect: %h EXPECTED %h", DEX_V0, VPU_V0);
-		$stop;
-	end
-	if(DEX_V1 !== VPU_V1)begin
-		$display("Vertex Register V1 incorrect: %h EXPECTED %h", DEX_V1, VPU_V1);
-		$stop;
-	end
-	if(DEX_V2 !== VPU_V2)begin
-		$display("Vertex Register V2 incorrect: %h EXPECTED %h", DEX_V2, VPU_V2);
-		$stop;
-	end
-	if(DEX_V3 !== VPU_V3)begin
-		$display("Vertex Register V3 incorrect: %h EXPECTED %h", DEX_V3, VPU_V3);
-		$stop;
-	end
-	if(DEX_V4 !== VPU_V4)begin
-		$display("Vertex Register V4 incorrect: %h EXPECTED %h", DEX_V4, VPU_V4);
-		$stop;
-	end
-	if(DEX_V5 !== VPU_V5)begin
-		$display("Vertex Register V5 incorrect: %h EXPECTED %h", DEX_V5, VPU_V5);
-		$stop;
-	end
-	if(DEX_V6 !== VPU_V6)begin
-		$display("Vertex Register V6 incorrect: %h EXPECTED %h", DEX_V6, VPU_V6);
-		$stop;
-	end
-	if(DEX_V7 !== VPU_V7)begin
-		$display("Vertex Register V7 incorrect: %h EXPECTED %h", DEX_V7, VPU_V7);
-		$stop;
-	end
-	if(DEX_RO !== VPU_RO)begin
-		$display("Vertex Register RO incorrect: %h EXPECTED %h", DEX_RO, VPU_RO);
-		$stop;
-	end
+    @(negedge clk);
+    if(DEX_V0 !== VPU_V0)begin
+        $display("Vertex Register V0 incorrect: %h EXPECTED %h", DEX_V0, VPU_V0);
+        $stop;
+    end
+    if(DEX_V1 !== VPU_V1)begin
+        $display("Vertex Register V1 incorrect: %h EXPECTED %h", DEX_V1, VPU_V1);
+        $stop;
+    end
+    if(DEX_V2 !== VPU_V2)begin
+        $display("Vertex Register V2 incorrect: %h EXPECTED %h", DEX_V2, VPU_V2);
+        $stop;
+    end
+    if(DEX_V3 !== VPU_V3)begin
+        $display("Vertex Register V3 incorrect: %h EXPECTED %h", DEX_V3, VPU_V3);
+        $stop;
+    end
+    if(DEX_V4 !== VPU_V4)begin
+        $display("Vertex Register V4 incorrect: %h EXPECTED %h", DEX_V4, VPU_V4);
+        $stop;
+    end
+    if(DEX_V5 !== VPU_V5)begin
+        $display("Vertex Register V5 incorrect: %h EXPECTED %h", DEX_V5, VPU_V5);
+        $stop;
+    end
+    if(DEX_V6 !== VPU_V6)begin
+        $display("Vertex Register V6 incorrect: %h EXPECTED %h", DEX_V6, VPU_V6);
+        $stop;
+    end
+    if(DEX_V7 !== VPU_V7)begin
+        $display("Vertex Register V7 incorrect: %h EXPECTED %h", DEX_V7, VPU_V7);
+        $stop;
+    end
+    if(DEX_RO !== VPU_RO)begin
+        $display("Vertex Register RO incorrect: %h EXPECTED %h", DEX_RO, VPU_RO);
+        $stop;
+    end
 
     VPU_data_we = 0; // This won't deassert til end of the cycle in practice
-	// SPART Interface //
-	@(posedge clk);
+    // SPART Interface //
+    @(posedge clk);
     SPART_we    = 1;
     SPART_keys  = 4'hF; // Write all key bits in R22 [6:3]
 
-	@(negedge clk);
-	if(DEX.regfile.R22[6:3] !== SPART_keys)begin
-		$display("SPART interface was not captured by the CPU correctly! R22: %h", DEX.regfile.R22);
-		$stop;
-	end
-	// Clearing the SPART flags is up to the user with an AND operation or similar //
+    @(negedge clk);
+    if(DEX.regfile.R22[6:3] !== SPART_keys)begin
+        $display("SPART interface was not captured by the CPU correctly! R22: %h", DEX.regfile.R22);
+        $stop;
+    end
+    // Clearing the SPART flags is up to the user with an AND operation or similar //
     SPART_we    = 1;
-	// CPU Operation Tests //------------------------------------------------------
-	// Using the basic registers R0 - R15 with the written values corresponding to
-	// the register number. This will allow for easier testing and consistent data
-	// used when probing inner signals. This would also be accurate of a typical
-	// CPU operation since the programmer should limit him or herself to those
-	// registers - only accessing other ones in special cases.
-	//
-	// To limit the complexity of this testbench, any value not particularly related
-	// to the instruction will not be check. Focus on the basic functionality, and
-	// signals that may interfere with interfaces to other modules.
+    // CPU Operation Tests //------------------------------------------------------
+    // Using the basic registers R0 - R15 with the written values corresponding to
+    // the register number. This will allow for easier testing and consistent data
+    // used when probing inner signals. This would also be accurate of a typical
+    // CPU operation since the programmer should limit him or herself to those
+    // registers - only accessing other ones in special cases.
+    //
+    // To limit the complexity of this testbench, any value not particularly related
+    // to the instruction will not be check. Focus on the basic functionality, and
+    // signals that may interfere with interfaces to other modules.
 
-	// AND //
-	@(posedge clk);
-	Opcode		= AND;
-	X			= 0;
-	Rd_Rs		= R4;
-	Rt			= R8;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // AND //
+    @(posedge clk);
+    Opcode      = AND;
+    X           = 0;
+    Rd_Rs       = R4;
+    Rt          = R8;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -481,16 +481,16 @@ initial begin
         $stop;
     end
 
-	// OR //
-	@(posedge clk);
-	Opcode		= OR;
-	X			= 0;
-	Rd_Rs		= R7;
-	Rt			= R8;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // OR //
+    @(posedge clk);
+    Opcode      = OR;
+    X           = 0;
+    Rd_Rs       = R7;
+    Rt          = R8;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -616,16 +616,16 @@ initial begin
         $stop;
     end
 
-	// XOR //
-	@(posedge clk);
-	Opcode		= XOR;
-	X			= 0;
-	Rd_Rs		= R9;
-	Rt			= R10;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // XOR //
+    @(posedge clk);
+    Opcode      = XOR;
+    X           = 0;
+    Rd_Rs       = R9;
+    Rt          = R10;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -751,16 +751,16 @@ initial begin
         $stop;
     end
 
-	// NOT //
-	@(posedge clk);
-	Opcode		= NOT;
-	X			= 0;
-	Rd_Rs		= R15;
-	Rt			= R15;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // NOT //
+    @(posedge clk);
+    Opcode      = NOT;
+    X           = 0;
+    Rd_Rs       = R15;
+    Rt          = R15;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -886,16 +886,16 @@ initial begin
         $stop;
     end
 
-	// ADD //
-	@(posedge clk);
-	Opcode		= ADD;
-	X			= 0;
-	Rd_Rs		= R5;
-	Rt			= R11;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // ADD //
+    @(posedge clk);
+    Opcode      = ADD;
+    X           = 0;
+    Rd_Rs       = R5;
+    Rt          = R11;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1021,16 +1021,16 @@ initial begin
         $stop;
     end
 
-	// ADDI //
-	@(posedge clk);
-	Opcode		= ADD;
-	X			= 1;
-	Rd_Rs		= R1;
-	Rt			= R5;
-	instr       = {Opcode, X, Rd_Rs, 5'b01110};
+    // ADDI //
+    @(posedge clk);
+    Opcode      = ADD;
+    X           = 1;
+    Rd_Rs       = R1;
+    Rt          = R5;
+    instr       = {Opcode, X, Rd_Rs, 5'b01110};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1156,16 +1156,16 @@ initial begin
         $stop;
     end
 
-	// LSL //
-	@(posedge clk);
-	Opcode		= LSL;
-	X			= 0;
-	Rd_Rs		= R4;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0100};
+    // LSL //
+    @(posedge clk);
+    Opcode      = LSL;
+    X           = 0;
+    Rd_Rs       = R4;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0100};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1291,16 +1291,16 @@ initial begin
         $stop;
     end
 
-	// LSR //
-	@(posedge clk);
-	Opcode		= SR;
-	X			= 0;
-	Rd_Rs		= R8;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
+    // LSR //
+    @(posedge clk);
+    Opcode      = SR;
+    X           = 0;
+    Rd_Rs       = R8;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1426,16 +1426,16 @@ initial begin
         $stop;
     end
 
-	// ASR //
-	@(posedge clk);
-	Opcode		= SR;
-	X			= 1;
-	Rd_Rs		= R15;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
+    // ASR //
+    @(posedge clk);
+    Opcode      = SR;
+    X           = 1;
+    Rd_Rs       = R15;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, 1'b0, 4'b0010};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1561,16 +1561,16 @@ initial begin
         $stop;
     end
 
-	// ROL //
-	@(posedge clk);
-	Opcode		= ROT;
-	X			= 0;
-	Rd_Rs		= R10;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, 5'b00000};
+    // ROL //
+    @(posedge clk);
+    Opcode      = ROT;
+    X           = 0;
+    Rd_Rs       = R10;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, 5'b00000};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1696,16 +1696,16 @@ initial begin
         $stop;
     end
 
-	// ROR //
-	@(posedge clk);
-	Opcode		= ROT;
-	X			= 1;
-	Rd_Rs		= R15;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, 5'b00000};
+    // ROR //
+    @(posedge clk);
+    Opcode      = ROT;
+    X           = 1;
+    Rd_Rs       = R15;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, 5'b00000};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1831,16 +1831,16 @@ initial begin
         $stop;
     end
 
-	// MOV //
-	@(posedge clk);
-	Opcode		= MOV;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // MOV //
+    @(posedge clk);
+    Opcode      = MOV;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -1966,16 +1966,16 @@ initial begin
         $stop;
     end
 
-	// SWAP //
-	@(posedge clk);
-	Opcode		= MOV;
-	X			= 1;
-	Rd_Rs		= R5;
-	Rt			= R10;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // SWAP //
+    @(posedge clk);
+    Opcode      = MOV;
+    X           = 1;
+    Rd_Rs       = R5;
+    Rt          = R10;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2101,16 +2101,16 @@ initial begin
         $stop;
     end
 
-	// LDR //
-	@(posedge clk);
-	Opcode		= LDR;
-	X			= 0;
-	Rd_Rs		= R3;
-	Rt			= R8;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // LDR //
+    @(posedge clk);
+    Opcode      = LDR;
+    X           = 0;
+    Rd_Rs       = R3;
+    Rt          = R8;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2236,16 +2236,16 @@ initial begin
         $stop;
     end
 
-	// LDU //
-	@(posedge clk);
-	Opcode		= LDU;
-	X			= 0;
-	Rd_Rs		= R7;
-	Rt			= R1;
-	instr       = {Opcode, Rd_Rs[2:0], 8'hFE};
+    // LDU //
+    @(posedge clk);
+    Opcode      = LDU;
+    X           = 0;
+    Rd_Rs       = R7;
+    Rt          = R1;
+    instr       = {Opcode, Rd_Rs[2:0], 8'hFE};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2371,16 +2371,16 @@ initial begin
         $stop;
     end
 
-	// LDL //
-	@(posedge clk);
-	Opcode		= LDL;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, Rd_Rs[2:0], 8'hCD};
+    // LDL //
+    @(posedge clk);
+    Opcode      = LDL;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, Rd_Rs[2:0], 8'hCD};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2506,16 +2506,16 @@ initial begin
         $stop;
     end
 
-	// ST //
-	@(posedge clk);
-	Opcode		= ST;
-	X			= 0;
-	Rd_Rs		= R2;
-	Rt			= R15;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // ST //
+    @(posedge clk);
+    Opcode      = ST;
+    X           = 0;
+    Rd_Rs       = R2;
+    Rt          = R15;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2641,16 +2641,16 @@ initial begin
         $stop;
     end
 
-	// J //
-	@(posedge clk);
-	Opcode		= J;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R12;
-	instr       = {Opcode, X, 5'b00000, Rt};
+    // J //
+    @(posedge clk);
+    Opcode      = J;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R12;
+    instr       = {Opcode, X, 5'b00000, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2776,16 +2776,16 @@ initial begin
         $stop;
     end
 
-	// JI //
-	@(posedge clk);
-	Opcode		= J;
-	X			= 1;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, X, 10'b00_0100_1010};
+    // JI //
+    @(posedge clk);
+    Opcode      = J;
+    X           = 1;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, X, 10'b00_0100_1010};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -2911,16 +2911,16 @@ initial begin
         $stop;
     end
 
-	// B //
-	@(posedge clk);
-	Opcode		= B;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, 3'b000, 8'b0000_1111};
+    // B //
+    @(posedge clk);
+    Opcode      = B;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, 3'b000, 8'b0000_1111};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -3046,16 +3046,16 @@ initial begin
         $stop;
     end
 
-	// NOP //
-	@(posedge clk);
-	Opcode		= NOP;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, 11'b000_0000_0000};
+    // NOP //
+    @(posedge clk);
+    Opcode      = NOP;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, 11'b000_0000_0000};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -3181,16 +3181,16 @@ initial begin
         $stop;
     end
 
-	// WAIT //
-	@(posedge clk);
-	Opcode		= NOP;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, 11'b100_0000_0000};
+    // WAIT //
+    @(posedge clk);
+    Opcode      = NOP;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, 11'b100_0000_0000};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
+    @(posedge clk);
+    @(negedge clk);
     if(DEX_STALL          != 1'b1)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_STALL, $time);
         $stop;
@@ -3316,33 +3316,33 @@ initial begin
         $stop;
     end
 
-	i = 0;
-	while(DEX_STALL == 1)begin
-		@(negedge clk);
-		i = i + 1;
-	end
-	if(i != 12'b0100_0000_0000)begin
-		$display("WAIT time was for %d cycles EXPECTED: %d", i, 12'b0100_0000_0000);
-		$stop;
-	end
+    i = 0;
+    while(DEX_STALL == 1)begin
+        @(negedge clk);
+        i = i + 1;
+    end
+    if(i != 12'b0100_0000_0000)begin
+        $display("WAIT time was for %d cycles EXPECTED: %d", i, 12'b0100_0000_0000);
+        $stop;
+    end
 
-	// HALT //
-	@(posedge clk);
-	Opcode		= HALT;
-	X			= 0;
-	Rd_Rs		= R0;
-	Rt			= R1;
-	instr       = {Opcode, X, Rd_Rs, Rt};
+    // HALT //
+    @(posedge clk);
+    Opcode      = HALT;
+    X           = 0;
+    Rd_Rs       = R0;
+    Rt          = R1;
+    instr       = {Opcode, X, Rd_Rs, Rt};
     pc_plus_1   = pc_plus_1 + 1;
-	@(posedge clk);
-	@(negedge clk);
-	if(DEX_halt           != 1'b0)begin
+    @(posedge clk);
+    @(negedge clk);
+    if(DEX_halt           != 1'b0)begin
         $display("Unexpected signal value was asserted: %b at time %t", DEX_halt, $time);
         $stop;
     end
-	
-	repeat(25) @(posedge clk);
-	$stop;
+    
+    repeat(25) @(posedge clk);
+    $stop;
 end
 
 endmodule
