@@ -1,36 +1,118 @@
 ///////////////////////////////////////
 //ECE 554 Final Demo Program
 ///////////////////////////////////////
-FILL 0x00 //start with blank screen
-WAIT 0x500
+			FILL 0x00 //start with blank screen
+			WAIT 0x500
+			
 /////////////////////////////
-//CUBE INIT
+//OBJ INIT
 /////////////////////////////
-// init right side of cube
-DPOLY 0x01 0x07
-MOV R0 RO //R0 holds right side of cube
-ADDI V0 0xFF
-TRN R0 0x01 0x03
-ROTR R0 0x00 0x06
-WAIT 0x500
-//init left side of cube
-DPOLY 0x01 0x07
-MOV R1 RO //R1 holds left side of cube
-ROTL R1 0x00 0x06
-WAIT 0x500
-//init front side of cube
-DPOLY 0x01 0x07
-MOV R2 RO //R2 holds front side of cube
-//init back side of cube
-DPOLY 0x01 0x07
-MOV R3 RO //R3 holds back side of cube
-// init top of cube
-DPOLY 0x01 0x07
-MOV R4 RO //R4 holds right side of cube
-ROTR R0 0x00 0x06
-WAIT 0x500
-// init top of cube
-DPOLY 0x01 0x07
-MOV R0 RO //R5 holds bottom of cube
-ROTR R0 0x00 0x06
-WAIT 0x500
+			DPOLY 0x01 0x07
+			WAIT 0x500
+			MOV R10 RO //R10 holds reference to the square
+			
+			DTRI 0x01 0x03
+			WAIT 0x500
+			MOV R11 RO //R11 holds reference to the triangle
+			
+			MOV R9 R10 //R9 holds active object, initialize to be square
+			
+/////////////////////////////
+//Set Control Key Values
+/////////////////////////////			
+			LDU R0 0xFF
+			LDL R0 0xE0
+			//LDL R0 0xA2
+			MOV R13 R0 //R13 holds check value for the space bar
+			LDL R0 0x89
+			//LDL R0 0xD8
+			MOV R14 R0 //R14 holds check value for 'w'
+			LDL R0 0x8D
+			//LDL R0 0xC3
+			MOV R15 R0 //R15 holds chack value for 's'
+			LDL R0 0x9C
+			//LDL R0 0xC2
+			MOV R16 R0 //R16 holds check value for 'd'
+			LDL R0 0x9F
+			//LDL R0 0xC4
+			MOV R17 R0 //R17 holds check value for 'a'
+			LDL R0 0x9B
+			//LDL R0 0xD7
+			MOV R18 R0 //R18 holds check value for 'e'
+			LDL R0 0x8F
+			//LDL R0 0xD9
+			MOV R19 R0 //r19 holds check value for 'q'
+			
+/////////////////////////////
+//Main Program
+/////////////////////////////
+_Main       MOV R0 FS
+			ADD R0 R13
+			BEQ _ChangeObj //move the obj up if 'w' pressed
+			MOV R0 FS
+			ADD R0 R14
+			BEQ _MoveUp //move the obj up if 'w' pressed
+			MOV R0 FS
+			ADD R0 R15
+			BEQ _MoveDown //move the obj up if 's' pressed
+			MOV R0 FS
+			ADD R0 R16
+			BEQ _MoveRight //move the obj up if 'd' pressed
+			MOV R0 FS
+			ADD R0 R17
+			BEQ _MoveLeft //move the obj up if 'a' pressed
+			MOV R0 FS
+			ADD R0 R18
+			BEQ _RotR //move the obj up if 'e' pressed
+			MOV R0 FS
+			ADD R0 R19
+			BEQ _RotL //move the obj up if 'q' pressed
+			B _Main
+			
+_ChangeObj  AND R9 R10 //change the active object
+			BEQ _Tri
+			BNE _Squ
+			B _Main
+			
+			
+_Tri        MOV R9 R11 //set triangle to active
+			B _Main
+			
+_Squ        MOV R9 R10 //set square to active
+			B _Main
+			
+_MoveUp     LDU R0 0x00 //Moves object up and returns to main
+			LDL R0 0x50
+			MOV V1 R0
+			TRNALL R9 0x02
+			WAIT 0x500
+            B _Main
+
+_MoveDown   LDU R0 0xFF //Moves object down and returns to main
+			LDL R0 0xB0
+			MOV V1 R0
+			TRNALL R9 0x02
+			WAIT 0x500
+            B _Main
+
+_MoveRight  LDU R0 0x00 //Moves object right and return to main
+			LDL R0 0x50
+			MOV V0 R0
+			TRNALL R9 0x01
+			WAIT 0x500
+            B _Main
+
+_MoveLeft   LDU R0 0xFF //Moves object left and returns to main
+			LDL R0 0xB0
+			MOV V0 R0
+			TRNALL R9 0x01
+			WAIT 0x500
+            B _Main
+
+_RotR       ROTR R9 0x00 0x00 //Rotates object clockwise and returns to main
+			WAIT 0x500
+            B _Main
+
+_RotL       ROTL R9 0x00 0x00 //Rotates object counter-clockwise and returns to main
+			WAIT 0x500
+            B _Main
