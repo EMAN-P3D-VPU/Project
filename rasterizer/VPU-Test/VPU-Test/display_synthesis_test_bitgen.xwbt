@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=I:\Documents\ECE 554\VPU-Test\display_synthesis_test.ncd
+OUTFILE=I:\Documents\ECE 554\VPU-Test\display_synthesis_test.bit
+FAMILY=Virtex5
+PART=xc5vlx110t-1ff1136
+WORKINGDIR=I:\Documents\ECE 554\VPU-Test
+LICENSE=ISE
+USER_INFO=204658407_203016412_210597697_865

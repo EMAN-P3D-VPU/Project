@@ -1,0 +1,12 @@
+xst -intstyle ise -ifn "I:/Documents/ECE 554/VPU-Test/dvi_framebuffer_synthesis_test.xst" -ofn "I:/Documents/ECE 554/VPU-Test/dvi_framebuffer_synthesis_test.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc top_level.ucf -p xc5vlx110t-ff1136-1 "dvi_framebuffer_synthesis_test.ngc" dvi_framebuffer_synthesis_test.ngd  
+map -intstyle ise -p xc5vlx110t-ff1136-1 -w -logic_opt off -ol high -t 1 -register_duplication off -global_opt off -mt off -cm area -ir off -pr off -lc off -power off -o dvi_framebuffer_synthesis_test_map.ncd dvi_framebuffer_synthesis_test.ngd dvi_framebuffer_synthesis_test.pcf 
+par -w -intstyle ise -ol high -mt off dvi_framebuffer_synthesis_test_map.ncd dvi_framebuffer_synthesis_test.ncd dvi_framebuffer_synthesis_test.pcf 
+trce -intstyle ise -v 3 -s 1 -n 3 -fastpaths -xml dvi_framebuffer_synthesis_test.twx dvi_framebuffer_synthesis_test.ncd -o dvi_framebuffer_synthesis_test.twr dvi_framebuffer_synthesis_test.pcf -ucf top_level.ucf 
+bitgen -intstyle ise -f dvi_framebuffer_synthesis_test.ut dvi_framebuffer_synthesis_test.ncd 
+xst -intstyle ise -ifn "I:/Documents/ECE 554/VPU-Test/dvi_framebuffer_synthesis_test.xst" -ofn "I:/Documents/ECE 554/VPU-Test/dvi_framebuffer_synthesis_test.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc top_level.ucf -p xc5vlx110t-ff1136-1 "dvi_framebuffer_synthesis_test.ngc" dvi_framebuffer_synthesis_test.ngd  
+map -intstyle ise -p xc5vlx110t-ff1136-1 -w -logic_opt off -ol high -t 1 -register_duplication off -global_opt off -mt off -cm area -ir off -pr off -lc off -power off -o dvi_framebuffer_synthesis_test_map.ncd dvi_framebuffer_synthesis_test.ngd dvi_framebuffer_synthesis_test.pcf 
+par -w -intstyle ise -ol high -mt off dvi_framebuffer_synthesis_test_map.ncd dvi_framebuffer_synthesis_test.ncd dvi_framebuffer_synthesis_test.pcf 
+trce -intstyle ise -v 3 -s 1 -n 3 -fastpaths -xml dvi_framebuffer_synthesis_test.twx dvi_framebuffer_synthesis_test.ncd -o dvi_framebuffer_synthesis_test.twr dvi_framebuffer_synthesis_test.pcf -ucf top_level.ucf 
+bitgen -intstyle ise -f dvi_framebuffer_synthesis_test.ut dvi_framebuffer_synthesis_test.ncd 

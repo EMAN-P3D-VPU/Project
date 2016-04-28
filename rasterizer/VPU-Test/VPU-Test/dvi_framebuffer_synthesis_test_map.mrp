@@ -1,0 +1,229 @@
+Release 14.7 Map P.20131013 (nt64)
+Xilinx Mapping Report File for Design 'dvi_framebuffer_synthesis_test'
+
+Design Information
+------------------
+Command Line   : map -intstyle ise -p xc5vlx110t-ff1136-1 -w -logic_opt off -ol
+high -t 1 -register_duplication off -global_opt off -mt off -cm area -ir off -pr
+off -lc off -power off -o dvi_framebuffer_synthesis_test_map.ncd
+dvi_framebuffer_synthesis_test.ngd dvi_framebuffer_synthesis_test.pcf 
+Target Device  : xc5vlx110t
+Target Package : ff1136
+Target Speed   : -1
+Mapper Version : virtex5 -- $Revision: 1.55 $
+Mapped Date    : Wed Apr 27 17:29:07 2016
+
+Design Summary
+--------------
+Number of errors:      0
+Number of warnings:    0
+Slice Logic Utilization:
+  Number of Slice Registers:                   311 out of  69,120    1%
+    Number used as Flip Flops:                 311
+  Number of Slice LUTs:                        391 out of  69,120    1%
+    Number used as logic:                      383 out of  69,120    1%
+      Number using O6 output only:             212
+      Number using O5 output only:              79
+      Number using O5 and O6:                   92
+    Number used as exclusive route-thru:         8
+  Number of route-thrus:                        87
+    Number using O6 output only:                87
+
+Slice Logic Distribution:
+  Number of occupied Slices:                   182 out of  17,280    1%
+  Number of LUT Flip Flop pairs used:          477
+    Number with an unused Flip Flop:           166 out of     477   34%
+    Number with an unused LUT:                  86 out of     477   18%
+    Number of fully used LUT-FF pairs:         225 out of     477   47%
+    Number of unique control sets:              23
+    Number of slice register sites lost
+      to control set restrictions:              37 out of  69,120    1%
+
+  A LUT Flip Flop pair for this architecture represents one LUT paired with
+  one Flip Flop within a slice.  A control set is a unique combination of
+  clock, reset, set, and enable signals for a registered element.
+  The Slice Logic Distribution report is not meaningful if the design is
+  over-mapped for a non-slice resource or if Placement fails.
+  OVERMAPPING of BRAM resources should be ignored if the design is
+  over-mapped for a non-BRAM resource or if placement fails.
+
+IO Utilization:
+  Number of bonded IOBs:                        24 out of     640    3%
+    Number of LOCed IOBs:                       24 out of      24  100%
+
+Specific Feature Utilization:
+  Number of BlockRAM/FIFO:                      97 out of     148   65%
+    Number using BlockRAM only:                 97
+    Total primitives used:
+      Number of 36k BlockRAM used:              96
+      Number of 18k BlockRAM used:               1
+    Total Memory used (KB):                  3,474 out of   5,328   65%
+  Number of BUFG/BUFGCTRLs:                      3 out of      32    9%
+    Number used as BUFGs:                        3
+  Number of DCM_ADVs:                            1 out of      12    8%
+
+Average Fanout of Non-Clock Nets:                8.07
+
+Peak Memory Usage:  741 MB
+Total REAL time to MAP completion:  23 secs 
+Total CPU time to MAP completion:   19 secs 
+
+Table of Contents
+-----------------
+Section 1 - Errors
+Section 2 - Warnings
+Section 3 - Informational
+Section 4 - Removed Logic Summary
+Section 5 - Removed Logic
+Section 6 - IOB Properties
+Section 7 - RPMs
+Section 8 - Guide Report
+Section 9 - Area Group and Partition Summary
+Section 10 - Timing Report
+Section 11 - Configuration String Information
+Section 12 - Control Set Information
+Section 13 - Utilization by Hierarchy
+
+Section 1 - Errors
+------------------
+
+Section 2 - Warnings
+--------------------
+WARNING:Security:43 - No license file was found in the standard Xilinx license
+directory.
+WARNING:Security:44 - Since no license file was found,
+WARNING:Security:42 - Your software subscription period has lapsed. Your current
+version of Xilinx tools will continue to function, but you no longer qualify for
+Xilinx software updates or new releases.
+
+Section 3 - Informational
+-------------------------
+INFO:Security:50 - The XILINXD_LICENSE_FILE environment variable is set to
+'27005@license.ece.wisc.edu'.
+INFO:Security:52 - The LM_LICENSE_FILE environment variable is set to
+'27005@license.ece.wisc.edu'.
+INFO:Security:56 - Part 'xc5vlx110t' is not a WebPack part.
+INFO:MapLib:562 - No environment variables are currently set.
+INFO:Pack:1716 - Initializing temperature to 85.000 Celsius. (default - Range:
+   0.000 to 85.000 Celsius)
+INFO:Pack:1720 - Initializing voltage to 0.950 Volts. (default - Range: 0.950 to
+   1.050 Volts)
+INFO:Map:215 - The Interim Design Summary has been generated in the MAP Report
+   (.mrp).
+INFO:Pack:1650 - Map created a placed design.
+
+Section 4 - Removed Logic Summary
+---------------------------------
+   8 block(s) optimized away
+   2 signal(s) removed
+
+Section 5 - Removed Logic
+-------------------------
+
+The trimmed logic report below shows the logic removed from your design due to
+sourceless or loadless signals, and VCC or ground connections.  If the removal
+of a signal or symbol results in the subsequent removal of an additional signal
+or symbol, the message explaining that second removal will be indented.  This
+indentation will be repeated as a chain of related logic is removed.
+
+To quickly locate the original cause for the removal of a chain of logic, look
+above the place where that logic is listed in the trimming report, then locate
+the lines that are least indented (begin at the leftmost edge).
+
+The signal "dfb_tl/fb/frame0/frame_mem/N0" is sourceless and has been removed.
+The signal "dfb_tl/fb/frame1/frame_mem/N0" is sourceless and has been removed.
+
+Optimized Block(s):
+TYPE 		BLOCK
+GND 		XST_GND
+VCC 		XST_VCC
+GND 		dfb_tl/display/fifo/XST_GND
+VCC 		dfb_tl/display/fifo/XST_VCC
+GND 		dfb_tl/fb/frame0/frame_mem/XST_GND
+VCC 		dfb_tl/fb/frame0/frame_mem/XST_VCC
+GND 		dfb_tl/fb/frame1/frame_mem/XST_GND
+VCC 		dfb_tl/fb/frame1/frame_mem/XST_VCC
+
+To enable printing of redundant blocks removed and signals merged, set the
+detailed map report option and rerun map.
+
+Section 6 - IOB Properties
+--------------------------
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| IOB Name                           | Type             | Direction | IO Standard          | Diff  | Drive    | Slew | Reg (s)      | Resistor | IOB      |
+|                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| D<0>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<1>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<2>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<3>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<4>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<5>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<6>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<7>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<8>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<9>                               | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<10>                              | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| D<11>                              | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| blank                              | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| clk_25mhz                          | IOB              | OUTPUT    | LVCMOS33             |       | 24       | FAST |              |          |          |
+| clk_25mhz_n                        | IOB              | OUTPUT    | LVCMOS33             |       | 24       | FAST |              |          |          |
+| clk_input                          | IOB              | INPUT     | LVCMOS33             |       |          |      |              |          |          |
+| dont_change                        | IOB              | INPUT     | LVCMOS18             |       |          |      |              |          |          |
+| dvi_rst                            | IOB              | OUTPUT    | LVCMOS33             |       | 12       | SLOW |              |          |          |
+| hsync                              | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
+| rast_pixel_rdy                     | IOB              | INPUT     | LVCMOS18             |       |          |      |              |          |          |
+| rst                                | IOB              | INPUT     | LVCMOS18             |       |          |      |              |          |          |
+| scl_tri                            | IOB              | OUTPUT    | LVCMOS18             |       | 6        | SLOW |              |          |          |
+| sda_tri                            | IOB              | OUTPUT    | LVCMOS18             |       | 6        | SLOW |              |          |          |
+| vsync                              | IOB              | OUTPUT    | LVDCI_33             |       |          |      |              |          |          |
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Section 7 - RPMs
+----------------
+
+Section 8 - Guide Report
+------------------------
+Guide not run on this design.
+
+Section 9 - Area Group and Partition Summary
+--------------------------------------------
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+Area Group Information
+----------------------
+
+  No area groups were found in this design.
+
+----------------------
+
+Section 10 - Timing Report
+--------------------------
+A logic-level (pre-route) timing report can be generated by using Xilinx static
+timing analysis tools, Timing Analyzer (GUI) or TRCE (command line), with the
+mapped NCD and PCF files. Please note that this timing report will be generated
+using estimated delay information. For accurate numbers, please generate a
+timing report with the post Place and Route NCD file.
+
+For more information about the Timing Analyzer, consult the Xilinx Timing
+Analyzer Reference Manual; for more information about TRCE, consult the Xilinx
+Command Line Tools User Guide "TRACE" chapter.
+
+Section 11 - Configuration String Details
+-----------------------------------------
+Use the "-detail" map option to print out Configuration Strings
+
+Section 12 - Control Set Information
+------------------------------------
+Use the "-detail" map option to print out Control Set Information.
+
+Section 13 - Utilization by Hierarchy
+-------------------------------------
+Use the "-detail" map option to print out the Utilization by Hierarchy section.
