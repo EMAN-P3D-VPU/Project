@@ -175,6 +175,8 @@ def parse_immd(param, size):
     # Exception for register labels being used as immd for VPU instr #
     if param in registers:
         return list(registers[param])[-size:]
+    if param in global_labels:
+        return parse_label(param, size)[-size:]
     # check type - hex/binary/decimal(signed/upper/lower) #
     if re.search(r'(0x)', param):
         param = hex_to_binary(param[2:])
