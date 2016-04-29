@@ -75,7 +75,7 @@ cpu CPU(
 
 assign VPU_rdy = !busy;
 
-matrix_unit mat(.clk(clk), .rst_n(rst_n), .go(start_VPU), .v0(V0_VPU), .v1(V1_VPU), .v2(V2_VPU), .v3(V3_VPU), 
+matrix_top mat(.clk(clk), .rst_n(rst_n), .go(start_VPU), .v0(V0_VPU), .v1(V1_VPU), .v2(V2_VPU), .v3(V3_VPU), 
                 .v4(V4_VPU), .v5(V5_VPU), .v6(V6_VPU), .v7(V7_VPU),
                 .obj_type(obj_type_VPU), .obj_color({5'b0,obj_color_VPU}), .obj_num_in(obj_num_VPU),
                 .gmt_op(op_VPU), .gmt_code(code_VPU), .obj_in(mat_obj_out), .addr_vld(addr_vld), 
@@ -95,7 +95,7 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
                 .addr_vld(addr_vld), .lst_stored_obj(lst_stored_obj_in), .lst_stored_obj_vld(lst_stored_obj_vld),
                 .obj_mem_full(obj_mem_full_in), .obj_map(obj_map), .changed_out(changed));
 
-clipping_unit clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
+clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
                 .reading(reading), .f1_wr_test(f1_wr_test),
                 .x0_in_f1(x0_in_f1), .y0_in_f1(y0_in_f1), .x1_in_f1(x1_in_f1), .y1_in_f1(y1_in_f1));
