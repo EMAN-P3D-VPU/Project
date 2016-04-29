@@ -6,7 +6,8 @@ import pprint
 #-##############################################################################
 # Definitions #
 #-#
-FILL_ADDRESS_SPACE_START = 0x0800
+CODE_SIZE                = 0x0200
+FILL_ADDRESS_SPACE_START = 0x0100 # 256
 CODE_ADDRESS_SPACE_START = 0x0000
 
 p = pprint.PrettyPrinter(indent=2)
@@ -781,8 +782,10 @@ p.pprint(global_labels)
 #print('\nALL INSTRUCTIONS:\n')
 #p.pprint(instructions) debug only
 
-instr_space_to_print_hex = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
-fill_space_to_print_hex  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
+instr_space_to_print_hex = ''
+fill_space_to_print_hex = ''
+#instr_space_to_print_hex = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
+#fill_space_to_print_hex  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 instr_space_to_print_bin = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
 fill_space_to_print_bin  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 # Second pass for label linking + instruction generation #
@@ -792,16 +795,28 @@ for instr in instructions:
     curr_opcode = instr['instr']
     (parsed_hex, parsed_bin) = parse_instruction(instr)
     if instr['instr'] == '.FILL':
-        fill_space_to_print_hex += '\n' + parsed_hex
+        fill_space_to_print_hex += parsed_hex + '\n'
         fill_space_to_print_bin += '\n' + parsed_bin
     else:
-        instr_space_to_print_hex += '\n' + parsed_hex
+        instr_space_to_print_hex += parsed_hex + '\n'
         instr_space_to_print_bin += '\n' + parsed_bin
 
 #-##############################################################################
 # Write to File #
 #-#
+# NOP : 0x7800
 print('\nWRITTING TO FILE\n')
+zeroFill = instr_space_to_print_hex.count('\n')
+while(zeroFill < FILL_ADDRESS_SPACE_START):
+    instr_space_to_print_hex += '7800\n'
+    zeroFill += 1
+
+zeroFill = FILL_ADDRESS_SPACE_START + fill_space_to_print_hex.count('\n')
+while(zeroFill < CODE_SIZE-1):
+    fill_space_to_print_hex += '7800\n'
+    zeroFill += 1
+fill_space_to_print_hex += '7800'
+
 binary_code.write(instr_space_to_print_bin)
 binary_code.write(fill_space_to_print_bin)
 machine_code.write(instr_space_to_print_hex)
