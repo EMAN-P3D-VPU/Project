@@ -4,7 +4,7 @@ input clk, rst, EoO, valid, changed;
 input [9:0] x_0, x_1, y_0, y_1;
 input [2:0] color;
 
-output reg [45:0] line_cap_reg;
+output reg [43:0] line_cap_reg;
 //register that keeps all these values (consider this a pipeline stage)
 
 always @(posedge clk, negedge rst)
@@ -15,7 +15,7 @@ always @(posedge clk, negedge rst)
       end
     else
       begin
-        line_cap_reg <= {x_0, y_0, x_1, y_1, color, changed, valid, EoO};
+        line_cap_reg <= {x_0, y_0, x_1, y_1, color, valid};
       end
 end
 

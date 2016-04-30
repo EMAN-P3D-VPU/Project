@@ -1,0 +1,96 @@
+module Rasterizer_Top_Level (			 clk, rst,
+	                                     x0_in, y0_in,
+	                                     x1_in, y1_in,
+				  /*input from clipper*/ EoO, valid, Frame_Start, 
+				  /*input from object*/  obj_change,
+				  /*input from matrix*/  bk_color,
+				  /*input from f_buff*/  frame_ready,
+				  /*output to f_buff*/   raster_done, frame_rd_en, frame_x, frame_y, px_color);
+
+input clk, rst;
+//CLIPPER INPUTS/OUTPUTS
+input [9:0] x0_in, y0_in, x1_in, y1_in;
+input EoO, Frame_Start, valid;
+//OBJECT UNIT INPUT
+input obj_change;
+//MATRIX UNIT INPUT
+input [2:0] bk_color;
+//Frame Buffer input/outputs
+input frame_ready;
+output raster_done, frame_rd_en;
+output [9:0] frame_x, frame_y;
+output [2:0] px_color;
+
+
+//top level internals
+wire [43:0] line_cap_reg;
+wire [11:0] dy, dx;
+wire [1:0]  steepness;
+
+wire [9:0] sx_0, sx_1, sy_0, sy_1;
+wire [2:0] octant;
+
+reg [67:0] delay;
+
+wire [68:0] fifo_input, fifo_output;
+wire fifo_rd_en, fifo_empty;
+
+
+raster_input_stage input_stage( .clk(clk), 
+								.rst(rst), 
+								.x_0(x0_in), 
+								.x_1(x1_in), 
+								.y_0(y0_in), 
+								.y_1(y1_in), 
+								.EoO(EoO), 
+								.valid(valid), 
+								.color(bk_color), 
+								.changed(obj_change), 
+								.line_cap_reg(line_cap_reg));
+
+//calculate steepness, dy, dx
+steep_calculator steep_calculator(  .line_cap_reg(line_cap_reg), 
+									.dy(dy), 
+									.dx(dx), 
+									.steep_octant(steepness));
+
+point_swapper point_swap(   .x_0(delay[67:58]), 
+							.x_1(delay[47:38]), 
+							.y_0(delay[57:48]), 
+							.y_1(delay[37:28]), 
+							.slope_steep(delay[1:0]),
+
+							.sx_0(sx_0), 
+							.sx_1(sx_1), 
+							.sy_0(sy_0), 
+							.sy_1(sy_1), 
+							.line_octant(octant));
+
+assign fifo_input = {sx_0, sy_0, sx_1, sy_1, delay[27:17], delay[16:6], delay[5:3], delay[2], octant};
+
+//GENERATE FIFO INSERT HERE
+//TIE WR_EN TO DELAY[2]
+
+LINE_GENERATOR LINE_GENERATOR(/*global inputs*/      .clk(clk), .rst(rst),
+	              /*raster inputs*/      .fifo_data(fifo_output), .fifo_empty(fifo_empty),
+	              /*raster self-out*/    .fifo_rd_en(fifo_rd_en),
+				  /*input from clipper*/ .EoO(EoO), .Frame_Start(Frame_Start), 
+				  /*input from object*/  .obj_change(obj_change),
+				  /*input from matrix*/  .bk_color(bk_color),
+				  /*input from f_buff*/  .frame_ready(frame_ready),
+				  /*output to f_buff*/   .raster_done(raster_done), .frame_rd_en(frame_rd_en), .frame_x(frame_x), .frame_y(frame_y), .px_color(px_color));
+
+//pipeline stage
+always@(posedge clk, negedge rst)
+begin
+	if(~rst)
+	begin
+		delay <= 0;
+	end
+	else 
+	begin
+		delay <= {line_cap_reg[43:4], dy, dx, line_cap_reg[3:0], steepness};
+	end
+end
+
+endmodule

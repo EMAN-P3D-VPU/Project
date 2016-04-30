@@ -1,12 +1,12 @@
-module point_swapper(x_0, x_1, y_0, y_1, sx_0, sx_1, sy_0, sy_1, p_or_n, dy, dx, slope_steep, line_octant);
+module point_swapper(x_0, x_1, y_0, y_1, slope_steep, sx_0, sx_1, sy_0, sy_1, line_octant);
 
 input [9:0] x_0, x_1, y_0, y_1;
-inout [10:0] dy, dx;
-inout [1:0] slope_steep;
+
+input [1:0] slope_steep;
 output reg [9:0] sx_0, sx_1, sy_0, sy_1;
-output reg p_or_n; //technically could be deciphered from octant, but this is easier to understand
+//output reg //; //technically could be deciphered from octant, but this is easier to understand
                //positive or negative slope...use to trigger math function appropriately
-output reg line_octant; //needed to reverse the swap
+output reg [2:0] line_octant; //needed to reverse the swap
 
 wire [2:0] octant, octant_f;
 wire vector_direction;
@@ -35,7 +35,7 @@ case(octant_f)
     sy_1 = x_1;
 
     //positive slope
-    p_or_n = 1'b0;
+    // = 1'b0;
     end
   1:begin
     //slope in quadrant 0, slope is greater than 0, less/equal to 1
@@ -46,7 +46,7 @@ case(octant_f)
     sy_1 = y_1;
 
     //positive slope
-    p_or_n = 1'b0;
+    // = 1'b0;
     end
   2:begin
     //slope is in quadrant 1, slope is less than 0, greater/equal to -1
@@ -57,7 +57,7 @@ case(octant_f)
     sy_1 = y_1;
 
     //negative slope
-    p_or_n = 1'b1;
+    // = 1'b1;
     end
   3:begin
     //slope is in quadrant 1, slope is less than -1
@@ -68,7 +68,7 @@ case(octant_f)
     sy_1 = x_0;
 
     //negative slope
-    p_or_n = 1'b1;
+    // = 1'b1;
     end
   4:begin
     //slope is in quadrant 2, slope is greater than 1
@@ -79,7 +79,7 @@ case(octant_f)
     sy_1 = x_0;
 
     //positive slope
-    p_or_n = 1'b0;
+    // = 1'b0;
     end
   5:begin
     //slope is in quadrant 2, slope is greater than 0, less/equal to 1
@@ -91,7 +91,7 @@ case(octant_f)
     sy_1 = y_0;
 
     //positive slope
-    p_or_n = 1'b0;
+    // = 1'b0;
     end
   6:begin
     //slope is in quadrant 3, slope is less than 0, greater/equal to -1
@@ -102,7 +102,7 @@ case(octant_f)
     sx_1 = x_0;
     sy_1 = y_0;
 
-    p_or_n = 1'b1;
+    // = 1'b1;
     end
   7:begin
     //slope is in quadrant 3, slope is less than -1
@@ -112,7 +112,7 @@ case(octant_f)
     sx_1 = y_1;
     sy_1 = x_1;
 
-    p_or_n = 1'b1;
+    // = 1'b1;
     end
 endcase
 
