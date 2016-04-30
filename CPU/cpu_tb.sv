@@ -3,29 +3,31 @@
 // Dan Wortmann
 //
 // Description:
-// 
+// Read instruction files for software testbench and visual inspection. Any
+// code specific tests should use this as a template to have test specific
+// self checking code.
 ////////////////////////////////////////////////////////////////////////////////
 module cpu_tb();
 ////////////
 // Inputs /
 //////////
-logic			clk, rst_n;
-logic			VPU_rdy, VPU_data_we;
-logic			SPART_we;
-logic	[3:0]	SPART_keys;
-logic	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
+logic           clk, rst_n;
+logic           VPU_rdy, VPU_data_we;
+logic           SPART_we;
+logic   [3:0]   SPART_keys;
+logic   [15:0]  VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 /////////////
 // Outputs /
 ///////////
 wire            halt, start_VPU;
 wire            fill_VPU;
-wire    [1:0]	obj_type_VPU;
-wire    [2:0]	obj_color_VPU;
-wire    [3:0]	op_VPU;
-wire    [3:0]	code_VPU;
-wire    [4:0]	obj_num_VPU;
-wire    [15:0]	V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, RO_VPU;
+wire    [1:0]   obj_type_VPU;
+wire    [2:0]   obj_color_VPU;
+wire    [3:0]   op_VPU;
+wire    [3:0]   code_VPU;
+wire    [4:0]   obj_num_VPU;
+wire    [15:0]  V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, RO_VPU;
 
 ///////////////////
 // Interconnects /
@@ -78,11 +80,11 @@ cpu CPU(
 
 // Clock //
 always
-	#2 clk = ~clk;
+    #2 clk = ~clk;
 
 // Fail Safe Stop //
 initial
-	#1000000 $stop;
+    #1000000 $stop;
 
 // Fill Memory for Software Tests //
 initial
@@ -90,13 +92,13 @@ initial
 
 // Main Test Loop //
 initial begin
-	clk = 0;
-	rst_n = 0;
-	// SPART //
+    clk = 0;
+    rst_n = 0;
+    // SPART //
     SPART_we     = 1'h0;
     SPART_keys   = 3'h0;
-	// VPU //
-    VPU_rdy      = 1'h1;	// CPU stalls when VPU is not ready!
+    // VPU //
+    VPU_rdy      = 1'h1;    // CPU stalls when VPU is not ready!
     VPU_data_we  = 1'h1;
     VPU_V0       = 16'h0;
     VPU_V1       = 16'h0;
@@ -107,14 +109,14 @@ initial begin
     VPU_V6       = 16'h0;
     VPU_V7       = 16'h0;
     VPU_RO       = 16'h0;
-	$display("rst assert\n");
-	@(negedge clk) rst_n = 1;
+    $display("rst assert\n");
+    @(negedge clk) rst_n = 1;
     VPU_data_we  = 1'h0;
-	$display("rst deassert\n");
+    $display("rst deassert\n");
 
 
-	repeat(50) @(posedge clk);
-	$stop;
+    repeat(50) @(posedge clk);
+    $stop;
 end
 
 endmodule

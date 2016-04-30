@@ -43,7 +43,7 @@ reg load_line, load_next_point;
 wire valid;
 
 //instantiate the math module here
-wire new_x, new_y;
+wire [9:0] new_x, new_y;
 wire final_line_point;
 //mathmodules****
 point_gen POINT_GEN(.x_i(CAP_REG[68:59]), .y_i(CAP_REG[58:49]), .dy(CAP_REG[28:18]), .dx(CAP_REG[17:7]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
@@ -99,7 +99,7 @@ always @(posedge clk or negedge rst) begin
 	if(stall_coords)
 	begin
 		y <= y;
-	end
+	end else
 	if(clr_coords) begin
 		y <= 0;
 	end else
@@ -251,7 +251,7 @@ always @(*)
 				begin
 					if(fifo_empty & ~EoO) begin
 						//whilst fifo is empty then wait for it to get full
-						nxt_state <= POP_LINE;
+						nxt_state = POP_LINE;
 					end else
 					if(fifo_empty & EoO) begin
 						//rasterizer is done

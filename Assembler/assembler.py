@@ -6,12 +6,14 @@ import pprint
 #-##############################################################################
 # Definitions #
 #-#
-FILL_ADDRESS_SPACE_START = 0x0800
+CODE_SIZE                = 0x0200
+FILL_ADDRESS_SPACE_START = 0x0100 # 256
 CODE_ADDRESS_SPACE_START = 0x0000
 
 p = pprint.PrettyPrinter(indent=2)
 
 global_labels = {}
+curr_opcode = ''
 
 bcd = {
 '0' : '0000',
@@ -125,7 +127,11 @@ def hex_to_binary(hex):
         binary += bcd[h.upper()]
 
     # Sign Extend #
-    binary = binary[0] * (16 - len(binary)) + binary
+    if curr_opcode == 'LDU' or curr_opcode == 'LDL':
+        binary = '0' * (16 - len(binary)) + binary
+    else:
+        binary = binary[0] * (16 - len(binary)) + binary
+
     return binary
 
 def decimal_to_binary(type, decimal, size):
@@ -175,6 +181,8 @@ def parse_immd(param, size):
     # Exception for register labels being used as immd for VPU instr #
     if param in registers:
         return list(registers[param])[-size:]
+    if param in global_labels:
+        return parse_label(param, size)[-size:]
     # check type - hex/binary/decimal(signed/upper/lower) #
     if re.search(r'(0x)', param):
         param = hex_to_binary(param[2:])
@@ -186,7 +194,10 @@ def parse_immd(param, size):
     else:
         print("***ERROR*** Invalid immediate type: " + param)
 
-    return list(param)[-size:]
+    if curr_opcode == 'LDU':
+        return list(param)[:size]
+    else:
+        return list(param)[-size:]
 
 def parse_label(param, size):
     """
@@ -414,7 +425,7 @@ instructions_list = {
                            },
                           ]
          },
-'LDR'   :{'opcode'      : '01100',
+'ST'   :{'opcode'      : '01100',
           'params'      : [{'type'   : 'reg',
                             'start'  : 9,
                             'size'   : 5,
@@ -771,26 +782,41 @@ p.pprint(global_labels)
 #print('\nALL INSTRUCTIONS:\n')
 #p.pprint(instructions) debug only
 
-instr_space_to_print_hex = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
-fill_space_to_print_hex  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
+instr_space_to_print_hex = ''
+fill_space_to_print_hex = ''
+#instr_space_to_print_hex = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
+#fill_space_to_print_hex  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 instr_space_to_print_bin = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
 fill_space_to_print_bin  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 # Second pass for label linking + instruction generation #
 print('\nSECOND PASS\n')
 for instr in instructions:
     # Parse entire instruction now #
+    curr_opcode = instr['instr']
     (parsed_hex, parsed_bin) = parse_instruction(instr)
     if instr['instr'] == '.FILL':
-        fill_space_to_print_hex += '\n' + parsed_hex
+        fill_space_to_print_hex += parsed_hex + '\n'
         fill_space_to_print_bin += '\n' + parsed_bin
     else:
-        instr_space_to_print_hex += '\n' + parsed_hex
+        instr_space_to_print_hex += parsed_hex + '\n'
         instr_space_to_print_bin += '\n' + parsed_bin
 
 #-##############################################################################
 # Write to File #
 #-#
+# NOP : 0x7800
 print('\nWRITTING TO FILE\n')
+zeroFill = instr_space_to_print_hex.count('\n')
+while(zeroFill < FILL_ADDRESS_SPACE_START):
+    instr_space_to_print_hex += '7800\n'
+    zeroFill += 1
+
+zeroFill = FILL_ADDRESS_SPACE_START + fill_space_to_print_hex.count('\n')
+while(zeroFill < CODE_SIZE-1):
+    fill_space_to_print_hex += '7800\n'
+    zeroFill += 1
+fill_space_to_print_hex += '7800'
+
 binary_code.write(instr_space_to_print_bin)
 binary_code.write(fill_space_to_print_bin)
 machine_code.write(instr_space_to_print_hex)

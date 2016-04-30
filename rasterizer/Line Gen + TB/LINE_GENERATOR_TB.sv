@@ -5,8 +5,8 @@ parameter line_data_width = 68;
 reg clk, rst;
 reg [2:0] internal_state, internal_nxt_state;
 
-//fifo in/out
-wire [line_data_width:0] fifo_data;
+//fake fifo in/out
+reg [line_data_width:0] fifo_data;
 reg fifo_empty, fifo_rd_en;
 
 //line generator inputs and probeable/testable signals
@@ -52,6 +52,7 @@ localparam ERROR      = 3'b111;
   wire _f_rd_en;
   wire _raster_complete;
   reg [2:0] gp_counter;
+  reg test_loop;
 
 
 //10ns (100mhz clock)
@@ -63,6 +64,7 @@ always
 initial 
 begin
 
+test_loop = 1;
 testing = 1;
 gp_counter = 0;
 //begin fsm params
@@ -87,6 +89,7 @@ rst = 1;
 //test every transition possible
 while(testing)
 begin
+    gp_counter = 0;
 	//test IDLE TRANSITIONS
 	$display("BEGINING IDLE TRANSITION TO IDLE TEST");
 	repeat(6)
@@ -382,6 +385,12 @@ begin
 
     //TEST LINE POPPING NOW
     //TEST EMPTY CASE LAST!!	
+    $display("BEGIN POP LINE TO POP LINE ",);
+
+    
+
+
+
 end
 
 
