@@ -38,17 +38,17 @@ localparam ERROR      = 3'b111;
 
 //line capture register
 //will get filled on a fifo "POP"
-reg [58:0] CAP_REG;
+reg [68:0] CAP_REG;
 reg load_line, load_next_point;
 wire valid;
 
 //instantiate the math module here
-wire new_x, new_y;
+wire [9:0] new_x, new_y;
 wire final_line_point;
 //mathmodules****
-point_gen POINT_GEN(.x_i(CAP_REG[58:49]), .y_i(CAP_REG[48:39]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
+point_gen POINT_GEN(.x_i(CAP_REG[68:59]), .y_i(CAP_REG[58:49]), .dy(CAP_REG[28:18]), .dx(CAP_REG[17:7]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
 //see if you hit the final point
-assign final_line_point = ((CAP_REG[58:49] == CAP_REG[38:29]) & (CAP_REG[48:39] == CAP_REG[28:19]));
+assign final_line_point = ((CAP_REG[68:59] == CAP_REG[48:39]) & (CAP_REG[58:49] == CAP_REG[38:29]));
 
 always @(posedge clk or negedge rst) begin
 	if(~rst) begin
@@ -58,14 +58,14 @@ always @(posedge clk or negedge rst) begin
 		CAP_REG <= fifo_data;
 	end else
 	if(load_next_point) begin
-		CAP_REG <= {new_x, new_y, CAP_REG[38:0]};
+		CAP_REG <= {new_x, new_y, CAP_REG[48:0]};
 	end else
 	begin
 		CAP_REG <= CAP_REG;
 	end
 end
 
-assign valid = CAP_REG[4];
+assign valid = CAP_REG[3];
 
 //frame buffer coordinate values
 reg [9:0] x, y;
@@ -99,7 +99,7 @@ always @(posedge clk or negedge rst) begin
 	if(stall_coords)
 	begin
 		y <= y;
-	end
+	end else
 	if(clr_coords) begin
 		y <= 0;
 	end else
@@ -117,11 +117,11 @@ end
 
 //MUX output px_color between background color or the line color
 reg clr_color;
-assign px_color = (clr_color)? bk_color:CAP_REG[7:5];
+assign px_color = (clr_color)? bk_color:CAP_REG[6:4];
 
 //MUX between scanning/clear function and select/paint function
-assign frame_x = (clr_color)? x:CAP_REG[58:49];
-assign frame_y = (clr_color)? y:CAP_REG[48:39];
+assign frame_x = (clr_color)? x:CAP_REG[68:59];
+assign frame_y = (clr_color)? y:CAP_REG[58:49];
 
 wire last_px;
 assign last_px = ((x == 640) & (y == 480)) ? 1:0;
@@ -134,7 +134,33 @@ assign fifo_rd_en  = pop;
 
 //raster done
 reg draw_complete;
-assign raster_done = draw_complete;
+
+//draw complete needs to be held high until 
+//next clearing cycle
+reg rast_draw_complete;
+always@(posedge clk, negedge rst)
+begin
+	if(~rst)
+	begin
+		rast_draw_complete <= 0;
+	end else
+	if(draw_complete)
+	begin
+		rast_draw_complete <= draw_complete;
+	end else
+	if(Frame_Start & obj_change & frame_ready)
+	begin
+		rast_draw_complete <= 0;
+	end else
+	begin
+		rast_draw_complete <= rast_draw_complete;
+	end
+end
+
+//when draw complete is asserted, the raster done signal gets 
+//asserted immediately to be ready before the clock edge.
+//the signal is then maintained by a register
+assign raster_done = (draw_complete) ? draw_complete:rast_draw_complete;
 
 
 reg [2:0] state, nxt_state;
@@ -145,6 +171,7 @@ always @(posedge clk, negedge rst)
 		else
 			state <= nxt_state;
 	end
+
 
 //combinational logic
 //(EQUIVALENT TO 'ALWAYS_COMB'
@@ -224,7 +251,7 @@ always @(*)
 				begin
 					if(fifo_empty & ~EoO) begin
 						//whilst fifo is empty then wait for it to get full
-						nxt_state <= POP_LINE;
+						nxt_state = POP_LINE;
 					end else
 					if(fifo_empty & EoO) begin
 						//rasterizer is done
