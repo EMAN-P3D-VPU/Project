@@ -12,7 +12,7 @@ always @(color_code) begin
 		4: color_translated = 24'h00FF00;
 		5: color_translated = 24'h0000FF;
 		6: color_translated = 24'h7F00FF;
-		7: color_translated = 24'hFF00FF;
+		7: color_translated = 24'hFFFFFF;
 		default: color_translated = 24'h000000;
 	endcase
 end

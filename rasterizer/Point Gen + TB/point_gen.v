@@ -10,12 +10,15 @@ output signed [9:0] Xn, Yn;
 //21 bits for entire range of algorithm
 wire signed [21:0] del_X, del_Xf, del_Y, y_dir, dy_xi, dx_yi, diff, Yn_sel;
 
-assign del_X = x_i + x_i + 2;
-assign del_Xf = (~del_X + 1);
-assign del_Y = (p_or_n)? (y_i + y_i - 1):(y_i + y_i + 1);
-assign dy_xi = (dy * del_Xf);
-assign dx_yi = (dx * del_Y);
+assign del_X = x_i + x_i + 22'd2;
+assign del_Xf = ~del_X + 22'b1;
+assign del_Y = (p_or_n)? (y_i + y_i - 22'b1) :( y_i + y_i + 22'b1);
+// assign dy_xi = (dy * del_Xf);
+// assign dx_yi = (dx * del_Y);
 assign diff =  dy_xi + dx_yi;
+
+rast_mult multdy_xi(.a(dy), .b(del_Xf), .p(dy_xi));
+rast_mult multdx_yi(.a(dx), .b(del_Y), .p(dx_yi));
 
 //always step forward in the x direction
 assign Xn = x_i + 1;
