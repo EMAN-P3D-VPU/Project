@@ -8,20 +8,19 @@ module clipping_top(input clk,
                     output [9:0] x0_out,
                     output [9:0] y0_out,
                     output [9:0] x1_out,
-                    output [7:0] y1_out,
+                    output [9:0] y1_out,
                     output [2:0] color_out,
                     output [4:0] addr,
                     output read_en,
-                    output [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1,
-                    output f1_wr_test,
                     output clr_changed, //to matrix unit
                     output reading, //to matrix_unit
+                    output start_refresh,
                     output reg vld,
                     output reg end_of_obj
                     );
 
 //Timing logic wires
-wire refresh_en, start_refresh, end_refresh;
+wire refresh_en, end_refresh;
 wire obj_vld, prev_obj_vld;
 wire cycle_1, cycle_2, cycle_3, cycle_4;
 
@@ -46,7 +45,7 @@ wire accept_line, reject_line, clip_line;
 wire latch_line, store_line, clip_en;
 
 //final fifo inputs
-//reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
+reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
 wire [7:0] color_in_f1;
 reg  f1_rd;
 wire f1_wr, clr_f1;
@@ -165,7 +164,6 @@ aFifo final_fifo(
             .Clear_in(clr_f1)
             );
 
-assign f1_wr_test = f1_wr;
 
 //OUTPUT STAGE
 
