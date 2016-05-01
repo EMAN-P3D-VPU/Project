@@ -1,8 +1,12 @@
 `timescale 1ns / 1ps
 module display_top_level(
 					// generic inputs
-					input clk_input,
+					input clk,
 					input rst,
+
+					// clock gen inputs 
+					input clk_25mhz,
+					input locked_dcm,
 
 					// display specific outputs
 					output hsync,
@@ -10,13 +14,8 @@ module display_top_level(
 					output blank,
 					output [11:0] D,
 					output dvi_rst,
-					output clk_25mhz,
-					output clk_25mhz_n,
 					inout scl_tri,
 					inout sda_tri,
-
-					// output clock to all other modules
-					output clk_output,
 
 					// rasterizer input
 					input [2:0] frame_buffer_color_in,
@@ -26,12 +25,7 @@ module display_top_level(
 					output fifo_full);
 
 wire comp_sync;
-wire clk_input_buf;
-wire locked_dcm;
-
 wire sda, scl;
-
-assign clk_25mhz_n = ~clk_25mhz;
 
 // pixel location (x is horizontal, y is vertical)
 wire [9:0] pixel_x;
@@ -67,13 +61,10 @@ dvi_ifc u_dvi(  .Clk           (clk_25mhz),
                 .init_IIC_xfer (1'b0)
             );
 
-// Add your logic for the VGA mini project
-vga_clk_gen vga_clk_gen1(clk_input, rst, clk_25mhz, clk_output, clk_input_buf, locked_dcm);
-
 // FIFO, data written in from 100 Mhz side and read from 25 Mhz side 
 fifo_xclk fifo (
 		.rst(rst),
-		.wr_clk(clk_output),
+		.wr_clk(clk),
 		.din(frame_buffer_color_in),
 		.wr_en(frame_buffer_fifo_write_enable),
 		.full(fifo_full),

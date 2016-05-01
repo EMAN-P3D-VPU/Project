@@ -1,8 +1,12 @@
 `timescale 1ns / 1ps
 module dvi_framebuffer_top_level(
 	// generic
-	input clk_input,
+	input clk,
 	input rst,
+
+	// clock gen inputs
+	input clk_25mhz,
+	input locked_dcm,
 
 	// clipping unit input
 	input next_frame_switch,
@@ -23,13 +27,8 @@ module dvi_framebuffer_top_level(
 	output blank,
 	output [11:0] D,
 	output dvi_rst,
-	output clk_25mhz,
-	output clk_25mhz_n,
 	inout scl_tri,
-	inout sda_tri,
-
-	// clock output 
-	output clk_output);
+	inout sda_tri);
 
 // frame buffer outputs
 wire [2:0] dvi_color_out;
@@ -38,7 +37,7 @@ wire dvi_fifo_write_enable;
 // display outputs
 wire dvi_fifo_full;
 
-frame_buffer fb(.clk(clk_output),
+frame_buffer fb(.clk(clk),
 			.rst(rst),
 			.dvi_fifo_full(dvi_fifo_full),
 			.dvi_color_out(dvi_color_out),
@@ -51,18 +50,17 @@ frame_buffer fb(.clk(clk_output),
 			.read_rast_pixel_rdy(read_rast_pixel_rdy),
 			.next_frame_switch(next_frame_switch));
 
-display_top_level display(.clk_input(clk_input),
+display_top_level display(.clk(clk),
 			.rst(rst),
+			.clk_25mhz(clk_25mhz),
+			.locked_dcm(locked_dcm),
 			.hsync(hsync),
 			.vsync(vsync),
 			.blank(blank),
 			.D(D),
 			.dvi_rst(dvi_rst),
-			.clk_25mhz(clk_25mhz),
-			.clk_25mhz_n(clk_25mhz_n),
 			.scl_tri(scl_tri),
 			.sda_tri(sda_tri),
-			.clk_output(clk_output),
 			.frame_buffer_color_in(dvi_color_out),
 			.frame_buffer_fifo_write_enable(dvi_fifo_write_enable),
 			.fifo_full(dvi_fifo_full));
