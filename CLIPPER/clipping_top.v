@@ -15,7 +15,7 @@ module clipping_top(input clk,
                     output clr_changed, //to matrix unit
                     output reading, //to matrix_unit
                     output start_refresh,
-                    output reg vld,
+                    output reg vld_out,
                     output reg end_of_obj
                     );
 
@@ -45,9 +45,9 @@ wire accept_line, reject_line, clip_line;
 wire latch_line, store_line, clip_en;
 
 //final fifo inputs
-reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
+wire [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
 wire [7:0] color_in_f1;
-reg  f1_rd;
+reg  f1_rd, vld;
 wire f1_wr, clr_f1;
 
 //final fifo outputs
@@ -153,7 +153,7 @@ clipping_algo algo(.clk(clk),
 
 
 aFifo final_fifo(
-            .Data_out({color_out_f1, y1_out1, x1_out_f1, y0_out_f1, x0_out_f1}), 
+            .Data_out({color_out_f1, y1_out_f1, x1_out_f1, y0_out_f1, x0_out_f1}), 
             .Empty_out(f1_empty), 
             .ReadEn_in(f1_rd), 
             .RClk(clk),
@@ -179,6 +179,8 @@ always @(posedge clk, negedge rst_n) begin
     end else begin
         if(start_refresh)
             end_of_obj <= 1'b0;
+        if(!refresh_en && f1_empty)
+            end_of_obj <= 1'b1;
     end
 end
 
@@ -186,7 +188,7 @@ always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
         f1_rd <= 1'b0;
     end else begin
-        if(raster_ready) begin //this will cause a 2-cycle delay in data
+        if(raster_ready && !f1_empty) begin //this will cause a 2-cycle delay in data
             f1_rd <= 1'b1;
         end else begin
             f1_rd <= 1'b0;
@@ -197,5 +199,7 @@ end
 always @(posedge clk)
     vld <= f1_rd; //data will be valid in the next cycle of vld
 
+always @(posedge clk)
+    vld_out <= vld; //data will be valid in the same cycle of vld_out
 
 endmodule

@@ -116,6 +116,6 @@ case(octant_f)
     end
 endcase
 
-endmodule;
+endmodule
 
 

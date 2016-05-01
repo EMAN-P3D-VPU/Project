@@ -13,7 +13,7 @@ module cpu_vpu_top(input clkin,
 ////////////
 // Inputs /
 //////////
-wire clk;
+wire clk, locked_dcm;
 clkgen clk_gen(clkin, !rst_n, clk_25mhz, clk, clk_input_buf, locked_dcm);
 
 wire			VPU_rdy;
@@ -58,10 +58,10 @@ wire [143:0] clip_obj_out;
 wire [31:0] obj_map;
 //clipping-raster
 wire [9:0] x0_out, x1_out, y0_out, y1_out;
-wire vld, end_of_obj, start_refresh;
+wire vld, end_of_obj, start_refresh, raster_ready;
 //raster-fb
 wire rast_rdy, rast_done, fb_rdy;
-wire [3:0] rast_color;
+wire [2:0] rast_color;
 wire [9:0] rast_width;
 wire [8:0] rast_height;
 
@@ -110,15 +110,15 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
 clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
                 .reading(reading), .start_refresh(start_refresh),
-                .x0_out(x0_out), .x1_out(x1_out), .y0_out(y0_out), .y1_out(y1_out), .vld(vld), end_of_obj(end_of_obj));
+                .x0_out(x0_out), .x1_out(x1_out), .y0_out(y0_out), .y1_out(y1_out), .vld_out(vld), .end_of_obj(end_of_obj));
 
-Rasterizer_top_level raster(.clk(clk), .rst(!rst_n), .x0_in(x0_out), .y0_in(y0_out), .x1_in(x1_out), .y1_in(y1_out),
-                   .EoO(end_of_obj), .valid(vld), .Frame_Start(start_refresh), 
-                   .obj_change(changed), .bk_color(3'b1), frame_ready(fb_rdy),
+Rasterizer_Top_Level raster(.clk(clk), .rst(rst_n), .x0_in(x0_out), .y0_in(y0_out), .x1_in(x1_out), .y1_in(y1_out),
+                   .EoO(end_of_obj), .valid(vld), .Frame_Start(start_refresh), .raster_ready(raster_ready),
+                   .obj_change(changed), .bk_color(3'b1), .frame_ready(fb_rdy),
                   .raster_done(rast_done), .frame_rd_en(rast_rdy), .frame_x(rast_width), .frame_y(rast_height), .px_color(rast_color));
 
 dvi_framebuffer_top_level dfb_tl(
-		.clk(clk), .rst(!rst_n), .next_frame_switch(start_refresh),
+		.clk(clk), .rst(!rst_n), .next_frame_switch(start_refresh), .locked_dcm(locked_dcm),
 		.rast_pixel_rdy(rast_rdy), .rast_color_input(rast_color), .rast_width(rast_width),
 		.rast_height(rast_height), .rast_done(rast_done), .read_rast_pixel_rdy(fb_rdy),
 		.hsync(hsync), .vsync(vsync), .blank(blank), .D(D), .dvi_rst(dvi_rst), .clk_25mhz(clk_25mhz),
