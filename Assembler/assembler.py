@@ -89,7 +89,7 @@ def parse_instruction(instr):
     p = 0
     for param in params:
         # Check type - reg/immd/label #
-        parsed_param = parameter_types[parameters[p]['type']](param, parameters[p]['size'])
+        parsed_param = parameter_types[parameters[p]['type']](instr, param, parameters[p]['size'])
         i = 15 - parameters[p]['start']
 
         # Write Binary (could make hex later?) #
@@ -109,7 +109,7 @@ def parse_instruction(instr):
 
     return hex_instr, binary_instr
 
-def parse_reg(param, size):
+def parse_reg(instr, param, size):
     """
     Parse a register parameter to a binary/hex value
     """
@@ -174,7 +174,7 @@ def decimal_to_binary(type, decimal, size):
     
     return binary
 
-def parse_immd(param, size):
+def parse_immd(instr, param, size):
     """
     Parse an immediate value of varying length into binary/hex format
     """
@@ -182,7 +182,7 @@ def parse_immd(param, size):
     if param in registers:
         return list(registers[param])[-size:]
     if param in global_labels:
-        return parse_label(param, size)[-size:]
+        return parse_label(instr, param, size)[-size:]
     # check type - hex/binary/decimal(signed/upper/lower) #
     if re.search(r'(0x)', param):
         param = hex_to_binary(param[2:])
@@ -199,7 +199,7 @@ def parse_immd(param, size):
     else:
         return list(param)[-size:]
 
-def parse_label(param, size):
+def parse_label(instr, param, size):
     """
     Parse labels to place within instructions
     """
@@ -209,7 +209,22 @@ def parse_label(param, size):
     except KeyError as e:
         raise Exception('***ERROR*** Undeclared label %s was used' % param)
 
-    label_bits = parse_immd(str(label_value), size)
+    # Calculate PC offset #
+    if instructions_list[curr_opcode]['opcode'] == '011010' or \
+       instructions_list[curr_opcode]['opcode'][:5] == '01110':
+        target = int(label_value, base=16)
+        pc_plus_one = instr['address'] + 1
+        # Change decimals to binary/hex format #
+        if target >= pc_plus_one:
+            offset = target - pc_plus_one
+            label_bits = parse_immd(instr, 'dp'+str(offset), size)
+            return label_bits
+        else:
+            offset = target - pc_plus_one
+            label_bits = parse_immd(instr, 'dn'+str(offset), size)
+            return label_bits
+
+    label_bits = parse_immd(instr, str(label_value), size)
 
     return label_bits
 
@@ -558,6 +573,13 @@ instructions_list = {
                            {'type'   : 'immd',
                             'start'  : 2,
                             'size'   : 3,
+                           },
+                          ]
+         },
+'GETOBJ':{'opcode'      : '10001',
+          'params'      : [{'type'   : 'immd',
+                            'start'  : 9,
+                            'size'   : 5,
                            },
                           ]
          },
