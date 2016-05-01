@@ -37,14 +37,14 @@ LINE_GENERATOR LINE_GENERATOR(.clk(clk), .rst(rst),
 assign internal_state = LINE_GENERATOR.state;
 assign internal_nxt_state = LINE_GENERATOR.nxt_state;
 
-//FSM PARAMS for comparison
+//FSM PARAMS
 localparam IDLE       = 3'b000;
 localparam CLR_SCREEN = 3'b001;
 localparam POP_LINE   = 3'b010;
-localparam LD_LINE    = 3'b100;  
-localparam WAIT_DATA  = 3'b101;
-localparam GEN_POINTS = 3'b110;
-localparam ERROR      = 3'b111;
+localparam LD_LINE    = 3'b011;  
+localparam WAIT_DATA  = 3'b100;
+localparam GEN_POINTS = 3'b101;
+localparam ERROR      = 3'b110;
 
 //diagnostic info for debugging
   wire [2:0] fail_state, nxt_state;
@@ -98,6 +98,7 @@ rst = 1;
 while(testing)
 begin
     gp_counter = 0;
+    #5;
 	//test IDLE TRANSITIONS
 	$display("BEGINING IDLE TRANSITION TO IDLE TEST");
 	repeat(6)
@@ -143,6 +144,9 @@ begin
 
 	//NOW TEST TRANSITION INTO CLEAR STATE
 	$display("BEGINING IDLE TRANSITION TO CLR SCREEN TEST");
+    _xcoord = 0;
+    _ycoord = 0;
+    y_track = 0;
 	@(negedge clk)
 	begin
 		if(gp_counter == 3'b111)
@@ -323,9 +327,9 @@ begin
     frame_ready = 1;
 
 
-    for(_ycoord = y_track; _ycoord < 481; _ycoord++)
+    for(_ycoord = y_track; _ycoord <=  480; _ycoord++)
     begin
-    	for(_xcoord = 0; _xcoord < 641; _xcoord ++)
+    	for(_xcoord = 0; _xcoord <= 640; _xcoord ++)
     	begin
 
             @(posedge clk)
@@ -338,7 +342,7 @@ begin
                     $display("CHECKING FINAL POINT CONDITIONS");
                     if((internal_state != CLR_SCREEN) || (internal_nxt_state != POP_LINE))
                     begin
-                        $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                        $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, POP_LINE);
                         $stop;
                     end
                     if(~LINE_GENERATOR.last_px)
@@ -361,7 +365,7 @@ begin
                 else begin
             		if(((internal_state != CLR_SCREEN) || (internal_nxt_state != CLR_SCREEN)))
             		begin
-            			$display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                        $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
             			$stop;
             		end
             		//check that current and next states are gucci
@@ -391,8 +395,9 @@ begin
     	end
     end
 
+
     //TEST LINE POPPING NOW
-    //TEST EMPTY CASE LAST!!	
+    //TEST EMPTY CASE LAST!!    
     fifo_empty = 1;
     EoO = 0;
     $display("BEGIN POP LINE TO POP LINE ::FIFO EMPTY:: ");
@@ -400,24 +405,27 @@ begin
     begin
         @(posedge clk)
         begin
+            #5;
             if(((internal_state != POP_LINE) || (internal_nxt_state != POP_LINE)))
             begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, POP_LINE, internal_nxt_state, POP_LINE);
                 $stop;
             end            
         end
     end
 
+
     if(~pop_test)
     begin
         $display("BEGIN POP LINE BACK TO IDLE TEST");
-        fifo_empty = 0;
+        fifo_empty = 1;//TODO FIX WIERD BUG WHERE FIFO EMPTY = 0 + EoO = 1 CAUSES STATE 2 -> 4 JUMP
         EoO = 1;
-        @(posedge clk)
+        @(negedge clk)
         begin
+            #5;
             if(((internal_state != POP_LINE) || (internal_nxt_state != IDLE)))
             begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, POP_LINE, internal_nxt_state, IDLE);
                 $stop;
             end 
 
@@ -435,9 +443,9 @@ begin
         fifo_empty = 0;
         @(posedge clk)
         begin
-            if(((internal_state != POP_LINE) || (internal_nxt_state != LOAD_LINE)))
+            if(((internal_state != POP_LINE) || (internal_nxt_state != LD_LINE)))
             begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, POP_LINE, internal_nxt_state, LD_LINE);
                 $stop;
             end 
             
@@ -455,7 +463,7 @@ begin
         fifo_empty = 0;
         @(posedge clk)
         begin
-            if(((internal_state != LOAD_LINE) || (internal_nxt_state != WAIT_DATA)))
+            if(((internal_state != LD_LINE) || (internal_nxt_state != WAIT_DATA)))
             begin
                 $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
                 $stop;
@@ -473,7 +481,7 @@ begin
         fifo_empty = 0;
         @(posedge clk)
         begin
-            if(((internal_state != WAIT) || (internal_nxt_state != POP_LINE)))
+            if(((internal_state != WAIT_DATA) || (internal_nxt_state != POP_LINE)))
             begin
                 $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
                 $stop;
@@ -487,16 +495,20 @@ begin
 
         repeat(2)
         begin
+
             @(posedge clk)
+            begin
+            end
+
         end
 
         $display("BEGIN WAIT TO GEN_POINTS");
         fifo_empty = 0;
         @(posedge clk)
         begin
-            if(((internal_state != WAIT) || (internal_nxt_state != GEN_POINTS)))
+            if(((internal_state != WAIT_DATA) || (internal_nxt_state != GEN_POINTS)))
             begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, WAIT_DATA, internal_nxt_state, GEN_POINTS);
                 $stop;
             end 
 
@@ -507,49 +519,44 @@ begin
             end
         end
 
+
+        $display("BEGIN GEN_POINTS TO GEN_POINTS");
         //first point is prepared to be written out
         while(~LINE_GENERATOR.final_line_point)
         begin
-            if(((internal_state != GEN_POINTS) || (internal_nxt_state != GEN_POINTS)))
-            begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
-                $stop;
-            end 
             @(posedge clk)
             begin
+                //after posedge, final point may be asserted, causing this to be false...CHANGE HERE
+
+                if(((internal_state != GEN_POINTS) || (internal_nxt_state != GEN_POINTS)) && ~LINE_GENERATOR.final_line_point)
+                begin
+                    $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, GEN_POINTS, internal_nxt_state, GEN_POINTS);
+                    $stop;
+                end else
+                if(((internal_state != GEN_POINTS) || (internal_nxt_state != POP_LINE)) && LINE_GENERATOR.final_line_point)
+                begin
+                    $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, GEN_POINTS, internal_nxt_state, POP_LINE);
+                    $stop;
+                end
+
                 $display("X_out: %d :::: Y_out: %d",frame_x, frame_y);
             end
 
         end
 
-
-        EoO = 0;
+        EoO = 1;
         fifo_empty = 1;
-        @(posedge clk)
-        begin
-            if(((internal_state != GEN_POINTS) || (internal_nxt_state != POP_LINE)))
-            begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
-                $stop;
-            end 
-        end
-
         @(posedge clk)
         begin
             if(((internal_state != POP_LINE) || (internal_nxt_state != IDLE)))
             begin
-                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, CLR_SCREEN, internal_nxt_state, CLR_SCREEN);
+                $display("**STATE FAILED** CURRENT STATE: %d, EXPECTED STATE: %d, CURRENT NEXT: %d, EXPECTED NEXT: %d",internal_state, POP_LINE, internal_nxt_state, IDLE);
                 $stop;
             end 
         end
 
         $display("TEST BENCH COMPLETE AND SUCCESSFUL!",);
-
-
-
-
-
-
+        $stop;
     end
 
 

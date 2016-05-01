@@ -31,10 +31,10 @@ output [2:0] px_color;
 localparam IDLE       = 3'b000;
 localparam CLR_SCREEN = 3'b001;
 localparam POP_LINE   = 3'b010;
-localparam LD_LINE    = 3'b100;  
-localparam WAIT_DATA  = 3'b101;
-localparam GEN_POINTS = 3'b110;
-localparam ERROR      = 3'b111;
+localparam LD_LINE    = 3'b011;  
+localparam WAIT_DATA  = 3'b100;
+localparam GEN_POINTS = 3'b101;
+localparam ERROR      = 3'b110;
 
 //line capture register
 //will get filled on a fifo "POP"
