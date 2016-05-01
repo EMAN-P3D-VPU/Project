@@ -42,4 +42,4 @@ assign steep_octant = (octant_select == 0)? 2'b01:
 		      (octant_select == 1)? 2'b00: octant_select;
 
 //to find steep quadrant 
-endmodule;
+endmodule
