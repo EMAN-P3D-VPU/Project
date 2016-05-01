@@ -35,12 +35,14 @@ wire read_rast_pixel_rdy;
 // clock output
 wire clk_100mhz;
 
+// fifo_rd_en doesn't actually read from a fifo
 wire useless;
 
 // clipping unit input
 reg next_frame_switch;
 reg [20:0] counter;
 
+// next frame switch test
 always @(posedge clk_100mhz) begin
 	if(rst) begin
 		next_frame_switch <= 1'b0;
@@ -53,12 +55,13 @@ always @(posedge clk_100mhz) begin
 		counter <= counter + 20'b1;
 	end
 end
+
 wire [68:0] constant_data;
 assign constant_data = {10'd0, 10'd0, 10'd500, 10'd200, 11'd200, 11'd500, 3'b000, 1'b1, 3'b000};
 LINE_GENERATOR line_gen(/*global inputs*/      .clk(clk_100mhz), .rst(~rst),
 	              /*raster inputs*/      .fifo_data(constant_data), .fifo_empty(fake_fifo_empty),
 	              /*raster self-out*/    .fifo_rd_en(useless),
-				  /*input from clipper*/ .EoO(fake_EoO), .Frame_Start(next_frame_switch), 
+				  /*input from clipper*/ .end_of_objects(fake_EoO), .frame_start(next_frame_switch), 
 				  /*input from object*/  .obj_change(fake_object_change),
 				  /*input from matrix*/  .bk_color(3'b001),
 				  /*input from f_buff*/  .frame_ready(read_rast_pixel_rdy),
