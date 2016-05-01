@@ -35,7 +35,7 @@ output  [15:0]  read_data;
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
-reg [15:0]  RAM [63:0];
+reg [15:0]  RAM [256:0];
 
 ///////////////////
 // Interconnects /
