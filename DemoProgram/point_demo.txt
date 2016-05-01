@@ -1,0 +1,49 @@
+///////////////////////////////////////
+//ECE 554 Final Demo Program #1
+///////////////////////////////////////
+			FILL 0x00 //start with blank screen
+			WAIT 0x500
+			
+/////////////////////////////
+//Clear Registers
+/////////////////////////////
+_CLR_REG    LDU     R0  0x00
+            LDL     R0  0x00
+            MOV     R1  R0
+            MOV     R2  R0
+            MOV     R3  R0
+            MOV     R4  R0
+            MOV     R5  R0
+            MOV     R6  R0
+            MOV     R7  R0
+            MOV     R8  R0
+            MOV     R9  R0
+            MOV     R10 R0
+            MOV     R11 R0
+            MOV     R12 R0
+            MOV     R13 R0
+            MOV     R14 R0
+            MOV     R15 R0
+            MOV     R16 R0
+            MOV     R17 R0
+            MOV     R18 R0
+            MOV     R19 R0
+            MOV     R20 R0
+            MOV     R21 R0
+            MOV     FS  R0
+            MOV     RO  R0
+            MOV     V0  R0
+            MOV     V1  R0
+            MOV     V2  R0
+            MOV     V3  R0
+            MOV     V4  R0
+            MOV     V5  R0
+            MOV     V6  R0
+            MOV     V7  R0
+			
+/////////////////////////////
+//OBJ INIT
+/////////////////////////////
+_OBJ_INIT   DPOLY 0x01 0x07
+			WAIT 0x500
+			MOV R10 RO //R10 holds reference to the square

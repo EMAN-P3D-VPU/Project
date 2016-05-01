@@ -59,27 +59,27 @@ _SET_MASKS  LDU     R8  _w
             J       _TOP
 // Wait a bit before relooping
 _TOP        WAIT    0x7FF
-_W          MOV     FS  R5
+_W          MOV     R5  FS
             AND     R5  R8
             BEQ     _A
             FILL    0x0
             MOV     R5  R0
-_A          MOV     FS  R5
+_A          MOV     R5  FS
             AND     R5  R9
             BEQ     _S
             MOV     R5  R0
             FILL    0x1
-_S          MOV     FS  R5
+_S          MOV     R5  FS
             AND     R5  R10
             BEQ     _D
             MOV     R5  R0
             FILL    0x2
-_D          MOV     FS  R5
+_D          MOV     R5  FS
             AND     R5  R11
             BEQ     _J
             MOV     R5  R0
             FILL    0x3
-_J          MOV     FS  R5
+_J          MOV     R5  FS
             AND     R5  R12
             BEQ     _TOP
             MOV     R5  R0
