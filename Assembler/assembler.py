@@ -210,7 +210,7 @@ def parse_label(instr, param, size):
         raise Exception('***ERROR*** Undeclared label %s was used' % param)
 
     # Calculate PC offset #
-    if instructions_list[curr_opcode]['opcode'] == '011010' or \
+    if instructions_list[curr_opcode]['opcode'] == '011011' or \
        instructions_list[curr_opcode]['opcode'][:5] == '01110':
         target = int(label_value, base=16)
         pc_plus_one = instr['address'] + 1
@@ -451,14 +451,14 @@ instructions_list = {
                            },
                           ]
          },
-'J'     :{'opcode'      : '01101' + '0',
+'J'     :{'opcode'      : '01101' + '1',
           'params'      : [{'type'   : 'label',
                             'start'  : 9,
                             'size'   : 10,
                            },
                           ]
          },
-'JR'    :{'opcode'      : '01101' + '1',
+'JR'    :{'opcode'      : '01101' + '0',
           'params'      : [{'type'   : 'reg',
                             'start'  : 4,
                             'size'   : 5,
