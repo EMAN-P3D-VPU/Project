@@ -29,7 +29,8 @@ input [2:0] bk_color;
 //Frame Buffer input/outputs
 input frame_ready;
 output raster_done, frame_rd_en;
-output [9:0] frame_x, frame_y;
+output [9:0] frame_x;
+output [8:0] frame_y;
 output [2:0] px_color;
 
 //FSM PARAMS
@@ -81,13 +82,14 @@ always @(posedge clk) begin
 end
 
 //frame buffer coordinate values
-reg [9:0] x, y;
+reg [9:0] x;
+reg [8:0] y;
 reg clr_coords;
 reg update_coords;
 
 // last pixel used to determine when to move y back to 0 as well as move to next state if in CLR_SCREEN
 wire last_px;
-assign last_px = (y == 10'd479) & (x == 10'd639);
+assign last_px = (y == 9'd479) & (x == 10'd639);
 
 //As x goes 0 to 639
 always @(posedge clk) begin
@@ -112,13 +114,13 @@ end
 //y gets auto updated by x
 always @(posedge clk) begin
 	if(~rst) begin
-		y <= 10'b0;
+		y <= 9'b0;
 	end else if (clr_coords) begin
-		y <= 10'b0;
+		y <= 9'b0;
 	end else if ((x == 10'd639) & update_coords) begin
-		y <= y + 10'b1;
+		y <= y + 9'b1;
 	end else if (last_px & update_coords) begin
-		y <= 10'b0;
+		y <= 9'b0;
 	end else begin
 		y <= y;
 	end

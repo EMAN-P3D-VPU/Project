@@ -25,7 +25,7 @@ module dvi_framebuffer_synthesis_test(
 // frame buffer inputs
 wire [2:0] rast_color_input;
 wire [9:0] rast_width;
-wire [9:0] rast_height;
+wire [8:0] rast_height;
 wire rast_done;
 wire rast_pixel_rdy;
 
@@ -89,7 +89,7 @@ dvi_framebuffer_top_level dfb_tl(
 		.rast_pixel_rdy(rast_pixel_rdy),
 		.rast_color_input(rast_color_input),
 		.rast_width(rast_width),
-		.rast_height(rast_height[8:0]),
+		.rast_height(rast_height),
 		.rast_done(rast_done),
 		.read_rast_pixel_rdy(read_rast_pixel_rdy),
 		.hsync(hsync),
