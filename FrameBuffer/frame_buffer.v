@@ -75,7 +75,7 @@ always @(posedge clk) begin
 	if (rst) begin
 		next_mode <= 1'b0;
 	// should only happen once before switching to the next frmae
-	end else if (next_frame_switch) begin
+	end else if (next_frame_switch & (mode == next_mode)) begin
 		next_mode <= switch_mode;
 	end else begin
 		next_mode <= next_mode;

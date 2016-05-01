@@ -128,7 +128,7 @@ end
 
 //MUX between scanning/clear function and select/paint function
 assign frame_x = (clr_color) ? x : CAP_REG[68:59];
-assign frame_y = (clr_color) ? y : CAP_REG[58:49];
+assign frame_y = (clr_color) ? y : CAP_REG[57:49];
 
 //frame and fifo enable regs
 reg draw_px;
@@ -196,7 +196,7 @@ case (state)
 
 		if (frame_ready & ~last_px) begin
 			//update the coordinates
-			update_coords = 1;
+			update_coords = 1'b1;
 			nxt_state = CLR_SCREEN;
 		end else if (frame_ready & last_px) begin
 			// go to POP_LINE when it's the last pixel
@@ -213,6 +213,7 @@ case (state)
 			nxt_state = IDLE;
 		// go directly to clear screen if object change is ready as well
 		end else if (fifo_empty & end_of_objects & frame_start & obj_change) begin
+			clr_coords = 1'b1;
 			draw_complete = 1'b1;
 			nxt_state = CLR_SCREEN;
 		// if fifo is not empty -> if invalid just pop line without doing anything with it
