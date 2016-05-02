@@ -1,5 +1,7 @@
 INSTRUCTIONS ON HOW TO PROCEED:
 
+In CPU/cpu_memory.v and VPU_RLT/coeff_ROM.v, change the path of $readmemh statement to your local linux path. USE ABSOLUTE PATH for simulation otherwise it won't work.
+
 Make a modelsim project with ALL verilog files included (except reverse_Swap.v -> not part of the project)
 Also add ./libraries/lib/glbl.v
 
