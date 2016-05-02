@@ -3,11 +3,13 @@ module clipping_line_handler(input clk,
                     input [143:0] obj,
                     input cycle_1, cycle_2, cycle_3, cycle_4,
                     input obj_vld, prev_obj_vld,
+                    input start_refresh,
                     output reg read_en,
                     output reg signed [15:0] x0_in_f0, x1_in_f0, y0_in_f0, y1_in_f0,
                     output reg [7:0] color_in_f0,
                     output [3:0] oc0_in, oc1_in, 
-                    output reg f0_wr, clr_f0
+                    output reg f0_wr, clr_f0,
+                    output reg [6:0] line_cnt
                     );
 
 //Pipeline regs for storing obj
@@ -53,8 +55,12 @@ always @(posedge clk, negedge rst_n) begin
         y1_in_f0 <= 16'hx;
         clr_f0 <= 1'b1;
         f0_wr <= 1'b0;
+        line_cnt <= 7'h0;
     end else begin
         clr_f0 <= 1'b0;
+        if(start_refresh) begin
+            line_cnt <= 7'h0;
+        end
         if(prev_obj_vld) begin 
             if(cycle_1 && type_reg == 0) begin //point
                 x0_in_f0 <= x0;
@@ -62,36 +68,42 @@ always @(posedge clk, negedge rst_n) begin
                 x1_in_f0 <= x0;
                 y1_in_f0 <= y0;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else if(cycle_1 && type_reg >= 1) begin //or first line
                 x0_in_f0 <= x0;
                 y0_in_f0 <= y0;
                 x1_in_f0 <= x1;
                 y1_in_f0 <= y1;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else if(cycle_2 && type_reg >= 2) begin //2nd line of tri or quad
                 x0_in_f0 <= x1;
                 y0_in_f0 <= y1;
                 x1_in_f0 <= x2;
                 y1_in_f0 <= y2;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else if(cycle_3 && type_reg == 2) begin //3rd line of tri
                 x0_in_f0 <= x2;
                 y0_in_f0 <= y2;
                 x1_in_f0 <= x0;
                 y1_in_f0 <= y0;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else if(cycle_3 && type_reg == 3) begin //3rd line of quad
                 x0_in_f0 <= x2;
                 y0_in_f0 <= y2;
                 x1_in_f0 <= x3;
                 y1_in_f0 <= y3;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else if(cycle_4 && type_reg == 3) begin //4th line of quad
                 x0_in_f0 <= x3;
                 y0_in_f0 <= y3;
                 x1_in_f0 <= x0;
                 y1_in_f0 <= y0;
                 f0_wr <= 1'b1;
+                line_cnt <= line_cnt +1;
             end else begin
                 x0_in_f0 <= 16'hx;
                 y0_in_f0 <= 16'hx;

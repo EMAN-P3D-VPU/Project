@@ -19,13 +19,14 @@ input [2:0] bk_color;
 //Frame Buffer input/outputs
 input frame_ready;
 output raster_done, frame_rd_en, raster_ready;
-output [9:0] frame_x, frame_y;
+output [9:0] frame_x;
+output [8:0] frame_y;
 output [2:0] px_color;
 
 
 //top level internals
 wire [43:0] line_cap_reg;
-wire [11:0] dy, dx;
+wire [10:0] dy, dx;
 wire [1:0]  steepness;
 
 wire [9:0] sx_0, sx_1, sy_0, sy_1;

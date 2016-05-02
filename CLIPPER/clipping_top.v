@@ -15,7 +15,7 @@ module clipping_top(input clk,
                     output clr_changed, //to matrix unit
                     output reading, //to matrix_unit
                     output start_refresh,
-                    output reg vld_out,
+                    output reg vld,
                     output reg end_of_obj
                     );
 
@@ -47,13 +47,19 @@ wire latch_line, store_line, clip_en;
 //final fifo inputs
 wire [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
 wire [7:0] color_in_f1;
-reg  f1_rd, vld;
+//reg  f1_rd;
+wire f1_rd;
 wire f1_wr, clr_f1;
 
 //final fifo outputs
 wire [15:0] x0_out_f1, x1_out_f1, y0_out_f1, y1_out_f1;
 wire [7:0] color_out_f1;
 wire f1_empty, f1_full;
+
+//
+wire [6:0] line_cnt, pop_cnt;
+
+reg end_obj, end_obj_d;
 
 
 clipping_timing_logic timing(
@@ -89,6 +95,8 @@ clipping_line_handler line_handler(
                 .x1_in_f0(x1_in_f0),
                 .y0_in_f0(y0_in_f0),
                 .y1_in_f0(y1_in_f0),
+                    .start_refresh(start_refresh),
+                    .line_cnt(line_cnt),
                 .color_in_f0(color_in_f0),
                 .oc0_in(oc0_in),
                 .oc1_in(oc1_in),
@@ -113,6 +121,7 @@ aFifo initial_fifo(
 clipping_control control(.clk(clk),
                         .rst_n(rst_n),
                         .raster_ready(raster_ready),
+                    .start_refresh(start_refresh),
                         .accept_line(accept_line),
                         .reject_line(reject_line),
                         .clip_line(clip_line),
@@ -122,6 +131,7 @@ clipping_control control(.clk(clk),
                         .reading(reading),
                         .latch_line(latch_line),
                         .store_line(store_line),
+                        .pop_cnt(pop_cnt),
                         .clip_en(clip_en)
                         );
 
@@ -175,31 +185,37 @@ assign color_out = color_out_f1[2:0]; //8-bit color path has already been design
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        end_of_obj <= 1'b0;
+        end_obj <= 1'b0;
     end else begin
         if(start_refresh)
-            end_of_obj <= 1'b0;
-        if(!refresh_en && f1_empty)
-            end_of_obj <= 1'b1;
+            end_obj <= 1'b0;
+        else if (pop_cnt != line_cnt)
+            end_obj <= 1'b0;
+        else if((pop_cnt == line_cnt) && f1_empty && !refresh_en)
+            end_obj <= 1'b1;
     end
 end
 
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-        f1_rd <= 1'b0;
-    end else begin
-        if(raster_ready && !f1_empty) begin //this will cause a 2-cycle delay in data
-            f1_rd <= 1'b1;
-        end else begin
-            f1_rd <= 1'b0;
-        end
-    end
-end
+always @(posedge clk)
+    end_obj_d <= end_obj;
+
+always @(posedge clk)
+    end_of_obj <= end_obj_d;
+
+//always @(posedge clk, negedge rst_n) begin
+//    if(!rst_n) begin
+//        f1_rd <= 1'b0;
+//    end else begin
+//        if(raster_ready && !f1_empty) begin //this will cause a 2-cycle delay in data
+//            f1_rd <= 1'b1;
+//        end else begin
+//            f1_rd <= 1'b0;
+//        end
+//    end
+//end
+assign f1_rd = (raster_ready && !f1_empty) ? 1'b1 : 1'b0;
 
 always @(posedge clk)
     vld <= f1_rd; //data will be valid in the next cycle of vld
-
-always @(posedge clk)
-    vld_out <= vld; //data will be valid in the same cycle of vld_out
 
 endmodule

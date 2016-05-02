@@ -110,7 +110,7 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
 clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
                 .reading(reading), .start_refresh(start_refresh),
-                .x0_out(x0_out), .x1_out(x1_out), .y0_out(y0_out), .y1_out(y1_out), .vld_out(vld), .end_of_obj(end_of_obj));
+                .x0_out(x0_out), .x1_out(x1_out), .y0_out(y0_out), .y1_out(y1_out), .vld(vld), .end_of_obj(end_of_obj));
 
 Rasterizer_Top_Level raster(.clk(clk), .rst(rst_n), .x0_in(x0_out), .y0_in(y0_out), .x1_in(x1_out), .y1_in(y1_out),
                    .EoO(end_of_obj), .valid(vld), .Frame_Start(start_refresh), .raster_ready(raster_ready),
