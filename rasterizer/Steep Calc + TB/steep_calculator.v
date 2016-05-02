@@ -1,13 +1,13 @@
-module steep_calculator(line_cap_reg, dy, dx, steep_octant);
+module steep_calculator(line_cap_reg, dy, dx, steep_value);
 
 input [43:0] line_cap_reg;
-output [1:0] steep_octant;
-output [10:0] dy, dx;
+output [1:0] steep_value;
+output signed [10:0] dy, dx;
 
 wire [9:0] x_0, y_0, x_1, y_1;
-wire [10:0] dy_, dx_;
-wire [10:0] abs_dy, abs_dx; //2'sc for slope/steep determination
-wire [1:0] steep_octant;
+wire signed [10:0] dy_, dx_;
+wire signed [10:0] abs_dy, abs_dx; //2'sc for slope/steep determination
+wire [1:0] steep_value;
 wire [1:0] octant_select;
 wire slope_steep;
 wire slope_polarity; 
@@ -34,12 +34,12 @@ assign abs_dx = (dx[10]) ? (~dx + 1'b1) : dx;
 
 //determine polarity/quadrant (is slope + or -?)
 assign slope_polarity = dy_[10] ^ dx_[10];
-//deterimine if dy > dx 
-assign slope_steep = (dy_ > dx_) ? 1'b1 : 1'b0;
+//deterimine if dy <= dx (relational op evaluates to 1/0)
+assign slope_steep = (abs_dy <= abs_dx);
 //custom truth table
 assign octant_select = {slope_polarity, slope_steep};
-assign steep_octant = (octant_select == 2'b0) ? 2'b01:
-		      (octant_select == 2'b1) ? 2'b00 : octant_select;
+assign steep_value = (octant_select == 2'b10) ? 2'b11:
+                      (octant_select == 2'b11) ? 2'b10: octant_select;
 
 //to find steep quadrant 
 endmodule

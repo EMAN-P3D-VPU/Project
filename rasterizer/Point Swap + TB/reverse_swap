@@ -1,1 +1,3 @@
-module reverse_swap
+module reverse_swap();
+
+endmodule
