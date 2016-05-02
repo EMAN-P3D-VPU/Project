@@ -261,7 +261,7 @@ always@(posedge clk)begin
     else if(alu_flags_we & ~STALL)
         FLAGS[3] <= alu_flags_we;
     else
-        FLAGS[3] <= FLAGS[3];
+        FLAGS[3] <= 1'b0;
 end
 // Z
 always@(posedge clk)begin
@@ -294,7 +294,7 @@ end
 // Branching Unit //
 assign condition_code = instr[10:8];
 assign branch_offset = {{8{instr[7]}}, instr[7:0]};
-assign jump_offset = (jump_immd) ? {{5{instr[9]}}, instr[9:0]}: // Immediate
+assign jump_offset = (jump_immd) ? {{6{instr[9]}}, instr[9:0]}: // Immediate
                       reg_data_1;                               // Rt register
 
 branch_unit pc_ctrl(

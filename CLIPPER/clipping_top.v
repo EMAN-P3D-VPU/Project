@@ -8,20 +8,19 @@ module clipping_top(input clk,
                     output [9:0] x0_out,
                     output [9:0] y0_out,
                     output [9:0] x1_out,
-                    output [7:0] y1_out,
+                    output [9:0] y1_out,
                     output [2:0] color_out,
                     output [4:0] addr,
                     output read_en,
-                    output [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1,
-                    output f1_wr_test,
                     output clr_changed, //to matrix unit
                     output reading, //to matrix_unit
+                    output start_refresh,
                     output reg vld,
                     output reg end_of_obj
                     );
 
 //Timing logic wires
-wire refresh_en, start_refresh, end_refresh;
+wire refresh_en, end_refresh;
 wire obj_vld, prev_obj_vld;
 wire cycle_1, cycle_2, cycle_3, cycle_4;
 
@@ -46,15 +45,21 @@ wire accept_line, reject_line, clip_line;
 wire latch_line, store_line, clip_en;
 
 //final fifo inputs
-//reg [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
+wire [15:0] x0_in_f1, x1_in_f1, y0_in_f1, y1_in_f1;
 wire [7:0] color_in_f1;
-reg  f1_rd;
+//reg  f1_rd;
+wire f1_rd;
 wire f1_wr, clr_f1;
 
 //final fifo outputs
 wire [15:0] x0_out_f1, x1_out_f1, y0_out_f1, y1_out_f1;
 wire [7:0] color_out_f1;
 wire f1_empty, f1_full;
+
+//
+wire [6:0] line_cnt, pop_cnt;
+
+reg end_obj, end_obj_d;
 
 
 clipping_timing_logic timing(
@@ -90,6 +95,8 @@ clipping_line_handler line_handler(
                 .x1_in_f0(x1_in_f0),
                 .y0_in_f0(y0_in_f0),
                 .y1_in_f0(y1_in_f0),
+                    .start_refresh(start_refresh),
+                    .line_cnt(line_cnt),
                 .color_in_f0(color_in_f0),
                 .oc0_in(oc0_in),
                 .oc1_in(oc1_in),
@@ -114,6 +121,7 @@ aFifo initial_fifo(
 clipping_control control(.clk(clk),
                         .rst_n(rst_n),
                         .raster_ready(raster_ready),
+                    .start_refresh(start_refresh),
                         .accept_line(accept_line),
                         .reject_line(reject_line),
                         .clip_line(clip_line),
@@ -123,6 +131,7 @@ clipping_control control(.clk(clk),
                         .reading(reading),
                         .latch_line(latch_line),
                         .store_line(store_line),
+                        .pop_cnt(pop_cnt),
                         .clip_en(clip_en)
                         );
 
@@ -154,7 +163,7 @@ clipping_algo algo(.clk(clk),
 
 
 aFifo final_fifo(
-            .Data_out({color_out_f1, y1_out1, x1_out_f1, y0_out_f1, x0_out_f1}), 
+            .Data_out({color_out_f1, y1_out_f1, x1_out_f1, y0_out_f1, x0_out_f1}), 
             .Empty_out(f1_empty), 
             .ReadEn_in(f1_rd), 
             .RClk(clk),
@@ -165,7 +174,6 @@ aFifo final_fifo(
             .Clear_in(clr_f1)
             );
 
-assign f1_wr_test = f1_wr;
 
 //OUTPUT STAGE
 
@@ -177,27 +185,27 @@ assign color_out = color_out_f1[2:0]; //8-bit color path has already been design
 
 always @(posedge clk, negedge rst_n) begin
     if(!rst_n) begin
-        end_of_obj <= 1'b0;
+        end_obj <= 1'b0;
     end else begin
         if(start_refresh)
-            end_of_obj <= 1'b0;
-    end
-end
-
-always @(posedge clk, negedge rst_n) begin
-    if(!rst_n) begin
-        f1_rd <= 1'b0;
-    end else begin
-        if(raster_ready) begin //this will cause a 2-cycle delay in data
-            f1_rd <= 1'b1;
-        end else begin
-            f1_rd <= 1'b0;
-        end
+            end_obj <= 1'b0;
+        else if (pop_cnt != line_cnt)
+            end_obj <= 1'b0;
+        else if((pop_cnt != 7'h0) && (pop_cnt == line_cnt) && f1_empty && !refresh_en)
+            end_obj <= 1'b1;
     end
 end
 
 always @(posedge clk)
-    vld <= f1_rd; //data will be valid in the next cycle of vld
+    end_obj_d <= end_obj;
 
+always @(posedge clk)
+    end_of_obj <= end_obj_d;
+
+assign f1_rd = (raster_ready && !f1_empty) ? 1'b1 : 1'b0;
+assign clr_changed = end_of_obj;
+
+always @(posedge clk)
+    vld <= f1_rd; //data will be valid in the next cycle of vld
 
 endmodule

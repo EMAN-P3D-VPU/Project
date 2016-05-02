@@ -1,11 +1,12 @@
-module Rasterizer_Top_Level (			 clk, rst,
-	                                     x0_in, y0_in,
-	                                     x1_in, y1_in,
-				  /*input from clipper*/ EoO, valid, Frame_Start, 
-				  /*input from object*/  obj_change,
-				  /*input from matrix*/  bk_color,
-				  /*input from f_buff*/  frame_ready,
-				  /*output to f_buff*/   raster_done, frame_rd_en, frame_x, frame_y, px_color);
+module Rasterizer_Top_Level (	clk, rst,
+                                x0_in, y0_in,
+                                x1_in, y1_in,
+                                EoO, valid, Frame_Start, 
+                                obj_change,
+                                raster_ready,
+                                bk_color,
+                                frame_ready,
+                                raster_done, frame_rd_en, frame_x, frame_y, px_color);
 
 input clk, rst;
 //CLIPPER INPUTS/OUTPUTS
@@ -17,14 +18,15 @@ input obj_change;
 input [2:0] bk_color;
 //Frame Buffer input/outputs
 input frame_ready;
-output raster_done, frame_rd_en;
-output [9:0] frame_x, frame_y;
+output raster_done, frame_rd_en, raster_ready;
+output [9:0] frame_x;
+output [8:0] frame_y;
 output [2:0] px_color;
 
 
 //top level internals
 wire [43:0] line_cap_reg;
-wire [11:0] dy, dx;
+wire [10:0] dy, dx;
 wire [1:0]  steepness;
 
 wire [9:0] sx_0, sx_1, sy_0, sy_1;
@@ -33,7 +35,7 @@ wire [2:0] octant;
 reg [67:0] delay;
 
 wire [68:0] fifo_input, fifo_output;
-wire fifo_rd_en, fifo_empty;
+wire fifo_rd_en, fifo_empty, fifo_full;
 
 
 raster_input_stage input_stage( .clk(clk), 
@@ -70,11 +72,14 @@ assign fifo_input = {sx_0, sy_0, sx_1, sy_1, delay[27:17], delay[16:6], delay[5:
 
 //GENERATE FIFO INSERT HERE
 //TIE WR_EN TO DELAY[2]
+// rasterizer fifo - packages lines into 69 bus
+assign raster_ready = !fifo_full;
+rast_fifo rf(.clk(clk), .rst(~rst), .din(fifo_input), .wr_en(delay[2]), .full(fifo_full), .dout(fifo_output), .rd_en(fifo_rd_en), .empty(fifo_empty));
 
 LINE_GENERATOR LINE_GENERATOR(/*global inputs*/      .clk(clk), .rst(rst),
 	              /*raster inputs*/      .fifo_data(fifo_output), .fifo_empty(fifo_empty),
 	              /*raster self-out*/    .fifo_rd_en(fifo_rd_en),
-				  /*input from clipper*/ .EoO(EoO), .Frame_Start(Frame_Start), 
+				  /*input from clipper*/ .end_of_objects(EoO), .frame_start(Frame_Start), 
 				  /*input from object*/  .obj_change(obj_change),
 				  /*input from matrix*/  .bk_color(bk_color),
 				  /*input from f_buff*/  .frame_ready(frame_ready),

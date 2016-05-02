@@ -26,15 +26,15 @@ input               branch;
 input               jump;
 input       [2:0]   condition_code;
 input       [2:0]   condition_flags;
-input       [15:0]  PC_plus_one;
-input       [15:0]  branch_offset;      // Sign X'ed
-input       [15:0]  jump_offset;        // Sign X'ed immd OR Rt
+input signed [15:0]  PC_plus_one;
+input signed [15:0]  branch_offset;      // Sign X'ed
+input signed [15:0]  jump_offset;        // Sign X'ed immd OR Rt
 
 /////////////
 // Outputs /
 ///////////
 output              PC_select;          // 1-Take new PC
-output      [15:0]  PC_next;
+output signed [15:0]  PC_next;
 output      [15:0]  PC_return;
 
 /////////////////////////////
@@ -45,8 +45,8 @@ reg     valid_B;
 ///////////////////
 // Interconnects /
 /////////////////
-wire    [15:0]  PC_branch;
-wire    [15:0]  PC_jump;
+wire	signed [15:0]  PC_branch;
+wire    signed [15:0]  PC_jump;
 
 ///////////////////////
 // Branch Conditions //
@@ -85,41 +85,41 @@ always@(*) begin
         // Not Equal //
         NE:begin
             if(!Z)
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Equal //
         EQ:begin
             if(Z)
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Greater Than //
         GT:begin
             if(!(Z|N))
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Less Than //
         LT:begin
             if(N)
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Greater Than or Equal To //
         GTE:begin
             if(Z|!(Z|N))
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Less Than or Equal To //
         LTE:begin
             if(N|Z)
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Overflow //
         OF:begin
             if(V)
-                valid_B = 1;
+                valid_B = (branch) ? 1 : 0;
         end
         // Unconditional //
         U:begin
-            valid_B = 1;
+            valid_B = (branch) ? 1 : 0;
         end
         default: valid_B = 0;
     endcase 
