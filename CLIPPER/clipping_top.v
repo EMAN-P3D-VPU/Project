@@ -191,7 +191,7 @@ always @(posedge clk, negedge rst_n) begin
             end_obj <= 1'b0;
         else if (pop_cnt != line_cnt)
             end_obj <= 1'b0;
-        else if((pop_cnt == line_cnt) && f1_empty && !refresh_en)
+        else if((pop_cnt != 7'h0) && (pop_cnt == line_cnt) && f1_empty && !refresh_en)
             end_obj <= 1'b1;
     end
 end
@@ -202,18 +202,8 @@ always @(posedge clk)
 always @(posedge clk)
     end_of_obj <= end_obj_d;
 
-//always @(posedge clk, negedge rst_n) begin
-//    if(!rst_n) begin
-//        f1_rd <= 1'b0;
-//    end else begin
-//        if(raster_ready && !f1_empty) begin //this will cause a 2-cycle delay in data
-//            f1_rd <= 1'b1;
-//        end else begin
-//            f1_rd <= 1'b0;
-//        end
-//    end
-//end
 assign f1_rd = (raster_ready && !f1_empty) ? 1'b1 : 1'b0;
+assign clr_changed = end_of_obj;
 
 always @(posedge clk)
     vld <= f1_rd; //data will be valid in the next cycle of vld

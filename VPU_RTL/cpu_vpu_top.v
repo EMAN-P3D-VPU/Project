@@ -14,8 +14,6 @@ module cpu_vpu_top(input clkin,
 // Inputs /
 //////////
 wire clk, locked_dcm;
-clkgen clk_gen(clkin, !rst_n, clk_25mhz, clk, clk_input_buf, locked_dcm);
-
 wire			VPU_rdy;
 wire                    VPU_data_we;
 //logic			SPART_we;
@@ -69,7 +67,12 @@ wire [8:0] rast_height;
 // Instantiations /
 //////////////////
 
+clkgen clk_gen(clkin, !rst_n, clk_25mhz, clk, clk_input_buf, locked_dcm);
+
+assign clk_25mhz_n = !clk_25mhz;
+
 assign VPU_data_we = 1'b0;
+
 cpu CPU(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .VPU_data_we(VPU_data_we), .VPU_rdy(VPU_rdy),
