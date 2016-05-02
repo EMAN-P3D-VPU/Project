@@ -1,0 +1,14 @@
+INSTRUCTIONS ON HOW TO PROCEED:
+
+Make a modelsim project with ALL verilog files included (except reverse_Swap.v -> not part of the project)
+Also add ./libraries/lib/glbl.v
+
+Then, when you click start simulation on ModelSim -> make sure to go the libraries tab -> add all libraries (excluding work) from the libraries folder (CORESIMS, GLBL, SIMPRIMS, UNISMS) -> these have already been compiled, just add them
+
+Then, when you want to simulate, control click BOTH cpu_vpu_top_tb and glbl so they are both selected
+
+Waveform it and see what happens
+
+We force the state to go to GEN_LINES so run simulation for 32us. Screen shot is included. Notice how around 20015 ns, the rast_height gets stuck at 19. the final first point should draw from (0, 41) -> (31, 68). Many screenshots will be had on FB.
+
+Screenshot of FSM also on FB
