@@ -75,11 +75,13 @@ output  reg     halt;
 ///////////////////////////
 reg             set_timer;
 reg     [10:0]  timer;
+reg				timer_done_1;
 
 ///////////////////
 // Interconnects /
 /////////////////
 wire            timer_done;
+wire			timer_done_negedge;
 
 /////////////
 // OPCODES /
@@ -107,15 +109,20 @@ localparam HALT = 5'b11111;
 ////
 
 // Stalling Logic (Timer + VPU Ready + ... ) //
-assign STALL_control = ~timer_done | ~VPU_rdy | halt;
+assign STALL_control = ~timer_done_1 | ~VPU_rdy | halt;
 assign timer_done = ~|timer;
+
+always@(posedge clk)
+	timer_done_1 <= timer_done;
+
+assign timer_done_negedge = (~timer_done_1 & timer_done);
 
 always@(posedge clk)begin
     if(!rst_n)
         timer <= 11'h000;
     else if(set_timer)
         timer <= wait_time;
-    else if(!timer_done)
+    else if(~timer_done)
         timer <= timer - 1;
     else
         timer <= timer;
@@ -152,24 +159,28 @@ always@(*)begin
             reg_read_1 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         OR :begin
             reg_read_0 = 1;
             reg_read_1 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         XOR:begin
             reg_read_0 = 1;
             reg_read_1 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         NOT:begin
             reg_read_0 = 1;
             reg_read_1 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         ADD:begin
             reg_read_0 = 1;
@@ -177,11 +188,15 @@ always@(*)begin
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
             add_immd = x_bit;
+            Z_we = 1;
+            N_we = 1;
+            V_we = 1;
         end
         LSL:begin
             reg_read_0 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         SR :begin
             reg_read_0 = 1;
