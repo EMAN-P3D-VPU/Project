@@ -1,4 +1,27 @@
 `timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:   
+// Design Name: 
+// Module Name:    top_level 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//	Top level hierarchy for project 1, in which the SPART along with the driver
+//	module interact to echo back characters to the serial console. This is done
+//	by hardwiring the driver to read a character each time it is received, and
+//	placing it in the tx buffer as soon at tbr is asserted.
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module spart_top_level(
 	input clk,		 // clock
 	input rst,		 // Synchronous reset, tied to dip switch 0
@@ -10,36 +33,25 @@ module spart_top_level(
 	output [4:0] bit_mask,
 	output bit_mask_ready);
 	
-	// chip select
 	wire iocs;
-
-	// 0 when processor writing to SPART, 1 when SPART writing to processor
 	wire iorw;
-
-	// indicates when SPART has a received byte ready to be ready to processor
 	wire rda;
-
-	// indicates SPART is ready to receive a byte that will then be transmitted
-	// through txd
 	wire tbr;
-
-	// which address is being interfaced
 	wire [1:0] ioaddr;
-
-	// used to communicate between SPART and processor
 	wire [7:0] databus;
 	
-	// Instantiate your SPART here
-	spart spart0( .clk(clk),
-					.rst(rst),
-					.iocs(iocs),
+	// Instantiate your SPART here //
+	spart spart0( 	.clk(clk),
+                  	.rst(rst),
+				  	.iocs(iocs),
 					.iorw(iorw),
 					.rda(rda),
 					.tbr(tbr),
 					.ioaddr(ioaddr),
 					.databus(databus),
 					.txd(txd),
-					.rxd(rxd));
+					.rxd(rxd)
+					);
 
 	// interface with the cpu
 	spart_cpu_interface spartcpu(.clk(clk),
@@ -49,15 +61,17 @@ module spart_top_level(
 					.bit_mask(bit_mask),
 					.bit_mask_ready(bit_mask_ready));
 
-	// Instantiate your driver here
+	// Instantiate your driver here //
 	driver driver0( .clk(clk),
-					.rst(rst),
+	                .rst(rst),
 					.br_cfg(br_cfg),
 					.iocs(iocs),
 					.iorw(iorw),
 					.rda(rda),
 					.tbr(tbr),
 					.ioaddr(ioaddr),
-					.databus(databus));
+					.databus(databus)
+					 );
 					 
 endmodule
+
