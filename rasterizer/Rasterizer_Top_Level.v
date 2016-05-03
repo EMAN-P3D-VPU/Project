@@ -36,6 +36,7 @@ wire [1:0]  steepness;
 
 wire [9:0] sx_0, sx_1, sy_0, sy_1;
 wire [2:0] octant, octant_out;
+wire clr_color;
 
 reg [45:0] delay;
 
@@ -85,9 +86,9 @@ LINE_GENERATOR LINE_GENERATOR(/*global inputs*/      .clk(clk), .rst(rst),
 				  /*input from object*/  .obj_change(obj_change),
 				  /*input from matrix*/  .bk_color(bk_color),
 				  /*input from f_buff*/  .frame_ready(frame_ready),
-				  /*output to f_buff*/   .raster_done(raster_done), .frame_rd_en(frame_rd_en), .frame_x(x_generated), .frame_y(y_generated), .px_color(px_color), .octant(octant_out));
+				  /*output to f_buff*/   .raster_done(raster_done), .frame_rd_en(frame_rd_en), .frame_x(x_generated), .frame_y(y_generated), .px_color(px_color), .octant(octant_out), .clr_color(clr_color));
 
-point_swapback swap_back(.x_gen(x_generated), .y_gen(y_generated), .octant(octant_out), .x_f(frame_x), .y_f(frame_y));
+point_swapback swap_back(.x_gen(x_generated), .y_gen(y_generated), .octant(octant_out), .clr_color(clr_color), .x_f(frame_x), .y_f(frame_y));
 //pipeline stage
 always@(posedge clk, negedge rst)
 begin

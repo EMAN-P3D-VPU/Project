@@ -59,7 +59,7 @@ wire f1_empty, f1_full;
 //
 wire [6:0] line_cnt, pop_cnt;
 
-reg end_obj, end_obj_d;
+reg end_obj, end_obj_d, end_obj_dd;
 
 
 clipping_timing_logic timing(
@@ -200,7 +200,10 @@ always @(posedge clk)
     end_obj_d <= end_obj;
 
 always @(posedge clk)
-    end_of_obj <= end_obj_d;
+    end_obj_dd <= end_obj_d;
+
+always @(posedge clk)
+    end_of_obj <= end_obj_dd;
 
 assign f1_rd = (raster_ready && !f1_empty) ? 1'b1 : 1'b0;
 assign clr_changed = end_of_obj;
