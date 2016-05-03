@@ -3,9 +3,7 @@ module point_swapper(x_0, x_1, y_0, y_1, slope_steep, sx_0, sx_1, sy_0, sy_1, li
 input [9:0] x_0, x_1, y_0, y_1;
 
 input [1:0] slope_steep;
-output reg [9:0] sx_0, sx_1, sy_0, sy_1;
-//output reg //; //technically could be deciphered from octant, but this is easier to understand
-               //positive or negative slope...use to trigger math function appropriately
+output reg [9:0] sx_0, sx_1, sy_0, sy_1;             
 output reg [2:0] line_octant; //needed to reverse the swap
 
 wire [2:0] octant, octant_f;
@@ -13,7 +11,7 @@ wire vector_direction;
 
 //determine which octant we're working in to appropriately translate 
 //the point forward
-assign vector_direction = (x_0 < x_1) ? 0:1;
+assign vector_direction = (x_1 < x_0);
 assign octant = {slope_steep, vector_direction};
 
 //shifting will give the final octant
@@ -24,7 +22,7 @@ begin
   line_octant = octant_f;
 end
 
-always @(x_0 or x_1 or slope_steep)
+always @(x_0 or x_1 or y_0 or y_1 or slope_steep)
 case(octant_f)
   0:begin
     //slope in quadrant 0, slope is greater than 1

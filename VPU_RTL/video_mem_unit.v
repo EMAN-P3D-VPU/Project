@@ -41,7 +41,7 @@ always @(posedge clk) begin
         ldback_x0 <= ram[mat_addr][15:0];
         ldback_y0 <= ram[mat_addr][31:16];
         ldback_x1 <= ram[mat_addr][47:32];
-        ldback_x1 <= ram[mat_addr][63:48];
+        ldback_y1 <= ram[mat_addr][63:48];
         ldback_x2 <= ram[mat_addr][79:64];
         ldback_y2 <= ram[mat_addr][95:80];
         ldback_x3 <= ram[mat_addr][111:96];

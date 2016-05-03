@@ -15,10 +15,10 @@ module matrix_data(input clk,
             input crt_cmd, trans_one,
             input writeback, writeback_cen, ld_obj_in, calc_from_cen, ldback_reg,
             input [2:0] point_cnt,
-            input [144:0] obj_in,
+            input [143:0] obj_in,
             input signed [15:0] mat_res_x, mat_res_y,
             output [2:0] max_point_cnt,
-            output reg [144:0] obj_out,
+            output reg [143:0] obj_out,
             output reg signed [15:0]  x0, y0, x1, y1, x2, y2, x3, y3
             );
 

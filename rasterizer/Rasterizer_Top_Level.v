@@ -54,7 +54,7 @@ raster_input_stage input_stage( .clk(clk),
 steep_calculator steep_calculator(  .line_cap_reg(line_cap_reg), 
 									.dy(dy), 
 									.dx(dx), 
-									.steep_octant(steepness));
+									.steep_value(steepness));
 
 point_swapper point_swap(   .x_0(delay[67:58]), 
 							.x_1(delay[47:38]), 
