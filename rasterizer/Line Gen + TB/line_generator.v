@@ -249,7 +249,7 @@ case (state)
 		end else if (~fifo_empty) begin
 			// fifo is not empty so read
 			load_line = 1'b1;
-			nxt_state = RD_LINE;
+			nxt_state = GEN_POINTS;
 		end else begin
 			// fifo is empty but does not match the criteria to exit out
 			nxt_state = POP_LINE;
