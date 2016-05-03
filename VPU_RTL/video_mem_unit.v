@@ -9,14 +9,14 @@ module video_mem_unit(input clk,
                     input clip_rd_en,
                     output reg [143:0] mat_obj_out,
                     output reg [143:0] clip_obj_out,
-                    output reg ldback_x0,
-                    output reg ldback_x1,
-                    output reg ldback_x2,
-                    output reg ldback_x3,
-                    output reg ldback_y0,
-                    output reg ldback_y1,
-                    output reg ldback_y2,
-                    output reg ldback_y3
+                    output reg [15:0] ldback_x0,
+                    output reg [15:0] ldback_x1,
+                    output reg [15:0] ldback_x2,
+                    output reg [15:0] ldback_x3,
+                    output reg [15:0] ldback_y0,
+                    output reg [15:0] ldback_y1,
+                    output reg [15:0] ldback_y2,
+                    output reg [15:0] ldback_y3
                     );
 
 reg [143:0] ram[31:0];

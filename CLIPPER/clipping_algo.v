@@ -56,7 +56,7 @@ always @(posedge clk) begin
         end else if (ldback_x0) begin //
             x0_clip <= x0_clip + quotient[15:0];
             if(pt0_gt_ymax)
-                y0_clip <= 480;
+                y0_clip <= 479;
             else if (pt0_lt_ymin)
                 y0_clip <= 0;
             else
@@ -64,7 +64,7 @@ always @(posedge clk) begin
         end else if (ldback_x1) begin //
             x1_clip <= x1_clip + quotient[15:0];
             if(pt1_gt_ymax)
-                y1_clip <= 480;
+                y1_clip <= 479;
             else if (pt1_lt_ymin)
                 y1_clip <= 0;
             else
@@ -72,7 +72,7 @@ always @(posedge clk) begin
         end else if (ldback_y0) begin //
             y0_clip <= y0_clip + quotient[15:0];
             if(pt0_gt_xmax)
-                x0_clip <= 640;
+                x0_clip <= 639;
             else if (pt0_lt_xmin)
                 x0_clip <= 0;
             else
@@ -80,7 +80,7 @@ always @(posedge clk) begin
         end else if (ldback_y1) begin //
             y1_clip <= y1_clip + quotient[15:0];
             if(pt1_gt_xmax)
-                x1_clip <= 640;
+                x1_clip <= 639;
             else if (pt1_lt_xmin)
                 x1_clip <= 0;
             else
@@ -173,9 +173,9 @@ assign ldback_y1 = (clip_en &&
                     (pt1_gt_xmax && ldback_xmax_cnt) ||
                     (pt1_lt_xmin && ldback_xmin_cnt)
                     ) ? 1'b1 : 1'b0;
-assign x_max_min =  (pt0_gt_xmax || pt1_gt_xmax) ? 640 : 
+assign x_max_min =  (pt0_gt_xmax || pt1_gt_xmax) ? 639 : 
                     (pt0_lt_xmin || pt1_lt_xmin) ? 0 : 16'hx;
-assign y_max_min =  (pt0_gt_ymax || pt1_gt_ymax) ? 480 : 
+assign y_max_min =  (pt0_gt_ymax || pt1_gt_ymax) ? 479 : 
                     (pt0_lt_ymin || pt1_lt_ymin) ? 0 : 16'hx;
 assign x_a =  (ld_pt0 == 1'b1) ? x0_clip :
               (ld_pt1 == 1'b1) ? x1_clip : 16'hx;

@@ -8,7 +8,7 @@ module LINE_GENERATOR(/*global inputs*/      clk, rst,
 				  /*input from matrix*/  bk_color,
 				  /*input from f_buff*/  frame_ready,
 				  /*output to f_buff*/   raster_done, frame_rd_en, frame_x, frame_y, px_color,
-				                         octant);
+				                         octant, clr_color);
 
 //GLOBAL INPUTS
 input clk, rst;
@@ -33,7 +33,7 @@ output raster_done, frame_rd_en;
 output [9:0] frame_x;
 output [8:0] frame_y;
 output [2:0] px_color;
-
+output clr_color;
 output [2:0] octant;
 
 //FSM PARAMS
@@ -97,7 +97,7 @@ begin
   end
 end
 
-wire signed [9:0] offset_x, offset_y;
+wire [9:0] offset_x, offset_y;
 assign offset_x = temp_line[19:10];
 assign offset_y = temp_line[9:0];
 
@@ -115,7 +115,7 @@ end
 
 point_gen POINT_GEN(.x_i(offset_x), .y_i(offset_y), .dy(dy_in), .dx(dx_in), .Xn(new_x), .Yn(new_y));
 
-wire signed[9:0] current_x, current_y;
+wire [9:0] current_x, current_y;
 assign current_x = x_init + offset_x;
 assign current_y = y_init + offset_y;
 //see if you hit the final point
@@ -168,7 +168,7 @@ end
 
 //MUX between scanning/clear function and select/paint function
 assign frame_x = (clr_color) ? x : current_x;
-assign frame_y = (clr_color) ? y : current_y;
+assign frame_y = (clr_color) ? y : current_y[8:0];
 
 //frame and fifo enable regs
 reg draw_px;

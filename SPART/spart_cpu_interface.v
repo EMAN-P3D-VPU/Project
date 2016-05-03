@@ -42,4 +42,4 @@ find_rising_edge rda_find_rising_edge(.clk(clk),
 // outputs a 1 when a key we care about is pressed
 assign bit_mask_ready = rda_edge & (bit_mask != 5'b0);
 
-endmodule;
+endmodule

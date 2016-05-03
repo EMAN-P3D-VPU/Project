@@ -20,8 +20,8 @@ initial begin
     rst_n = 1'b1;
     #10us;
     trigger_clipper();//trigger clipper
-    #10us;
-    force_fb();
+    //#10us;
+    //force_fb();
 end
 
 task trigger_clipper();
