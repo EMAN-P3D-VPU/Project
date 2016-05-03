@@ -7,7 +7,8 @@ module LINE_GENERATOR(/*global inputs*/      clk, rst,
 				  /*input from object*/  obj_change,
 				  /*input from matrix*/  bk_color,
 				  /*input from f_buff*/  frame_ready,
-				  /*output to f_buff*/   raster_done, frame_rd_en, frame_x, frame_y, px_color);
+				  /*output to f_buff*/   raster_done, frame_rd_en, frame_x, frame_y, px_color,
+				                         octant);
 
 //GLOBAL INPUTS
 input clk, rst;
@@ -32,6 +33,8 @@ output raster_done, frame_rd_en;
 output [9:0] frame_x;
 output [8:0] frame_y;
 output [2:0] px_color;
+
+output [2:0] octant;
 
 //FSM PARAMS
 localparam IDLE       = 2'b00;
@@ -75,7 +78,6 @@ wire signed [10:0] dy_in, dx_in;
 assign dx_in = CAP_REG[17:7];
 assign dy_in = CAP_REG[28:18];
 
-wire [2:0] octant;
 assign octant = CAP_REG[2:0];
 
 //use a (0, 0) indexed register to generate a line

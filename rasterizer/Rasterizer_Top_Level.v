@@ -25,6 +25,9 @@ output [9:0] frame_x;
 output [8:0] frame_y;
 output [2:0] px_color;
 
+wire [9:0] x_generated;
+wire [8:0] y_generated;
+
 
 //top level internals
 wire [43:0] line_cap_reg;
@@ -32,7 +35,7 @@ wire [10:0] dy, dx;
 wire [1:0]  steepness;
 
 wire [9:0] sx_0, sx_1, sy_0, sy_1;
-wire [2:0] octant;
+wire [2:0] octant, octant_out;
 
 reg [45:0] delay;
 
@@ -82,8 +85,9 @@ LINE_GENERATOR LINE_GENERATOR(/*global inputs*/      .clk(clk), .rst(rst),
 				  /*input from object*/  .obj_change(obj_change),
 				  /*input from matrix*/  .bk_color(bk_color),
 				  /*input from f_buff*/  .frame_ready(frame_ready),
-				  /*output to f_buff*/   .raster_done(raster_done), .frame_rd_en(frame_rd_en), .frame_x(frame_x), .frame_y(frame_y), .px_color(px_color));
+				  /*output to f_buff*/   .raster_done(raster_done), .frame_rd_en(frame_rd_en), .frame_x(x_generated), .frame_y(y_generated), .px_color(px_color), .octant(octant_out));
 
+point_swapback swap_back(.x_gen(x_generated), .y_gen(y_generated), .octant(octant_out), .x_f(frame_x), .y_f(frame_y));
 //pipeline stage
 always@(posedge clk, negedge rst)
 begin
