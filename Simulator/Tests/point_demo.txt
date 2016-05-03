@@ -1,0 +1,252 @@
+///////////////////////////////////////
+//ECE 554 Final Demo Program #2
+///////////////////////////////////////
+			FILL 0x00 //start with blank screen
+			WAIT 0x500
+			
+/////////////////////////////
+//Clear Registers
+/////////////////////////////
+_CLR_REG    LDU     R0  0x00
+            LDL     R0  0x00
+            MOV     R1  R0
+            MOV     R2  R0
+            MOV     R3  R0
+            MOV     R4  R0
+            MOV     R5  R0
+            MOV     R6  R0
+            MOV     R7  R0
+            MOV     R8  R0
+            MOV     R9  R0
+            MOV     R10 R0
+            MOV     R11 R0
+            MOV     R12 R0
+            MOV     R13 R0
+            MOV     R14 R0
+            MOV     R15 R0
+            MOV     R16 R0
+            MOV     R17 R0
+            MOV     R18 R0
+            MOV     R19 R0
+            MOV     R20 R0
+            MOV     R21 R0
+            MOV     FS  R0
+            MOV     RO  R0
+            MOV     V0  R0
+            MOV     V1  R0
+            MOV     V2  R0
+            MOV     V3  R0
+            MOV     V4  R0
+            MOV     V5  R0
+            MOV     V6  R0
+            MOV     V7  R0
+			
+/////////////////////////////
+//OBJ INIT
+/////////////////////////////
+_OBJ_INIT   DPOLY 0x01 0x07
+			WAIT 0x500
+			MOV R10 RO //R10 holds reference to the square
+			
+			MOV R9 R18 //initialize active point to be point 1
+			
+/////////////////////////////
+//Set Control Key Values
+/////////////////////////////			
+_SET_MASKS  LDU R0 0xFF
+			LDL R0 0x89
+			//LDL R0 0xD8
+			MOV R14 R0 //R14 holds check value for 'w'
+			
+			LDL R0 0x8D
+			//LDL R0 0xC3
+			MOV R15 R0 //R15 holds chack value for 's'
+			
+			LDL R0 0x9C
+			//LDL R0 0xC2
+			MOV R16 R0 //R16 holds check value for 'd'
+			
+			LDL R0 0x9F
+			//LDL R0 0xC4
+			MOV R17 R0 //R17 holds check value for 'a'
+			
+			LDL R0 0xCF
+			//LDL R0 0xD7
+			MOV R18 R0 //R18 holds check value for '1'
+			
+			LDL R0 0xCE
+			//LDL R0 0xD9
+			MOV R19 R0 //r19 holds check value for '2'
+			
+			LDL R0 0xCD
+			//LDL R0 0xD9
+			MOV R12 R0 //r19 holds check value for '3'
+			
+			LDL R0 0xCC
+			//LDL R0 0xCD
+			MOV R13 R0 //r19 holds check value for '4'
+			
+_RstMask    LDU R1 0x00
+			LDL R1 0x01
+			
+			LDU R2 0x00
+			LDL R2 0x02
+			
+			LDU R3 0x00
+			LDL R3 0x03
+			
+			LDU R4 0x00
+			LDL R4 0x04
+			
+/////////////////////////////
+//Main Program
+/////////////////////////////
+_Main       MOV R0 FS
+			ADD R0 R18
+			BEQ _Point1 //set point 1 active if '1' pressed
+			
+			MOV R0 FS
+			ADD R0 R19
+			BEQ _Point2 //set point 2 active if '2' pressed
+			
+			MOV R0 FS
+			ADD R0 R12
+			BEQ _Point3 //set point 3 active if '3' pressed
+			
+			MOV R0 FS
+			ADD R0 R13
+			BEQ _Point4 //set point 4 active if '4' pressed
+			
+			MOV R0 FS
+			ADD R0 R14
+			BEQ _MoveUp //move the obj up if 'w' pressed
+			
+			MOV R0 FS
+			ADD R0 R15
+			BEQ _MoveDown //move the obj up if 's' pressed
+			
+			MOV R0 FS
+			ADD R0 R16
+			BEQ _MoveRight //move the obj up if 'd' pressed
+			
+			MOV R0 FS
+			ADD R0 R17
+			BEQ _MoveLeft //move the obj up if 'a' pressed
+			
+			B _Main
+			
+_Point1     MOV R9 R18
+			B _Main
+			
+_Point2     MOV R9 R19
+			B _Main
+			
+_Point3     MOV R9 R12
+			B _Main
+			
+_Point4     MOV R9 R13
+			B _Main
+			
+_MoveUp     LDU R0 0x00 //Moves object up and returns to main
+			LDL R0 0x50
+			MOV V1 R0
+			AND R1 R9
+			BNE _R2U
+			TRN R10 0x02 0x00
+			WAIT 0x500
+			B _RstMask
+			
+_R2U        AND R2 R9
+			BNE _R3U
+			TRN R10 0x02 0x01
+			WAIT 0x500
+			B _RstMask
+			
+_R3U        AND R3 R9
+			BNE _R4U
+			TRN R10 0x02 0x03
+			WAIT 0x500
+			B _RstMask
+			
+_R4U        AND R4 R9
+			TRN R10 0x02 0x04
+			WAIT 0x500
+            B _RstMask
+
+_MoveDown   LDU R0 0x00 //Moves object up and returns to main
+			LDL R0 0xB0
+			MOV V1 R0
+			AND R1 R9
+			BNE _R2D
+			TRN R10 0x02 0x00
+			WAIT 0x500
+			B _RstMask
+			
+_R2D        AND R2 R9
+			BNE _R3D
+			TRN R10 0x02 0x01
+			WAIT 0x500
+			B _RstMask
+			
+_R3D        AND R3 R9
+			BNE _R4D
+			TRN R10 0x02 0x03
+			WAIT 0x500
+			B _RstMask
+			
+_R4D        AND R4 R9
+			TRN R10 0x02 0x04
+			WAIT 0x500
+            B _RstMask
+
+_MoveRight  LDU R0 0x00 //Moves object up and returns to main
+			LDL R0 0x50
+			MOV V1 R0
+			AND R1 R9
+			BNE _R2R
+			TRN R10 0x01 0x00
+			WAIT 0x500
+			B _RstMask
+			
+_R2R        AND R2 R9
+			BNE _R3D
+			TRN R10 0x01 0x01
+			WAIT 0x500
+			B _RstMask
+			
+_R3R        AND R3 R9
+			BNE _R4D
+			TRN R10 0x01 0x03
+			WAIT 0x500
+			B _RstMask
+			
+_R4R        AND R4 R9
+			TRN R10 0x01 0x04
+			WAIT 0x500
+            B _RstMask
+
+_MoveLeft   LDU R0 0x00 //Moves object up and returns to main
+			LDL R0 0xB0
+			MOV V1 R0
+			AND R1 R9
+			BNE _R2L
+			TRN R10 0x02 0x00
+			WAIT 0x500
+			B _RstMask
+			
+_R2L        AND R2 R9
+			BNE _R3L
+			TRN R10 0x02 0x01
+			WAIT 0x500
+			B _RstMask
+			
+_R3L        AND R3 R9
+			BNE _R4L
+			TRN R10 0x02 0x03
+			WAIT 0x500
+			B _RstMask
+			
+_R4L        AND R4 R9
+			TRN R10 0x02 0x04
+			WAIT 0x500
+            B _RstMask
