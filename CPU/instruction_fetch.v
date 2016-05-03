@@ -62,7 +62,7 @@ always@(posedge clk)begin
         PC <= 16'h0000;
     else if(VPU_start)
         PC <= PC;
-    else if(~STALL)
+    else if(~STALL | IF_PC_select)
         PC <= PC_next;
     else
         PC <= PC;

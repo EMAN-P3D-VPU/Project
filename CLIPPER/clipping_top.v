@@ -12,7 +12,7 @@ module clipping_top(input clk,
                     output [2:0] color_out,
                     output [4:0] addr,
                     output read_en,
-                    output clr_changed, //to matrix unit
+                    output reg clr_changed, //to matrix unit
                     output reading, //to matrix_unit
                     output start_refresh,
                     output reg vld,
@@ -206,7 +206,12 @@ always @(posedge clk)
     end_of_obj <= end_obj_dd;
 
 assign f1_rd = (raster_ready && !f1_empty) ? 1'b1 : 1'b0;
-assign clr_changed = end_of_obj;
+
+always @(posedge clk)
+    if((end_obj_dd == 1) && (end_of_obj == 0))
+        clr_changed <= 1'b1;
+    else
+        clr_changed <= 1'b0;
 
 always @(posedge clk)
     vld <= f1_rd; //data will be valid in the next cycle of vld
