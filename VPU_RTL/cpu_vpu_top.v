@@ -84,21 +84,10 @@ reg  [2:0] VPU_BACKGROUND_COLOR;
 clkgen clk_gen(.CLKIN_IN(clkin), .RST_IN(1'b0), .CLKDV_OUT(clk_25mhz), 
                 .CLKIN_IBUFG_OUT(clk_input_buf), .CLK0_OUT(clk), .LOCKED_OUT(locked_dcm));
 
-//reg [1:0] clkreg;
-//always @(posedge clkin, negedge rst_n)
-//    if(!rst_n)
-//        clkreg <= 2'b0;
-//    else
-//        clkreg <= clkreg +1;
-//
-//assign clk = clkin;
-//assign clk_25mhz = clkreg[1];
-//assign locked_dcm = rst_n ? 1'b0: 1'b1;
-
 assign clk_25mhz_n = !clk_25mhz;
 
 // br_cfg is 0 so baud rate is set to 9600
-spart_top_level SPART(.clk(clk), .rst(rst), .txd(txd), .rxd(rxd), .br_cfg(2'b0),
+spart_top_level SPART(.clk(clk), .rst(rst), .txd(txd), .rxd(rxd), .br_cfg(2'b1),
                     .bit_mask(spart_keys), .bit_mask_ready(spart_we));
 
 cpu CPU(
@@ -136,7 +125,7 @@ matrix_top mat(.clk(clk), .rst_n(rst_n), .go(start_VPU), .v0(V0_VPU), .v1(V1_VPU
                 .busy(busy), .lst_stored_obj_out(lst_stored_obj_out), .obj_mem_full_out(obj_mem_full_out), 
                 .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all), .ref_addr(ref_addr),
                 .obj_num_out(obj_num_out), .changed(changed_in), .obj_out(mat_obj_in), .rd_en(mat_rd_en), .wr_en(mat_wr_en),
-                .loadback(loadback), .writing(writing));
+                .loadback(loadback), .writing(writing), .fill_VPU(fill_VPU));
 
 video_mem_unit mem_unit(.clk(clk), .rst_n(rst_n), .mat_addr(mat_addr), .mat_obj_in(mat_obj_in), .loadback(loadback),
                 .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out),

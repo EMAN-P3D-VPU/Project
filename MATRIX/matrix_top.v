@@ -30,6 +30,7 @@ module matrix_top(input clk,
                                         // F - loadback
             input [3:0] gmt_code,  //for translate_single - [3:2] bits select point, [1] - y, [0] - x - xy TESTED
                                    //for rotate and scale [2:0] - selects amount, [3] - whether around centroid - TESTED
+            input fill_VPU,
             //FROM VIDEO MEMORY UNIT
             input [143:0] obj_in,
             //FROM OBJECT UNIT
@@ -211,6 +212,8 @@ always @(posedge clk, negedge rst_n) begin
         changed <= 1'b1;
     end else begin
         if(set_changed)
+            changed <= 1'b1;
+        else if (fill_VPU)
             changed <= 1'b1;
         else if (clr_changed)
             changed <= 1'b0;
