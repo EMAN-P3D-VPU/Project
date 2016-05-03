@@ -1,157 +1,171 @@
 `timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    
+// Design Name: 
+// Module Name:    driver 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//	This unit simulates the behavior a processor might take in order to move
+//	data via serial. For the sake of this project, whenever data is ready in
+//  the SPART, the unit asserts the databus to receive said data and follows
+//	up by sending it back into the TX buffer.
+//
+//	Additionally, the unit sets the baud rate based on the set dip switches
+//	for varying speeds of communication.
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module driver(
-	input clk,
-	input rst,
-	input [1:0] br_cfg,
-	input rda,
-	input tbr,
-	output reg iocs,
-	output reg iorw,
-	output reg [1:0] ioaddr,
-	inout [7:0] databus);
+    input clk,
+    input rst,
+    input [1:0] br_cfg,
+    output iocs,
+    output iorw,
+    input rda,
+    input tbr,
+    output [1:0] ioaddr,
+    inout [7:0] databus
+    );
 
-// baud rates
-wire [15:0] baud4800;
-wire [15:0] baud9600;
-wire [15:0] baud19200;
-wire [15:0] baud38400;
+////////////
+// Inputs //
+////////////
 
-// which baud rate to choose based on br_cfg
-wire [7:0] dbLow;
-wire [7:0] dbHigh;
+/////////////
+// Outputs //
+/////////////
 
-assign baud4800 = 16'h516;
-assign baud9600 = 16'h28A;
-assign baud19200 = 16'h145;
-assign baud38400 = 16'hA2;
+/////////////
+// Signals //
+/////////////
+reg iorw_r;
+reg [1:0] ioaddr_r;
+reg set_baud_rate;
+reg save_data;
+reg [7:0] send_data;
+reg [7:0] data_received_reg;
+reg [15:0] baud_rate;
 
-assign dbLow = br_cfg == 2'b00 ? baud4800[7:0] :
-			(br_cfg == 2'b01 ? baud9600[7:0] :
-			(br_cfg == 2'b10 ? baud19200[7:0] : baud38400[7:0]));
+wire [15:0] next_baud_rate;
 
-assign dbHigh = br_cfg == 2'b00 ? baud4800[15:8] :
-			(br_cfg == 2'b01 ? baud9600[15:8] :
-			(br_cfg == 2'b10 ? baud19200[15:8] : baud38400[15:8]));
+// States //
+localparam IDLE		= 3'b000;
+localparam RECV		= 3'b001;
+localparam SEND		= 3'b010;
+localparam DB_LOW	= 3'b011;
+localparam DB_HIGH	= 3'b100;
 
+reg [2:0] state, next_state;
 
-// state variables
-parameter BLOW = 2'b00, BHIGH = 2'b01, RECEIVE = 2'b10, TRANSMIT = 2'b11;
-reg [1:0] next_state;
-reg [1:0] state;
+//////////////////////////////////////////////////////////////////////////////////
+// DRIVER
+////
 
-// combinational logic
-always @(*) begin
-	case(state)
-		BLOW: next_state = BHIGH;
-		BHIGH: next_state = RECEIVE;
-		RECEIVE:
-			begin
-				if (rda == 1'b1) begin
-					next_state = TRANSMIT;
-				end else begin
-					next_state = RECEIVE;
-				end
-			end
-		TRANSMIT:
-			begin
-				if (tbr == 1'b1) begin
-					next_state = RECEIVE;
-				end else begin
-					next_state = TRANSMIT;
-				end
-			end
-		default: next_state = BLOW;
-	endcase
-end
+// Loop back anything from SPART RX to be sent via TX // (Temporary)
+assign iorw = iorw_r;
+assign iocs = 1'b1; // In this case just always select the SPART
+assign ioaddr = ioaddr_r;
 
-// Sequential logic
-always @(posedge clk) begin
-	if (rst == 1'b1) begin
-		state <= BLOW;
-	end else begin
+// State Change //
+always@(posedge clk, posedge rst)begin
+	if(rst)
+		state <= IDLE;
+	else
 		state <= next_state;
-	end
 end
 
-// Output logic
-wire [7:0] dataIn;
-reg [7:0] dataOut;
+// Set Divisor based on dip switches //
+assign next_baud_rate =	(br_cfg == 2'b00) ? 16'h0515: //  4800 @100MHz
+						(br_cfg == 2'b01) ? 16'h028A: //  9600 @100MHz
+						(br_cfg == 2'b10) ? 16'h0144: // 19200 @100MHz
+									    	16'h00A2; // 38400 @100MHz
 
-assign dataIn = databus;
-assign databus = (iocs && ~iorw) ? dataOut : 8'bz;
-
-// used to store character input so that in transmit, one can send it
-reg [7:0] byteOfData;
-always @(posedge clk) begin
-	if (rst == 1'b1) begin
-		byteOfData <= 8'b0;
-	end else begin
-		case(state)
-			BLOW: byteOfData <= 8'b0;
-			BHIGH: byteOfData <= 8'b0;
-			RECEIVE: byteOfData <= dataIn;
-			TRANSMIT: byteOfData <= byteOfData;
-		endcase
-	end
+// Save baud rate on master side //
+always@(posedge clk, posedge rst)begin
+	if(rst)
+		baud_rate <= 16'h028A;
+	else if(set_baud_rate)
+		baud_rate <= next_baud_rate;
+	else
+		baud_rate <= baud_rate;
 end
 
-// logic for iocs, iorw, and ioaddr
-// iocs is always 1 only when need to read or write, 0 otherwise
-// iorw is 0 when writing, 1 when reading
-// dataOut is when one needs to send a byte out in the databus
-// ioaddr is what register to interface within the SPART
-always @(*) begin
+// Save received data to echo back //
+always@(posedge clk, posedge rst)begin
+	if(rst)
+		data_received_reg <= 8'h00;
+	else if(save_data)
+		data_received_reg <= databus;
+	else
+		data_received_reg <= data_received_reg;
+end
+
+// DATABUS //
+assign databus = (~iorw) ? send_data : 8'hZZ;
+
+// Control Unit //
+always@(*) begin
+	// Defaults //
+	set_baud_rate = 0;
+	iorw_r = 1;
+	ioaddr_r = 2'b01; // Read status by default
+	send_data = data_received_reg;
+	save_data = 0;
+
 	case(state)
-		BLOW:
-			begin
-				iocs = 1'b1;
-				iorw = 1'b0;
-				dataOut = dbLow;
-				ioaddr = 2'b10;
-			end
-		BHIGH:
-			begin
-				iocs = 1'b1;
-				iorw = 1'b0;
-				dataOut = dbHigh;
-				ioaddr = 2'b11;
-			end
-		RECEIVE:
-			begin
-				if (rda == 1'b1) begin
-					iocs = 1'b1;
-					iorw = 1'b1;
-					dataOut = 8'bz;
-					ioaddr = 2'b00;
-				end else begin
-					iocs = 1'b0;
-					iorw = 1'b1;
-					dataOut = 8'bz;
-					ioaddr = 2'b00;
-				end
-			end
-		TRANSMIT:
-			begin
-				if (tbr == 1'b1) begin
-					iocs = 1'b1;
-					iorw = 1'b0;
-					dataOut = byteOfData;
-					ioaddr = 2'b00;
-				end else begin
-					iocs = 1'b0;
-					iorw = 1'b0;
-					dataOut = byteOfData;
-					ioaddr = 2'b00;
-				end
-			end
-		default:
-			begin
-				iocs = 1'b0;
-				iorw = 1'b0;
-				dataOut = 8'bz;
-				ioaddr = 2'b00;
-			end
+		// Wait for operations //
+		IDLE:begin
+			if(rda)
+				next_state = RECV;
+			else if(baud_rate != next_baud_rate)
+				next_state = DB_LOW;
+			else
+				next_state = IDLE;
+		end
+		// Read data from SPART //
+		RECV:begin
+			iorw_r = 1;
+			ioaddr_r = 2'b00;
+			save_data = 1;
+			next_state = SEND;
+		end
+		// Transmit data via SPART //
+		SEND:begin
+			if(tbr)begin
+				iorw_r = 0;
+				ioaddr_r = 2'b00;
+				next_state = IDLE;
+			end else
+				next_state = SEND;
+		end
+		// Set baud rate - low //
+		DB_LOW:begin
+			iorw_r = 0;
+			ioaddr_r = 2'b10;
+			set_baud_rate = 1;
+			send_data = next_baud_rate[7:0];
+			next_state = DB_HIGH;
+		end
+		// Set baud rate - high //
+		DB_HIGH:begin
+			iorw_r = 0;
+			ioaddr_r = 2'b11;
+			send_data = next_baud_rate[15:8];
+			next_state = IDLE;
+		end
+		default: next_state = IDLE;
 	endcase
 end
 
 endmodule
+
