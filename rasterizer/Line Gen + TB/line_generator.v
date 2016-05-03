@@ -37,20 +37,21 @@ output [2:0] px_color;
 output [2:0] octant;
 
 //FSM PARAMS
-localparam IDLE       = 2'b00;
-localparam CLR_SCREEN = 2'b01;
-localparam POP_LINE   = 2'b10;
-localparam GEN_POINTS = 2'b11;
+localparam IDLE       = 3'b00;
+localparam CLR_SCREEN = 3'b01;
+localparam POP_LINE   = 3'b10;
+localparam RD_LINE = 3'b011;
+localparam GEN_POINTS = 3'b100;
 
 //line capture register
 //will get filled on a fifo "POP"
 reg [68:0] CAP_REG;
 
 // combinational logic for loading the next line
-reg load_line, load_next_point;
+reg fifo_read, load_line, load_next_point;
 
 // read from fifo when loading in a line
-assign fifo_rd_en  = load_line;
+assign fifo_rd_en  = fifo_read;
 
 // valid determines whether or not to actually draw the line
 // take valid directly from the fifo data
@@ -210,6 +211,9 @@ clr_coords = 1'b0;
 // assert that the rasterizer is done
 draw_complete = 1'b0;
 
+// reads in new line and load in on next clock cycle
+fifo_read = 1'b0;
+
 // loads in new line from fifo to draw
 load_line = 1'b0;
 
@@ -256,16 +260,22 @@ case (state)
 			draw_complete = 1'b1;
 			nxt_state = CLR_SCREEN;
 		// if fifo is not empty -> if invalid just pop line without doing anything with it
-		end else if (~fifo_empty & ~valid) begin
-			load_line = 1'b1;
-			nxt_state = POP_LINE;
-		end else if (~fifo_empty & valid) begin
-			// a valid line needs to be drawn
-			load_line = 1'b1;
-			nxt_state = GEN_POINTS;
+		end else if (~fifo_empty) begin
+			// fifo is not empty so read
+			fifo_read = 1'b1;
+			nxt_state = RD_LINE;
 		end else begin
 			// fifo is empty but does not match the criteria to exit out
 			nxt_state = POP_LINE;
+		end
+	end
+	RD_LINE: begin
+		// if not valid, go back to pop line
+		if (~valid) begin
+			nxt_state = POP_LINE;
+		end else begin
+			load_line = 1'b1;
+			nxt_state = GEN_POINTS;
 		end
 	end
 	GEN_POINTS: begin
