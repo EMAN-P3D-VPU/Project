@@ -25,7 +25,7 @@ wire			VPU_rdy;
 wire                    VPU_data_we;
 //logic			SPART_we;
 //logic	[3:0]	SPART_keys;
-reg	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
+wire	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 //////////////////////
 // CPU-VPU Interface /
@@ -66,6 +66,7 @@ wire [143:0] clip_obj_out;
 //clipping-obj
 wire [31:0] obj_map;
 //clipping-raster
+wire [2:0] color_out;
 wire [9:0] x0_out, x1_out, y0_out, y1_out;
 wire vld, end_of_obj, start_refresh, raster_ready;
 //raster-fb
@@ -130,7 +131,10 @@ matrix_top mat(.clk(clk), .rst_n(rst_n), .go(start_VPU), .v0(V0_VPU), .v1(V1_VPU
 
 video_mem_unit mem_unit(.clk(clk), .rst_n(rst_n), .mat_addr(mat_addr), .mat_obj_in(mat_obj_in), .loadback(loadback),
                 .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out),
-                .clip_addr(clip_addr), .clip_rd_en(clip_rd_en), .clip_obj_out(clip_obj_out));
+                .clip_addr(clip_addr), .clip_rd_en(clip_rd_en), .clip_obj_out(clip_obj_out),
+                .ldback_x0(VPU_V0), .ldback_y0(VPU_V1), .ldback_x1(VPU_V2), .ldback_y1(VPU_V3),
+                .ldback_x2(VPU_V4), .ldback_y2(VPU_V5), .ldback_x3(VPU_V6), .ldback_y3(VPU_V7)
+                );
 
 object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all),
                 .ref_addr(ref_addr), .obj_num(obj_num_out), .changed_in(changed_in), .addr(mat_addr),
@@ -139,12 +143,12 @@ object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), 
 
 clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_out), .raster_ready(raster_ready),
                 .writing(busy), .changed(changed), .addr(clip_addr), .read_en(clip_rd_en), .clr_changed(clr_changed), 
-                .reading(reading), .start_refresh(start_refresh),
+                .reading(reading), .start_refresh(start_refresh), .color_out(color_out),
                 .x0_out(x0_out), .x1_out(x1_out), .y0_out(y0_out), .y1_out(y1_out), .vld(vld), .end_of_obj(end_of_obj));
 
 Rasterizer_Top_Level raster(.clk(clk), .rst(rst_n), .x0_in(x0_out), .y0_in(y0_out), .x1_in(x1_out), .y1_in(y1_out),
                    .EoO(end_of_obj), .valid(vld), .Frame_Start(start_refresh), .raster_ready(raster_ready),
-                   .obj_change(changed), .bk_color(3'b1), .frame_ready(fb_rdy),
+                   .obj_change(changed), .bk_color(3'b1), .frame_ready(fb_rdy), .line_color(color_out),
                   .raster_done(rast_done), .frame_rd_en(rast_rdy), .frame_x(rast_width), .frame_y(rast_height), .px_color(rast_color));
 
 dvi_framebuffer_top_level dfb_tl(

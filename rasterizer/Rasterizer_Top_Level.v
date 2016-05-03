@@ -5,6 +5,7 @@ module Rasterizer_Top_Level (	clk, rst,
                                 obj_change,
                                 raster_ready,
                                 bk_color,
+                                line_color,
                                 frame_ready,
                                 raster_done, frame_rd_en, frame_x, frame_y, px_color);
 
@@ -15,6 +16,7 @@ input EoO, Frame_Start, valid;
 //OBJECT UNIT INPUT
 input obj_change;
 //MATRIX UNIT INPUT
+input [2:0] line_color;
 input [2:0] bk_color;
 //Frame Buffer input/outputs
 input frame_ready;
@@ -46,7 +48,7 @@ raster_input_stage input_stage( .clk(clk),
 								.y_1(y1_in), 
 								.EoO(EoO), 
 								.valid(valid), 
-								.color(bk_color), 
+								.color(line_color), 
 								.changed(obj_change), 
 								.line_cap_reg(line_cap_reg));
 

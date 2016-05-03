@@ -26,7 +26,7 @@ begin
   line_octant = octant_f;
 end
 
-always @(x_0 or x_1 or y_0 or y_1 or slope_steep)
+always @(x_0 or x_1 or y_0 or y_1 or slope_steep or octant_f)
 case(octant_f)
   0:begin
     //slope in quadrant 0, slope is greater than 1
