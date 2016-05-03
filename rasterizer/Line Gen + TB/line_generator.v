@@ -183,7 +183,7 @@ reg draw_complete;
 assign raster_done = draw_complete; //(draw_complete) ? draw_complete:rast_draw_complete;
 
 // state logic
-reg [1:0] state, nxt_state;
+reg [2:0] state, nxt_state;
 always @(posedge clk) begin
 	if (~rst) begin
 		state <= IDLE;
