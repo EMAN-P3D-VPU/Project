@@ -9,6 +9,7 @@ module video_mem_unit(input clk,
                     input clip_rd_en,
                     output reg [143:0] mat_obj_out,
                     output reg [143:0] clip_obj_out,
+                    output reg cpu_wr_en,
                     output reg [15:0] ldback_x0,
                     output reg [15:0] ldback_x1,
                     output reg [15:0] ldback_x2,
@@ -49,5 +50,8 @@ always @(posedge clk) begin
         //what about color and obj_type?
     end
 end
+
+always@(posedge clk)
+    cpu_wr_en <= loadback;
 
 endmodule

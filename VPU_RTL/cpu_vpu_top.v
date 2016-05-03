@@ -95,8 +95,6 @@ clkgen clk_gen(.CLKIN_IN(clkin), .RST_IN(1'b0), .CLKDV_OUT(clk_25mhz),
 
 assign clk_25mhz_n = !clk_25mhz;
 
-assign VPU_data_we = 1'b0;
-
 // br_cfg is 0 so baud rate is set to 9600
 spart_top_level SPART(.clk(clk), .rst(rst), .txd(txd), .rxd(rxd), .br_cfg(2'b0),
                     .bit_mask(spart_keys), .bit_mask_ready(spart_we));
@@ -133,8 +131,8 @@ video_mem_unit mem_unit(.clk(clk), .rst_n(rst_n), .mat_addr(mat_addr), .mat_obj_
                 .mat_rd_en(mat_rd_en), .mat_wr_en(mat_wr_en), .mat_obj_out(mat_obj_out),
                 .clip_addr(clip_addr), .clip_rd_en(clip_rd_en), .clip_obj_out(clip_obj_out),
                 .ldback_x0(VPU_V0), .ldback_y0(VPU_V1), .ldback_x1(VPU_V2), .ldback_y1(VPU_V3),
-                .ldback_x2(VPU_V4), .ldback_y2(VPU_V5), .ldback_x3(VPU_V6), .ldback_y3(VPU_V7)
-                );
+                .ldback_x2(VPU_V4), .ldback_y2(VPU_V5), .ldback_x3(VPU_V6), .ldback_y3(VPU_V7),
+                .cpu_wr_en(VPU_data_we));
 
 object_unit obj(.clk(clk), .rst_n(rst_n), .crt_obj(crt_obj), .del_obj(del_obj), .del_all(del_all),
                 .ref_addr(ref_addr), .obj_num(obj_num_out), .changed_in(changed_in), .addr(mat_addr),
