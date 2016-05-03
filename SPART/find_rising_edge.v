@@ -18,6 +18,6 @@ always @(posedge clk) begin
 end
 
 // only is asserted when there is a rising edge
-assign rising_edge = (previous_enable == 1'b0 && enable == 1'b1) ? 1'b1 : 1'b0 ;
+assign rising_edge = ((~previous_enable) & (enable));
 
 endmodule
