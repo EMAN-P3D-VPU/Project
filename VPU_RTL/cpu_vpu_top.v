@@ -119,7 +119,7 @@ cpu CPU(
 
 always@(negedge clk)
     if(!rst_n)
-        VPU_BACKGROUND_COLOR <= 3'h0
+        VPU_BACKGROUND_COLOR <= 3'h0;
     else if(fill_VPU)
         VPU_BACKGROUND_COLOR <= obj_color_VPU;
     else

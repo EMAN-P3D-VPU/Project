@@ -37,21 +37,21 @@ output clr_color;
 output [2:0] octant;
 
 //FSM PARAMS
-localparam IDLE       = 3'b00;
-localparam CLR_SCREEN = 3'b01;
-localparam POP_LINE   = 3'b10;
-localparam RD_LINE = 3'b011;
-localparam GEN_POINTS = 3'b100;
+localparam IDLE       = 2'b00;
+localparam CLR_SCREEN = 2'b01;
+localparam POP_LINE   = 2'b10;
+localparam GEN_POINTS = 2'b11;
 
 //line capture register
 //will get filled on a fifo "POP"
-reg [68:0] CAP_REG;
+wire [68:0] CAP_REG;
+assign CAP_REG = fifo_data;
 
 // combinational logic for loading the next line
-reg fifo_read, load_line, load_next_point;
+reg load_line, load_next_point;
 
 // read from fifo when loading in a line
-assign fifo_rd_en  = fifo_read;
+assign fifo_rd_en  = load_line;
 
 // valid determines whether or not to actually draw the line
 // take valid directly from the fifo data
@@ -100,17 +100,6 @@ end
 wire [9:0] offset_x, offset_y;
 assign offset_x = temp_line[19:10];
 assign offset_y = temp_line[9:0];
-
-// CAP_REG used to load new point and continue drawing line until new_x and new_y are equivalent to the final destination
-always @(posedge clk) begin
-	if (~rst) begin
-		CAP_REG <= 69'b0;
-	end else if (load_line) begin
-		CAP_REG <= fifo_data;
-	end else begin
-		CAP_REG <= CAP_REG;
-	end
-end
 
 
 point_gen POINT_GEN(.x_i(offset_x), .y_i(offset_y), .dy(dy_in), .dx(dx_in), .Xn(new_x), .Yn(new_y));
@@ -183,7 +172,7 @@ reg draw_complete;
 assign raster_done = draw_complete; //(draw_complete) ? draw_complete:rast_draw_complete;
 
 // state logic
-reg [2:0] state, nxt_state;
+reg [1:0] state, nxt_state;
 always @(posedge clk) begin
 	if (~rst) begin
 		state <= IDLE;
@@ -210,9 +199,6 @@ clr_coords = 1'b0;
 
 // assert that the rasterizer is done
 draw_complete = 1'b0;
-
-// reads in new line and load in on next clock cycle
-fifo_read = 1'b0;
 
 // loads in new line from fifo to draw
 load_line = 1'b0;
@@ -262,20 +248,11 @@ case (state)
 		// if fifo is not empty -> if invalid just pop line without doing anything with it
 		end else if (~fifo_empty) begin
 			// fifo is not empty so read
-			fifo_read = 1'b1;
-			nxt_state = RD_LINE;
+			load_line = 1'b1;
+			nxt_state = GEN_POINTS;
 		end else begin
 			// fifo is empty but does not match the criteria to exit out
 			nxt_state = POP_LINE;
-		end
-	end
-	RD_LINE: begin
-		// if not valid, go back to pop line
-		if (~valid) begin
-			nxt_state = POP_LINE;
-		end else begin
-			load_line = 1'b1;
-			nxt_state = GEN_POINTS;
 		end
 	end
 	GEN_POINTS: begin
