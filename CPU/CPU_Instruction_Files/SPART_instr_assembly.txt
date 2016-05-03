@@ -1,11 +1,3 @@
-// LABEL       | INSTR | PARAMS
-// Loop infinitely for key presses
-// [4] 'W' 'w' UP            [7]
-// [3] 'A' 'a' LEFT          [6]
-// [2] 'S' 's' DOWN          [5]
-// [1] 'D' 'd' RIGHT         [4]
-// [0] 'J' 'j' SELECT/TOGGLE [3]
-// Reset Registers to their values
 _CLR_REG    LDU     R0  0x00
             LDL     R0  0x00
             MOV     R1  R0
@@ -40,51 +32,54 @@ _CLR_REG    LDU     R0  0x00
             MOV     V6  R0
             MOV     V7  R0
             J       _SET_MASKS
-// Keep Masks for ease
-_SET_MASKS  LDU     R8  _w
-            LDL     R8  _w
-            LDR     R8  R8
-            LDU     R9  _a
-            LDL     R9  _a
-            LDR     R9  R9
-            LDU     R10 _s
-            LDL     R10 _s
-            LDR     R10  R10
-            LDU     R11 _d
-            LDL     R11 _d
-            LDR     R11  R11
-            LDU     R12 _j
-            LDL     R12 _j
-            LDR     R12  R12
+_SET_MASKS  LDU     R0  _w
+            LDL     R0  _w
+            LDR     R0  R0
+            LDU     R1  _a
+            LDL     R1  _a
+            LDR     R1  R1
+            LDU     R2  _s
+            LDL     R2  _s
+            LDR     R2   R2
+            LDU     R3  _d
+            LDL     R3  _d
+            LDR     R3   R3
+            LDU     R4  _j
+            LDL     R4  _j
+            LDR     R4   R4
             J       _TOP
-// Wait a bit before relooping
 _TOP        WAIT    0x7FF
 _W          MOV     R5  FS
-            AND     R5  R8
+            AND     R5  R0
             BEQ     _A
+            MOV     R5  R6
+            XOR     FS  R0
             FILL    0x0
-            MOV     R5  R0
 _A          MOV     R5  FS
-            AND     R5  R9
+            AND     R5  R1
             BEQ     _S
-            MOV     R5  R0
+            MOV     R5  R6
+            XOR     FS  R1
             FILL    0x1
 _S          MOV     R5  FS
-            AND     R5  R10
+            AND     R5  R2
             BEQ     _D
-            MOV     R5  R0
+            MOV     R5  R6
+            XOR     FS  R2
             FILL    0x2
 _D          MOV     R5  FS
-            AND     R5  R11
+            AND     R5  R3
             BEQ     _J
-            MOV     R5  R0
+            MOV     R5  R6
+            XOR     FS  R3
             FILL    0x3
 _J          MOV     R5  FS
-            AND     R5  R12
-            BEQ     _TOP
-            MOV     R5  R0
+            AND     R5  R4
+            BEQ     _END
+            MOV     R5  R6
+            XOR     FS  R4
             FILL    0x7
-            J       _TOP
+_END        J       _TOP
 // Memory Sector 0x800
 _w          .FILL       0x0080  // W
 _a          .FILL       0x0040  // A

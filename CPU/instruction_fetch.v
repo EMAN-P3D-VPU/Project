@@ -76,7 +76,7 @@ assign IF_mem_read_addr = PC;
 always@(posedge clk)begin
     if(!rst_n)
         IF_instr <= 16'h7800;
-    else if(VPU_start)
+    else if(VPU_start | IF_PC_select)
         IF_instr <= 16'h7800;
     else if(~STALL)
         IF_instr <= MEM_instr;

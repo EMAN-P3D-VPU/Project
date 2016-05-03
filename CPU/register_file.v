@@ -167,7 +167,7 @@ wire    [15:0]  wrt_data_R18;
 wire    [15:0]  wrt_data_R19;
 wire    [15:0]  wrt_data_R20;
 wire    [15:0]  wrt_data_R21;
-wire    [15:0]  wrt_data_R22;
+wire    [15:0]  wrt_data_R22, wrt_data_R22_flags, wrt_data_R22_spart;
 wire    [15:0]  wrt_data_R23;
 wire    [15:0]  wrt_data_R24;
 wire    [15:0]  wrt_data_R25;
@@ -368,10 +368,8 @@ assign  wrt_data_R21    = (we_a21) ? wrt_data_0 :
                            R21;
 // Flags Register can only be written by CPU (user restricted) //
 // TODO: Update from VPU/SPART as well so it may need some extra logic //
-assign  wrt_data_R22    = (cpu_flags_we) ? {R22[15:3], cpu_flags}:
-                          (SPART_we)     ? {R22[15:8], R22[7:3] | SPART_keys, R22[2:0]}:
-                          (we_a22)       ?  wrt_data_0 :
-                          (we_b22)       ?  wrt_data_1 :
+assign  wrt_data_R22    = (we_a22) ?  wrt_data_0 :
+                          (we_b22) ?  wrt_data_1 :
                            R22;
 // RO Register //
 assign  wrt_data_R23    = (we_VPU) ? return_obj :
@@ -638,9 +636,14 @@ always @(negedge clk)begin
         R21 <= R21;
 end
 // Flags Register
+assign wrt_data_R22_flags = (cpu_flags_we) ? {wrt_data_R22[15:3], cpu_flags}:
+                             wrt_data_R22;
+assign wrt_data_R22_spart = (SPART_we) ? wrt_data_R22_flags | {8'h00, SPART_keys, 3'h0}:
+                             wrt_data_R22_flags;
+
 always @(negedge clk)begin
     if(we_22)
-        R22 <= wrt_data_R22;
+        R22 <= wrt_data_R22_spart;
     else
         R22 <= R22;
 end

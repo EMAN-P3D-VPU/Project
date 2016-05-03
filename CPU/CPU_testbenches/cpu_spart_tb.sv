@@ -82,6 +82,25 @@ cpu CPU(
 always
     #2 clk = ~clk;
 
+always@(posedge clk)
+	if(CPU.IF.IF_instr == 16'h6FE0)
+		SPART_we = 1;
+	else
+		SPART_we = 0;
+
+always@(posedge clk)
+    if(CPU.IF.IF_instr == 16'h6FE0)
+	if(SPART_keys == 5'h01)
+		SPART_keys = 5'h02;
+	else if(SPART_keys == 5'h02)
+		SPART_keys = 5'h04;
+	else if(SPART_keys == 5'h04)
+		SPART_keys = 5'h08;
+	else if(SPART_keys == 5'h08)
+		SPART_keys = 5'h10;
+	else if(SPART_keys == 5'h10)
+		SPART_keys = 5'h01;
+
 // Fail Safe Stop //
 initial
     #100000 $stop;
@@ -95,8 +114,8 @@ initial begin
     clk = 0;
     rst_n = 0;
     // SPART //
-    SPART_we     = 1'h1;
-    SPART_keys   = 5'h0;
+    SPART_we     = 1'h0;
+    SPART_keys   = 5'h10;
     // VPU //
     VPU_rdy      = 1'h1;    // CPU stalls when VPU is not ready!
     VPU_data_we  = 1'h1;
@@ -112,7 +131,6 @@ initial begin
     $display("rst assert\n");
     @(negedge clk) rst_n = 1;
     VPU_data_we  = 1'h0;
-	SPART_we     = 1'h0;
     $display("rst deassert\n");
 
 

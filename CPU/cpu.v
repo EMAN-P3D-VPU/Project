@@ -148,7 +148,7 @@ cpu_memory MEMORY(
 // Instruction Decode + Execute (Stage 2) //////////////////////////////////////
 instruction_decode_execute DEX(
     // Inputs //
-    .clk(clk), .rst_n(rst_n),
+    .clk(clk), .rst_n(rst_n), .halt(halt),
     .instr(IF_instr),
     .pc_plus_1(IF_PC_plus_one),
     .we_VPU(VPU_data_we),

@@ -1,15 +1,16 @@
 `include "timescale.v"
 module cpu_vpu_top(input clkin,
                     input rst_n,
-	output hsync,
-	output vsync,
-	output blank,
-	output [11:0] D,
-	output dvi_rst,
-	output clk_25mhz,
-	output clk_25mhz_n,
-	inout scl_tri,
-	inout sda_tri);
+	            output hsync,
+	            output vsync,
+	            output blank,
+	            output [11:0] D,
+	            output dvi_rst,
+	            output clk_25mhz,
+	            output clk_25mhz_n,
+	            inout scl_tri,
+	            inout sda_tri
+                    );
 ////////////
 // Inputs /
 //////////
@@ -67,7 +68,19 @@ wire [8:0] rast_height;
 // Instantiations /
 //////////////////
 
-clkgen clk_gen(clkin, !rst_n, clk_25mhz, clk, clk_input_buf, locked_dcm);
+clkgen clk_gen(.CLKIN_IN(clkin), .RST_IN(1'b0), .CLKDV_OUT(clk_25mhz), 
+                .CLKIN_IBUFG_OUT(clk_input_buf), .CLK0_OUT(clk), .LOCKED_OUT(locked_dcm));
+
+//reg [1:0] clkreg;
+//always @(posedge clkin, negedge rst_n)
+//    if(!rst_n)
+//        clkreg <= 2'b0;
+//    else
+//        clkreg <= clkreg +1;
+//
+//assign clk = clkin;
+//assign clk_25mhz = clkreg[1];
+//assign locked_dcm = rst_n ? 1'b0: 1'b1;
 
 assign clk_25mhz_n = !clk_25mhz;
 
@@ -121,11 +134,11 @@ Rasterizer_Top_Level raster(.clk(clk), .rst(rst_n), .x0_in(x0_out), .y0_in(y0_ou
                   .raster_done(rast_done), .frame_rd_en(rast_rdy), .frame_x(rast_width), .frame_y(rast_height), .px_color(rast_color));
 
 dvi_framebuffer_top_level dfb_tl(
-		.clk(clk), .rst(!rst_n), .next_frame_switch(start_refresh), .locked_dcm(locked_dcm),
-		.rast_pixel_rdy(rast_rdy), .rast_color_input(rast_color), .rast_width(rast_width),
-		.rast_height(rast_height), .rast_done(rast_done), .read_rast_pixel_rdy(fb_rdy),
-		.hsync(hsync), .vsync(vsync), .blank(blank), .D(D), .dvi_rst(dvi_rst), .clk_25mhz(clk_25mhz),
-		.scl_tri(scl_tri), .sda_tri(sda_tri));
+                    .clk(clk), .rst(!rst_n), .next_frame_switch(start_refresh), .locked_dcm(locked_dcm),
+                    .rast_pixel_rdy(rast_rdy), .rast_color_input(rast_color), .rast_width(rast_width),
+                    .rast_height(rast_height), .rast_done(rast_done), .read_rast_pixel_rdy(fb_rdy),
+                    .hsync(hsync), .vsync(vsync), .blank(blank), .D(D), .dvi_rst(dvi_rst), .clk_25mhz(clk_25mhz),
+                    .scl_tri(scl_tri), .sda_tri(sda_tri));
 
 
 
