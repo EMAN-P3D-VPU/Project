@@ -32,7 +32,7 @@ wire [1:0]  steepness;
 wire [9:0] sx_0, sx_1, sy_0, sy_1;
 wire [2:0] octant;
 
-reg [67:0] delay;
+reg [45:0] delay;
 
 wire [68:0] fifo_input, fifo_output;
 wire fifo_rd_en, fifo_empty, fifo_full;
@@ -51,24 +51,21 @@ raster_input_stage input_stage( .clk(clk),
 								.line_cap_reg(line_cap_reg));
 
 //calculate steepness, dy, dx
-steep_calculator steep_calculator(  .line_cap_reg(line_cap_reg), 
-									.dy(dy), 
-									.dx(dx), 
-									.steep_value(steepness));
+steep_calculator steep_calculator(  .line_cap_reg(line_cap_reg),.steep_value(steepness));
 
-point_swapper point_swap(   .x_0(delay[67:58]), 
-							.x_1(delay[47:38]), 
-							.y_0(delay[57:48]), 
-							.y_1(delay[37:28]), 
+point_swapper point_swap(   .x_0(delay[45:36]), 
+							.x_1(delay[25:16]), 
+							.y_0(delay[35:26]), 
+							.y_1(delay[15:6]), 
 							.slope_steep(delay[1:0]),
 
 							.sx_0(sx_0), 
 							.sx_1(sx_1), 
 							.sy_0(sy_0), 
 							.sy_1(sy_1), 
-							.line_octant(octant));
+							.line_octant(octant), .dy_s(dy), .dx_s(dx));
 
-assign fifo_input = {sx_0, sy_0, sx_1, sy_1, delay[27:17], delay[16:6], delay[5:3], delay[2], octant};
+assign fifo_input = {sx_0, sy_0, sx_1, sy_1, dy, dx, delay[5:3], delay[2], octant};
 
 //GENERATE FIFO INSERT HERE
 //TIE WR_EN TO DELAY[2]
@@ -94,7 +91,7 @@ begin
 	end
 	else 
 	begin
-		delay <= {line_cap_reg[43:4], dy, dx, line_cap_reg[3:0], steepness};
+		delay <= {line_cap_reg[43:4], line_cap_reg[3:0], steepness};
 	end
 end
 

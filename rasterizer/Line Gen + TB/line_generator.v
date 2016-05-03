@@ -63,10 +63,40 @@ reg clr_color;
 assign px_color = (clr_color) ? bk_color : CAP_REG[6:4];
 
 //mathmodules****
-point_gen POINT_GEN(.x_i(CAP_REG[68:59]), .y_i(CAP_REG[58:49]), .dy(CAP_REG[28:18]), .dx(CAP_REG[17:7]), .p_or_n(CAP_REG[0]), .Xn(new_x), .Yn(new_y));
+wire [9:0] x_init, x_final;
+wire [9:0] y_init, y_final;
+assign x_init  = CAP_REG[68:59];
+assign y_init  = CAP_REG[58:49];
+assign x_final = CAP_REG[48:39];
+assign y_final = CAP_REG[38:29];
 
-//see if you hit the final point
-assign final_line_point = ((CAP_REG[68:59] == CAP_REG[48:39]) & (CAP_REG[58:49] == CAP_REG[38:29]));
+//any points at this point in the module will be in the +-1 slope range
+wire signed [10:0] dy_in, dx_in;
+assign dx_in = CAP_REG[17:7];
+assign dy_in = CAP_REG[28:18];
+
+wire [2:0] octant;
+assign octant = CAP_REG[2:0];
+
+//use a (0, 0) indexed register to generate a line
+//with slope dy/dx @ origin
+reg signed [19:0] temp_line;
+always@(posedge clk)
+begin
+  if(~rst) begin
+    temp_line <= 0;
+  end else if(load_line) begin
+    temp_line <= 0;
+  end else if(load_next_point) begin
+    temp_line <= {new_x, new_y};
+  end else begin
+    temp_line <= temp_line;
+  end
+end
+
+wire signed [9:0] offset_x, offset_y;
+assign offset_x = temp_line[19:10];
+assign offset_y = temp_line[9:0];
 
 // CAP_REG used to load new point and continue drawing line until new_x and new_y are equivalent to the final destination
 always @(posedge clk) begin
@@ -74,12 +104,19 @@ always @(posedge clk) begin
 		CAP_REG <= 69'b0;
 	end else if (load_line) begin
 		CAP_REG <= fifo_data;
-	end else if (load_next_point) begin
-		CAP_REG <= {new_x, new_y, CAP_REG[48:0]};
 	end else begin
 		CAP_REG <= CAP_REG;
 	end
 end
+
+
+point_gen POINT_GEN(.x_i(offset_x), .y_i(offset_y), .dy(dy_in), .dx(dx_in), .Xn(new_x), .Yn(new_y));
+
+wire signed[9:0] current_x, current_y;
+assign current_x = x_init + offset_x;
+assign current_y = y_init + offset_y;
+//see if you hit the final point
+assign final_line_point = ((current_x == x_final) & (current_y == y_final));
 
 //frame buffer coordinate values
 reg [9:0] x;
@@ -127,8 +164,8 @@ always @(posedge clk) begin
 end
 
 //MUX between scanning/clear function and select/paint function
-assign frame_x = (clr_color) ? x : CAP_REG[68:59];
-assign frame_y = (clr_color) ? y : CAP_REG[57:49];
+assign frame_x = (clr_color) ? x : current_x;
+assign frame_y = (clr_color) ? y : current_y;
 
 //frame and fifo enable regs
 reg draw_px;

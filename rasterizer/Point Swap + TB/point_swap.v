@@ -1,10 +1,14 @@
-module point_swapper(x_0, x_1, y_0, y_1, slope_steep, sx_0, sx_1, sy_0, sy_1, line_octant);
+module point_swapper(x_0, x_1, y_0, y_1, slope_steep, sx_0, sx_1, sy_0, sy_1, line_octant, dy_s, dx_s);
 
 input [9:0] x_0, x_1, y_0, y_1;
 
 input [1:0] slope_steep;
 output reg [9:0] sx_0, sx_1, sy_0, sy_1;             
 output reg [2:0] line_octant; //needed to reverse the swap
+output signed [10:0] dy_s, dx_s;
+
+assign dy_s = sy_1 - sy_0;
+assign dx_s = sx_1 - sx_0;
 
 wire [2:0] octant, octant_f;
 wire vector_direction;
@@ -15,7 +19,7 @@ assign vector_direction = (x_1 < x_0);
 assign octant = {slope_steep, vector_direction};
 
 //shifting will give the final octant
-assign octant_f = octant >> 1'b1;
+assign octant_f = {octant[0], octant[2:1]};
 
 always @(octant_f)
 begin

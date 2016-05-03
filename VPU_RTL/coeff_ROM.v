@@ -10,8 +10,8 @@ output reg [15:0] c1, c2, c3, c4;
   //Angles are (in degrees) : 3, 15, 30, 45, 60, 75, 90, 180
                         //  :-3,-15,-30,-45,-60,-75,-90,-180
   initial
-    $readmemh("coeff_new.txt",rom);		// Read coefficients
-    //$readmemh("/userspace/d/dsingh/ece554/EMAN/VPU_RTL/coeff_new.txt",rom);		// Read coefficients
+    //$readmemh("coeff_new.txt",rom);		// Read coefficients
+    $readmemh("/userspace/p/procek/554_eMan_Final/Project/VPU_RTL/coeff_new.txt",rom);		// Read coefficients
   
   always @(posedge clk) begin
     c1 <= rom[addr][63:48];

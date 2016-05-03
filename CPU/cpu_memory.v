@@ -46,8 +46,8 @@ reg [15:0]  RAM [256:0];
 ////
 //HACK//
 initial begin
-    $readmemh("CPU_Instruction_Files/CPU_instr_1.hex", RAM);
-    //$readmemh("/userspace/d/dsingh/ece554/EMAN/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+    //$readmemh("CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+    $readmemh("/userspace/p/procek/554_eMan_Final/Project/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
 end
 
 
