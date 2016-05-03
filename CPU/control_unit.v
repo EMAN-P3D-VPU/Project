@@ -109,7 +109,7 @@ localparam HALT = 5'b11111;
 ////
 
 // Stalling Logic (Timer + VPU Ready + ... ) //
-assign STALL_control = ~timer_done_1 | ~VPU_rdy | halt;
+assign STALL_control = ~timer_done | ~VPU_rdy | halt;
 assign timer_done = ~|timer;
 
 always@(posedge clk)
@@ -120,7 +120,7 @@ assign timer_done_negedge = (~timer_done_1 & timer_done);
 always@(posedge clk)begin
     if(!rst_n)
         timer <= 11'h000;
-    else if(set_timer)
+    else if(set_timer & ~timer_done_negedge)
         timer <= wait_time;
     else if(~timer_done)
         timer <= timer - 1;

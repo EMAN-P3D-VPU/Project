@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 module instruction_decode_execute(
     // Inputs //
-    clk, rst_n,
+    clk, rst_n, halt,
     instr,
     pc_plus_1,
     we_VPU,
@@ -72,6 +72,7 @@ input   [15:0]  V0_in, V1_in, V2_in, V3_in, V4_in, V5_in, V6_in, V7_in, RO_in;
 // Outputs /
 ///////////
 output              STALL;  // Main STALL signal for pipeline
+output              halt;
 output              PC_select;
 output      [15:0]  PC_next;
 // To VPU Pipeline Register //
