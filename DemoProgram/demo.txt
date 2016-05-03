@@ -42,6 +42,50 @@ _CLR_REG    LDU     R0  0x00
             MOV     V7  R0
 			
 /////////////////////////////
+//Set Control Key Values
+/////////////////////////////			
+_SET_MASKS  LDU R0 0xFF
+			LDL R0 0xBD
+			MOV R1 R0 //R1 holds check value for 'g'
+			
+			LDL R0 0x98
+			MOV R2 RO //R2 holds check value for 'h'
+			
+			LDL R0 0x88
+			MOV R3 R0 //R1 holds check value for 'x'
+			
+			LDL R0 0x87
+			MOV R4 RO //R2 holds check value for 'y'
+			
+			LDL R0 0x8E
+			MOV R5 R0 //R5 holds check value for 'r'
+			
+			LDL R0 0x92
+			MOV R6 R0 //R6 holds check value for 'n'
+			
+			LDL R0 0xE0
+			MOV R13 R0 //R13 holds check value for the space bar
+			
+			LDL R0 0x89
+			MOV R14 R0 //R14 holds check value for 'w'
+			
+			LDL R0 0x8D
+			MOV R15 R0 //R15 holds chack value for 's'
+			
+			LDL R0 0x9C
+			MOV R16 R0 //R16 holds check value for 'd'
+			
+			LDL R0 0x9F
+			MOV R17 R0 //R17 holds check value for 'a'
+			
+			LDL R0 0x9B
+			MOV R18 R0 //R18 holds check value for 'e'
+
+			LDL R0 0x8F
+			MOV R19 R0 //r19 holds check value for 'q'
+		
+			
+/////////////////////////////
 //OBJ INIT
 /////////////////////////////
 _OBJ_INIT   DPOLY 0x01 0x07
@@ -57,55 +101,7 @@ _OBJ_INIT   DPOLY 0x01 0x07
 			TRNALL R11 0x01
 			
 			MOV R9 R10 //R9 holds active object, initialize to be square
-			
-/////////////////////////////
-//Set Control Key Values
-/////////////////////////////			
-_SET_MASKS  LDU R0 0xFF
-			LDL R0 0xBD
-			//LDL R0
-			MOV R1 R0 //R1 holds check value for 'g'
-			
-			LDL R0 0x98
-			//LDL R0
-			MOV R2 RO //R2 holds check value for 'h'
-			
-			LDL R0 0x88
-			//LDL R0
-			MOV R3 R0 //R1 holds check value for 'x'
-			
-			LDL R0 0x87
-			//LDL R0
-			MOV R4 RO //R2 holds check value for 'y'
-			
-			LDL R0 0xE0
-			//LDL R0 0xA2
-			MOV R13 R0 //R13 holds check value for the space bar
-			
-			LDL R0 0x89
-			//LDL R0 0xD8
-			MOV R14 R0 //R14 holds check value for 'w'
-			
-			LDL R0 0x8D
-			//LDL R0 0xC3
-			MOV R15 R0 //R15 holds chack value for 's'
-			
-			LDL R0 0x9C
-			//LDL R0 0xC2
-			MOV R16 R0 //R16 holds check value for 'd'
-			
-			LDL R0 0x9F
-			//LDL R0 0xC4
-			MOV R17 R0 //R17 holds check value for 'a'
-			
-			LDL R0 0x9B
-			//LDL R0 0xD7
-			MOV R18 R0 //R18 holds check value for 'e'
-
-			LDL R0 0x8F
-			//LDL R0 0xD9
-			MOV R19 R0 //r19 holds check value for 'q'
-			
+				
 /////////////////////////////
 //Main Program
 /////////////////////////////
@@ -152,6 +148,14 @@ _Main       MOV R0 FS
 			MOV R0 FS
 			ADD R0 R4
 			BEQ _RefY //reflect obj over y-axis if 'y' pressed
+			
+			MOV R0 FS
+			ADD R0 R5
+			BEQ _Remove //clear the screen if 'r' pressed
+			
+			MOV R0 FS
+			ADD R0 R6
+			BEQ _OBJ_INIT //reset the screen if 'n' pressed
 			
 			B _Main
 			
@@ -220,3 +224,6 @@ _RefX       REFLECT R9 0x01
 _RefY       REFLECT R9 0x02
 			WAIT 0x500
 			B _Main
+			
+_Remove     RMVALL
+            B _Main
