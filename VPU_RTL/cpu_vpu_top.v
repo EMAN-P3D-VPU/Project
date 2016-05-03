@@ -1,6 +1,8 @@
 `include "timescale.v"
 module cpu_vpu_top(input clkin,
-                    input rst_n,
+                input rst_n,
+
+                // display
 	            output hsync,
 	            output vsync,
 	            output blank,
@@ -9,7 +11,11 @@ module cpu_vpu_top(input clkin,
 	            output clk_25mhz,
 	            output clk_25mhz_n,
 	            inout scl_tri,
-	            inout sda_tri
+	            inout sda_tri,
+
+                // spart
+                output txd,     // RS232 Transmit Data
+                input rxd       // RS232 Recieve Data
                     );
 ////////////
 // Inputs /
@@ -36,6 +42,10 @@ wire    [15:0]	V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, R
 ///////////////////
 // Interconnects /
 /////////////////
+//SPART-CPU interface
+wire [4:0] spart_keys;
+wire spart_we;
+
 //CPU inputs
 wire busy, obj_mem_full_out;
 wire [4:0] lst_stored_obj_out;
@@ -86,15 +96,19 @@ assign clk_25mhz_n = !clk_25mhz;
 
 assign VPU_data_we = 1'b0;
 
+// br_cfg is 0 so baud rate is set to 9600
+spart_top_level SPART(.clk(clk), .rst(rst), .txd(txd), .rxd(rxd), .br_cfg(2'b0),
+                    .bit_mask(spart_keys), .bit_mask_ready(spart_we));
+
 cpu CPU(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .VPU_data_we(VPU_data_we), .VPU_rdy(VPU_rdy),
     .VPU_V0(VPU_V0), .VPU_V1(VPU_V1), .VPU_V2(VPU_V2), .VPU_V3(VPU_V3), 
     .VPU_V4(VPU_V4), .VPU_V5(VPU_V5), .VPU_V6(VPU_V6), .VPU_V7(VPU_V7), .VPU_RO(VPU_RO),
-    // Outputs // TODO: SPART interface
+    // Outputs //
     .halt(halt),
     // SPART //
-    .SPART_we(1'b0), .SPART_keys(3'b0), // VPU //
+    .SPART_we(spart_we), .SPART_keys(spart_keys), // VPU //
     .start_VPU(start_VPU), .fill_VPU(fill_VPU), .obj_type_VPU(obj_type_VPU),
     .obj_color_VPU(obj_color_VPU), .op_VPU(op_VPU), .code_VPU(code_VPU), .obj_num_VPU(obj_num_VPU),
     .V0_VPU(V0_VPU), .V1_VPU(V1_VPU), .V2_VPU(V2_VPU), .V3_VPU(V3_VPU), .V4_VPU(V4_VPU), 
