@@ -6,25 +6,7 @@ input [2:0] octant;
 output [9:0] x_f;
 output [8:0] y_f;
 
-always@(*)
-begin
-
-	//octants 1/2 don't get their points swapped
-	//octants 5/6 only change vector direction, points generated are constant
-	case(octant)
-		0:  begin
-			end
-		3:	begin
-			end
-		4:	begin
-			end
-		7: 	begin
-			end
-		default:	begin
-					end
-
-
-end
-
+assign x_f = ((octant == 3'b000) || (octant == 3'b011) || (octant == 3'b100) || (octant == 3'b111)) ? y_gen:x_gen;
+assign y_f = ((octant == 3'b000) || (octant == 3'b011) || (octant == 3'b100) || (octant == 3'b111)) ? x_gen:y_gen;
 
 endmodule
