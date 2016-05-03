@@ -76,12 +76,14 @@ output  reg     halt;
 reg             set_timer;
 reg     [10:0]  timer;
 reg				timer_done_1;
+reg		[16:0]  TIMER_1MS;
 
 ///////////////////
 // Interconnects /
 /////////////////
 wire            timer_done;
 wire			timer_done_negedge;
+wire            TIMER_1MS_DONE;
 
 /////////////
 // OPCODES /
@@ -104,6 +106,12 @@ localparam B    = 5'b01110; // All B instr.
 localparam NOP  = 5'b01111; // NOP/WAIT
 localparam HALT = 5'b11111;
 
+///////////
+// Timer /
+/////////
+localparam TIMER_1MS_100MHz = 17'h186A0;
+//localparam TIMER_1MS_100MHz = 17'h00003; // Lower number for SIMULATION ONLY
+
 ////////////////////////////////////////////////////////////////////////////////
 // control_unit
 ////
@@ -113,7 +121,10 @@ assign STALL_control = ~timer_done | ~VPU_rdy | halt;
 assign timer_done = ~|timer;
 
 always@(posedge clk)
-	timer_done_1 <= timer_done;
+    if(!rst_n)
+		timer_done_1 <= 0;
+	else 
+		timer_done_1 <= timer_done;
 
 assign timer_done_negedge = (~timer_done_1 & timer_done);
 
@@ -122,11 +133,27 @@ always@(posedge clk)begin
         timer <= 11'h000;
     else if(set_timer & ~timer_done_negedge)
         timer <= wait_time;
-    else if(~timer_done)
+    else if(TIMER_1MS_DONE & ~timer_done)
         timer <= timer - 1;
     else
         timer <= timer;
 end
+
+// Keep a 1ms timer for WAIT instr //
+always@(posedge clk)begin
+	if(!rst_n)
+		TIMER_1MS <= 17'h00000;
+	else if(set_timer)
+		TIMER_1MS <= TIMER_1MS_100MHz;
+	else if(TIMER_1MS_DONE & ~timer_done)
+		TIMER_1MS <= TIMER_1MS_100MHz;
+	else if(~timer_done)
+		TIMER_1MS <= TIMER_1MS - 1;
+	else
+		TIMER_1MS <= TIMER_1MS;
+end
+
+assign TIMER_1MS_DONE = ~|TIMER_1MS;
 
 always@(*)begin
     // Defaults //

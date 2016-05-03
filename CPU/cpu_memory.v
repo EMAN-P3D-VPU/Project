@@ -35,7 +35,7 @@ output  [15:0]  read_data;
 /////////////////////////////
 // Signals/Logic/Registers /
 ///////////////////////////
-reg [15:0]  RAM [256:0];
+reg [15:0]  RAM [511:0];
 
 ///////////////////
 // Interconnects /
@@ -47,7 +47,8 @@ reg [15:0]  RAM [256:0];
 //HACK//
 initial begin
     //$readmemh("CPU_Instruction_Files/CPU_instr_1.hex", RAM);
-    $readmemh("/userspace/p/procek/554_eMan_Final/Project/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+    //$readmemh("/userspace/p/procek/554_eMan_Final/Project/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
+    $readmemh("CPU_Instruction_Files/SPART_instr.txt", RAM); // RAM must be >= 512
 end
 
 

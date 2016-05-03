@@ -75,6 +75,8 @@ wire [2:0] rast_color;
 wire [9:0] rast_width;
 wire [8:0] rast_height;
 
+reg  [2:0] VPU_BACKGROUND_COLOR;
+
 ////////////////////
 // Instantiations /
 //////////////////
@@ -107,12 +109,21 @@ cpu CPU(
     // Outputs //
     .halt(halt),
     // SPART //
-    .SPART_we(spart_we), .SPART_keys(spart_keys), // VPU //
+    .SPART_we(spart_we), .SPART_keys(spart_keys),
+    // VPU //
     .start_VPU(start_VPU), .fill_VPU(fill_VPU), .obj_type_VPU(obj_type_VPU),
     .obj_color_VPU(obj_color_VPU), .op_VPU(op_VPU), .code_VPU(code_VPU), .obj_num_VPU(obj_num_VPU),
     .V0_VPU(V0_VPU), .V1_VPU(V1_VPU), .V2_VPU(V2_VPU), .V3_VPU(V3_VPU), .V4_VPU(V4_VPU), 
     .V5_VPU(V5_VPU), .V6_VPU(V6_VPU), .V7_VPU(V7_VPU), .RO_VPU(RO_VPU)
 );
+
+always@(negedge clk)
+    if(!rst_n)
+        VPU_BACKGROUND_COLOR <= 3'h0
+    else if(fill_VPU)
+        VPU_BACKGROUND_COLOR <= obj_color_VPU;
+    else
+        VPU_BACKGROUND_COLOR <= VPU_BACKGROUND_COLOR;
 
 assign VPU_rdy = !busy;
 
@@ -146,7 +157,7 @@ clipping_top clipper(.clk(clk), .rst_n(rst_n), .obj_map(obj_map), .obj(clip_obj_
 
 Rasterizer_Top_Level raster(.clk(clk), .rst(rst_n), .x0_in(x0_out), .y0_in(y0_out), .x1_in(x1_out), .y1_in(y1_out),
                    .EoO(end_of_obj), .valid(vld), .Frame_Start(start_refresh), .raster_ready(raster_ready),
-                   .obj_change(changed), .bk_color(3'b1), .frame_ready(fb_rdy), .line_color(color_out),
+                   .obj_change(changed), .bk_color(VPU_BACKGROUND_COLOR), .frame_ready(fb_rdy), .line_color(color_out),
                   .raster_done(rast_done), .frame_rd_en(rast_rdy), .frame_x(rast_width), .frame_y(rast_height), .px_color(rast_color));
 
 dvi_framebuffer_top_level dfb_tl(

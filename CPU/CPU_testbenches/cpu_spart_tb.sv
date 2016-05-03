@@ -134,7 +134,7 @@ initial begin
     $display("rst deassert\n");
 
 
-    repeat(20000) @(posedge clk);
+    repeat(100000) @(posedge clk);
     $stop;
 end
 
