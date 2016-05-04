@@ -96,8 +96,16 @@ _J          MOV     R5  FS
             FILL    0x7
 _END        J       _TOP
 // Memory Sector 0x800
-_w          .FILL       0x0080  // W
-_a          .FILL       0x0040  // A
-_s          .FILL       0x0020  // S
-_d          .FILL       0x0010  // D
-_j          .FILL       0x0008  // J
+_space      .FILL       0x8000  // space
+_l          .FILL       0x4000  // l
+_k          .FILL       0x2000  // k
+_j          .FILL       0x1000  // j
+_h          .FILL       0x0800  // h
+_o          .FILL       0x0400  // o
+_i          .FILL       0x0200  // i
+_u          .FILL       0x0100  // u
+_y          .FILL       0x0080  // y
+_d          .FILL       0x0040  // d
+_s          .FILL       0x0020  // s
+_a          .FILL       0x0010  // a
+_w          .FILL       0x0008  // w
