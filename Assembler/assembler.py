@@ -7,7 +7,7 @@ import pprint
 # Definitions #
 #-#
 CODE_SIZE                = 0x0200
-FILL_ADDRESS_SPACE_START = 0x0100 # 256
+FILL_ADDRESS_SPACE_START = 0x0180 # 256
 CODE_ADDRESS_SPACE_START = 0x0000
 
 p = pprint.PrettyPrinter(indent=2)
@@ -59,7 +59,7 @@ except:
     sys.exit(2)
 
 source = open(inFile, 'r+') # allow to specify filename later on
-binary_code = open('Binary_' + outFile, 'w')
+binary_code = open(re.sub(r'[.]', '_bin.', outFile), 'w')
 machine_code = open(outFile, 'w')
 
 def parse_instruction(instr):
@@ -166,9 +166,6 @@ def decimal_to_binary(type, decimal, size):
             binary = decimal_to_binary('dn', decimal[1:], size)
         else:
             binary = decimal_to_binary('dp', decimal, size)
-
-        binary = binary[0:8] if type is 'dl' else binary[8:]
-        binary = 8*'0' + binary
     else:
         print("***ERROR*** Invalid immediate type: " + type)
     
@@ -801,13 +798,9 @@ for curr_line in source:
 #-#
 print('\nGLOBAL LABELS:\n')
 p.pprint(global_labels)
-#print('\nALL INSTRUCTIONS:\n')
-#p.pprint(instructions) debug only
 
 instr_space_to_print_hex = ''
 fill_space_to_print_hex = ''
-#instr_space_to_print_hex = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
-#fill_space_to_print_hex  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 instr_space_to_print_bin = '@'   + str(hex(CODE_ADDRESS_SPACE_START))
 fill_space_to_print_bin  = '\n@' + str(hex(FILL_ADDRESS_SPACE_START))
 # Second pass for label linking + instruction generation #
@@ -826,7 +819,6 @@ for instr in instructions:
 #-##############################################################################
 # Write to File #
 #-#
-# NOP : 0x7800
 print('\nWRITTING TO FILE\n')
 zeroFill = instr_space_to_print_hex.count('\n')
 while(zeroFill < FILL_ADDRESS_SPACE_START):

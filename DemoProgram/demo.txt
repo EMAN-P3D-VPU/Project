@@ -44,17 +44,45 @@ _CLR_REG    LDU     R0  0x00
 /////////////////////////////
 //OBJ INIT
 /////////////////////////////
-_OBJ_INIT   DPOLY 0x01 0x07
+_OBJ_INIT   LDU R0 0xD4
+			LDL R0 0x50
+			MOV V0 R0
+			
+			LDU R0 0xD1
+			LDL R0 0x25
+			MOV V1 R0
+			
+			LDU R0 0xD5
+			LDL R0 0x95
+			MOV V2 R0
+			
+			LDU R0 0x0D
+			LDL R0 0x10
+			MOV V3 R0
+			
+			LDU R0 0xD4
+			LDL R0 0x50
+			MOV V0 R0
+			
+			LDU R0 0xD1
+			LDL R0 0x25
+			MOV V1 R0
+			
+			LDU R0 0xD5
+			LDL R0 0x95
+			MOV V2 R0
+			
+			LDU R0 0x0D
+			LDL R0 0x10
+			MOV V3 R0
+			
+			DPOLY 0x01 0x07
 			WAIT 0x500
 			MOV R18 RO //R18 holds reference to the square
 			
 			DTRI 0x01 0x03
 			WAIT 0x500
-			LDU R0 0x00
-			LDL R0 0x50
-			MOV V1 R0
 			MOV R19 RO //R19 holds reference to the triangle
-			TRNALL R19 0x01
 			
 			MOV R1 R18 //R1 holds active object, initialize to be square
 
@@ -73,9 +101,33 @@ _SET_MASKS  LDU     R8  _w
             LDU     R11 _d
             LDL     R11 _d
             LDR     R11  R11
+			LDU     R11 _y
+            LDL     R11 _y
+            LDR     R11  R12
+			LDU     R11 _u
+            LDL     R11 _u
+            LDR     R11  R13
+			LDU     R11 _i
+            LDL     R11 _i
+            LDR     R11  R14
+			LDU     R11 _o
+            LDL     R11 _o
+            LDR     R11  R15
+			LDU     R11 _h
+            LDL     R11 _h
+            LDR     R11  R16
             LDU     R12 _j
             LDL     R12 _j
-            LDR     R12  R12
+            LDR     R12  R17
+			LDU     R11 _k
+            LDL     R11 _k
+            LDR     R11  R2
+			LDU     R11 _l
+            LDL     R11 _l
+            LDR     R11  R3
+			LDU     R11 _space
+            LDL     R11 _space
+            LDR     R11  R4
 				
 /////////////////////////////
 //Main Program
@@ -151,8 +203,16 @@ _MoveLeft   LDU R0 0x00 //Moves object left and returns to main
 /////////////////////////////			
 //Set Vars
 /////////////////////////////
-_w          .FILL       0x0080  // W
-_a          .FILL       0x0040  // A
+_w          .FILL       0x0008  // W
+_a          .FILL       0x0010  // A
 _s          .FILL       0x0020  // S
-_d          .FILL       0x0010  // D
-_j          .FILL       0x0008  // J
+_d          .FILL       0x0040  // D
+_y          .FILL       0x0080  // Y
+_u          .FILL       0x0100  // U
+_i          .FILL       0x0200  // I
+_o          .FILL       0x0400  // O
+_h          .FILL       0x0800  // H
+_j          .FILL       0x1000  // J
+_k          .FILL       0x2000  // K
+_l          .FILL       0x4000  // L
+_space      .FILL       0x8000  // SPACE

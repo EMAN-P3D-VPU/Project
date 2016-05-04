@@ -302,6 +302,7 @@ branch_unit pc_ctrl(
     // Inputs //
     .branch(branch),
     .jump(jump),
+    .return(~jump_immd),
     .condition_code(condition_code),
     .condition_flags(FLAGS[2:0]),
     .PC_plus_one(pc_plus_1),

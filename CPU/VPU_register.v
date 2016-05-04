@@ -11,6 +11,7 @@ module VPU_register(
     // Inputs //
     clk, rst_n, STALL,
     VPU_instr,
+    VPU_object,
     VPU_start,
     VPU_rdy,
     V0_in,
@@ -46,6 +47,7 @@ module VPU_register(
 input               clk, rst_n, STALL;
 input               VPU_start;
 input               VPU_rdy;
+input       [4:0]   VPU_object;
 input       [15:0]  VPU_instr;
 input       [15:0]  V0_in, V1_in, V2_in, V3_in, V4_in, V5_in, V6_in, V7_in, RO_in;
 /////////////
@@ -194,7 +196,7 @@ always@(posedge clk)begin
     if(!rst_n)
         VPU_obj_num <= 5'h0;
     else if(~STALL)
-        VPU_obj_num <= VPU_instr[9:5];
+        VPU_obj_num <= VPU_object;
     else
         VPU_obj_num <= VPU_obj_num;
 end

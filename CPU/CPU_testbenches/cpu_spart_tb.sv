@@ -14,7 +14,7 @@ module cpu_spart_tb();
 logic           clk, rst_n;
 logic           VPU_rdy, VPU_data_we;
 logic           SPART_we;
-logic   [4:0]   SPART_keys;
+logic   [12:0]  SPART_keys;
 logic   [15:0]  VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
 
 /////////////
@@ -83,31 +83,25 @@ always
     #2 clk = ~clk;
 
 always@(posedge clk)
-	if(CPU.IF.IF_instr == 16'h6FE0)
+	if(CPU.IF.IF_instr == 16'h6F9E)
 		SPART_we = 1;
 	else
 		SPART_we = 0;
 
 always@(posedge clk)
-    if(CPU.IF.IF_instr == 16'h6FE0)
-	if(SPART_keys == 5'h01)
-		SPART_keys = 5'h02;
-	else if(SPART_keys == 5'h02)
-		SPART_keys = 5'h04;
-	else if(SPART_keys == 5'h04)
-		SPART_keys = 5'h08;
-	else if(SPART_keys == 5'h08)
-		SPART_keys = 5'h10;
-	else if(SPART_keys == 5'h10)
-		SPART_keys = 5'h01;
+    if(CPU.IF.IF_instr == 16'h6F9E)
+	if(SPART_keys == 13'h0000)
+		SPART_keys = 13'h1000;
+	else
+		SPART_keys = SPART_keys >> 1;
 
 // Fail Safe Stop //
 initial
-    #100000 $stop;
+    #1000000 $stop;
 
 // Fill Memory for Software Tests //
 initial
-  $readmemh("CPU_Instruction_Files/SPART_instr.txt", CPU.MEMORY.RAM);
+  $readmemh("CPU_Instruction_Files/P3D_Animation_Demo.txt", CPU.MEMORY.RAM);
 
 // Main Test Loop //
 initial begin
@@ -134,7 +128,7 @@ initial begin
     $display("rst deassert\n");
 
 
-    repeat(100000) @(posedge clk);
+    repeat(1000000) @(posedge clk);
     $stop;
 end
 

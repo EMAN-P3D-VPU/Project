@@ -1,4 +1,22 @@
-_Label1  AND R1  R2    # comment
+        LDU R0  du300
+        LDU R0  du400
+        LDU R0  du500
+        LDU R0  du600
+        LDU R0  du700
+        LDU R0  du800
+        LDU R0  du900
+        LDU R0  du1000
+        LDU R0  du10000
+        LDL R0  dl300
+        LDL R0  dl400
+        LDL R0  dl500
+        LDL R0  dl600
+        LDL R0  dl700
+        LDL R0  dl800
+        LDL R0  dl900
+        LDL R0  dl1000
+        LDL R0  dl10000
+_Label1 AND R1  R2    # comment
         OR  R3  R1
         J   _Label1     //comment that is a couple words
 
