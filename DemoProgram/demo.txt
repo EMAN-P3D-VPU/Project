@@ -109,16 +109,17 @@ _ChangeObj  AND R1 R18 //change the active object
 			
 			
 _Tri        MOV R1 R19 //set triangle to active
-			WAIT 0x500
+			XOR FS R12
 			B _Main
 			
 _Squ        MOV R1 R18 //set square to active
-			WAIT 0x500
+			XOR FS R12
 			B _Main
 			
 _MoveUp     LDU R0 0x00 //Moves object up and returns to main
 			LDL R0 0x50
 			MOV V1 R0
+			XOR FS R8
 			TRNALL R1 0x02
 			WAIT 0x500
             B _Main
@@ -126,6 +127,7 @@ _MoveUp     LDU R0 0x00 //Moves object up and returns to main
 _MoveDown   LDU R0 0x00 //Moves object down and returns to main
 			LDL R0 0xB0
 			MOV V1 R0
+			XOR FS R10
 			TRNALL R1 0x02
 			WAIT 0x500
             B _Main
@@ -133,6 +135,7 @@ _MoveDown   LDU R0 0x00 //Moves object down and returns to main
 _MoveRight  LDU R0 0x00 //Moves object right and return to main
 			LDL R0 0x50
 			MOV V0 R0
+			XOR FS R11
 			TRNALL R1 0x01
 			WAIT 0x500
             B _Main
@@ -140,6 +143,7 @@ _MoveRight  LDU R0 0x00 //Moves object right and return to main
 _MoveLeft   LDU R0 0x00 //Moves object left and returns to main
 			LDL R0 0xB0
 			MOV V0 R0
+			XOR FS R9
 			TRNALL R1 0x01
 			WAIT 0x500
             B _Main
