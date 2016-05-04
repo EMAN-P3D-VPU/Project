@@ -31,7 +31,7 @@ input [2:0] bk_color;
 input frame_ready;
 output raster_done, frame_rd_en;
 output [9:0] frame_x;
-output [8:0] frame_y;
+output [9:0] frame_y;
 output [2:0] px_color;
 output clr_color;
 output [2:0] octant;
@@ -169,7 +169,7 @@ end
 
 //MUX between scanning/clear function and select/paint function
 assign frame_x = (clr_color) ? x : current_x;
-assign frame_y = (clr_color) ? y : current_y[8:0];
+assign frame_y = (clr_color) ? y : current_y;
 
 //frame and fifo enable regs
 reg draw_px;
