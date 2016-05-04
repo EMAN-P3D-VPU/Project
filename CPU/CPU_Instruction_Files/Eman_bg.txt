@@ -1,75 +1,5 @@
 // Showcase bg color change and different objects
 // Reset
-_RESET      J       _CLR_REG
-            J       _DRAW
-
-// Main Section -- contains SPART
-_MAIN       WAIT    dp150
-_Y          LDU     R0  _y
-            LDL     R0  _y
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _U
-            XOR     FS  R1
-            FILL    0x0
-
-_U          LDU     R0  _u
-            LDL     R0  _u
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _I
-            XOR     FS  R1
-            FILL    0x1
-
-_I          LDU     R0  _i
-            LDL     R0  _i
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _O
-            XOR     FS  R1
-            FILL    0x2
-
-_O          LDU     R0  _o
-            LDL     R0  _o
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _H
-            XOR     FS  R1
-            FILL    0x3
-
-_H          LDU     R0  _h
-            LDL     R0  _h
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _J
-            XOR     FS  R1
-            FILL    0x4
-
-_J          LDU     R0  _j
-            LDL     R0  _j
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _K
-            XOR     FS  R1
-            FILL    0x5
-
-_K          LDU     R0  _k
-            LDL     R0  _k
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _L
-            XOR     FS  R1
-            FILL    0x6
-
-_L          LDU     R0  _l
-            LDL     R0  _l
-            LDR     R1  R0
-            AND     R1  FS
-            BEQ     _END
-            XOR     FS  R0
-            FILL    0x7
-
-_END        J       _MAIN
 
 // Zero out all registers
 _CLR_REG    LDU     R0  0x00
@@ -105,8 +35,6 @@ _CLR_REG    LDU     R0  0x00
             MOV     V5  R0
             MOV     V6  R0
             MOV     V7  R0
-
-            JR      R16
 
 // 1 - E
 _DRAW       LDU     R0  du100
@@ -418,7 +346,76 @@ _DRAW       LDU     R0  du100
             MOV     V2  R2
             MOV     V3  R3
             DLINE   0x1 0x6
-            JR      R16
+
+// Main Section -- contains SPART
+            FILL    0x7
+            WAIT    dp500
+_MAIN       WAIT    dp250
+_Y          LDU     R0  _y
+            LDL     R0  _y
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _U
+            XOR     FS  R1
+            FILL    0x0
+
+_U          LDU     R0  _u
+            LDL     R0  _u
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _I
+            XOR     FS  R1
+            FILL    0x1
+
+_I          LDU     R0  _i
+            LDL     R0  _i
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _O
+            XOR     FS  R1
+            FILL    0x2
+
+_O          LDU     R0  _o
+            LDL     R0  _o
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _H
+            XOR     FS  R1
+            FILL    0x3
+
+_H          LDU     R0  _h
+            LDL     R0  _h
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _J
+            XOR     FS  R1
+            FILL    0x4
+
+_J          LDU     R0  _j
+            LDL     R0  _j
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _K
+            XOR     FS  R1
+            FILL    0x5
+
+_K          LDU     R0  _k
+            LDL     R0  _k
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _L
+            XOR     FS  R1
+            FILL    0x6
+
+_L          LDU     R0  _l
+            LDL     R0  _l
+            LDR     R1  R0
+            AND     R1  FS
+            BEQ     _END
+            XOR     FS  R0
+            FILL    0x7
+
+_END        J       _MAIN
 
 // Memory Sector 0x100
 _space      .FILL       0x8000  // space    // toggle
