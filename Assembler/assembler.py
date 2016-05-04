@@ -7,7 +7,7 @@ import pprint
 # Definitions #
 #-#
 CODE_SIZE                = 0x0200
-FILL_ADDRESS_SPACE_START = 0x0100 # 256
+FILL_ADDRESS_SPACE_START = 0x0180 # 256
 CODE_ADDRESS_SPACE_START = 0x0000
 
 p = pprint.PrettyPrinter(indent=2)

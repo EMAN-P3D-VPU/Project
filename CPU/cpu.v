@@ -211,6 +211,7 @@ VPU_register VPU_data_out(
     .VPU_start(DEX_VPU_start),
     .VPU_rdy(VPU_rdy),
     .VPU_instr(IF_instr),
+    .VPU_object(DEX_reg_data_0[4:0]),
     .V0_in(DEX_V0),
     .V1_in(DEX_V1),
     .V2_in(DEX_V2),

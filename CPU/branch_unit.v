@@ -9,6 +9,7 @@ module branch_unit(
     // Inputs //
     branch,
     jump,
+    return,
     condition_code,
     condition_flags,
     PC_plus_one,
@@ -24,6 +25,7 @@ module branch_unit(
 //////////
 input               branch;
 input               jump;
+input               return;
 input       [2:0]   condition_code;
 input       [2:0]   condition_flags;
 input signed [15:0]  PC_plus_one;
@@ -126,7 +128,8 @@ always@(*) begin
 end
 
 // Jump Logic //
-assign PC_jump = PC_plus_one + jump_offset;
+assign PC_jump = (return) ? jump_offset: 
+                  PC_plus_one + jump_offset;
 assign PC_return =  PC_plus_one;
 
 endmodule

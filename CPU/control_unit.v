@@ -280,6 +280,7 @@ always@(*)begin
         // All other commands default to VPU instructions //
         default:begin
             VPU_start = 1;
+            reg_read_0 = 1;
         end
     endcase
 end
