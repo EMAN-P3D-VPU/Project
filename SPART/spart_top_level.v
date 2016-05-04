@@ -30,7 +30,7 @@ module spart_top_level(
 	input [1:0] br_cfg, // Baud Rate Configuration, Tied to dip switches 2 and 3
 
 	// cpu interface
-	output [4:0] bit_mask,
+	output [12:0] bit_mask,
 	output bit_mask_ready);
 	
 	wire iocs;

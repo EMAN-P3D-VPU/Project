@@ -38,7 +38,7 @@ input       [2:0]   cpu_flags;      // Z, N, V
 input               cpu_flags_we;
 // SPART (key presses) 3 - UP 2 - DOWN 1 - LEFT 0 - RIGHT
 input               SPART_we;
-input       [4:0]   SPART_keys;
+input       [12:0]  SPART_keys;
 // Write Data from CPU //
 input       [15:0]  wrt_data_0;
 input       [15:0]  wrt_data_1;
@@ -638,7 +638,7 @@ end
 // Flags Register
 assign wrt_data_R22_flags = (cpu_flags_we) ? {wrt_data_R22[15:3], cpu_flags}:
                              wrt_data_R22;
-assign wrt_data_R22_spart = (SPART_we) ? wrt_data_R22_flags | {8'h00, SPART_keys, 3'h0}:
+assign wrt_data_R22_spart = (SPART_we) ? wrt_data_R22_flags | {SPART_keys, 3'h0}:
                              wrt_data_R22_flags;
 
 always @(negedge clk)begin

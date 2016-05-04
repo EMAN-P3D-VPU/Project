@@ -61,7 +61,7 @@ input           VPU_rdy;
 input           we_CPU_0;
 input           we_CPU_1;
 input           SPART_we;
-input   [4:0]   SPART_keys;
+input   [12:0]  SPART_keys;
 input   [4:0]   wrt_addr_0;
 input   [4:0]   wrt_addr_1;
 input   [15:0]  wrt_data_0;

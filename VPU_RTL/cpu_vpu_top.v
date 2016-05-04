@@ -43,7 +43,7 @@ wire    [15:0]	V0_VPU, V1_VPU, V2_VPU, V3_VPU, V4_VPU, V5_VPU, V6_VPU, V7_VPU, R
 // Interconnects /
 /////////////////
 //SPART-CPU interface
-wire [4:0] spart_keys;
+wire [12:0] spart_keys;
 wire spart_we;
 
 //CPU inputs
