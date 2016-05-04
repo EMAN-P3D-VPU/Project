@@ -415,7 +415,7 @@ _L          LDU     R0  _l
             XOR     FS  R0
             FILL    0x7
 
-_END        J       _MAIN
+_END        B       _MAIN
 
 // Memory Sector 0x100
 _space      .FILL       0x8000  // space    // toggle
