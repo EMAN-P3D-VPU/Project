@@ -112,6 +112,12 @@ always @(posedge clk, negedge rst_n) begin
                 f0_wr <= 1'b0;
             end
             color_in_f0 <= color_reg;
+        end else begin
+            x0_in_f0 <= 16'hx;
+            y0_in_f0 <= 16'hx;
+            x1_in_f0 <= 16'hx;
+            y1_in_f0 <= 16'hx;
+            f0_wr <= 1'b0;
         end
     end
 end
