@@ -1,7 +1,7 @@
 module point_swapback(x_gen, y_gen, octant, clr_color, x_f, y_f);
 
 input [9:0] x_gen;
-input [8:0] y_gen;
+input [9:0] y_gen;
 input [2:0] octant;
 input clr_color;
 output [9:0] x_f;

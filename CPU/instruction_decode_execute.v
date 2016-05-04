@@ -236,7 +236,7 @@ register_file regfile(
 assign ALU_op = instr[13:11];
 assign shamt = instr[3:0];
 assign alu_op_0 = reg_data_0;
-assign alu_op_1 = (add_immd) ? {{10{instr[4]}}, instr[4:0]}:    // Immediate
+assign alu_op_1 = (add_immd) ? {{11{instr[4]}}, instr[4:0]}:    // Immediate
                    reg_data_1;                                  // Rs
                    
 alu ALU(

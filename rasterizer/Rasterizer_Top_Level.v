@@ -26,7 +26,7 @@ output [8:0] frame_y;
 output [2:0] px_color;
 
 wire [9:0] x_generated;
-wire [8:0] y_generated;
+wire [9:0] y_generated;
 
 
 //top level internals

@@ -25,7 +25,7 @@ wire			VPU_rdy;
 wire                    VPU_data_we;
 //logic			SPART_we;
 //logic	[3:0]	SPART_keys;
-wire	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7, VPU_RO;
+wire	[15:0]	VPU_V0, VPU_V1, VPU_V2, VPU_V3, VPU_V4, VPU_V5, VPU_V6, VPU_V7;
 
 //////////////////////
 // CPU-VPU Interface /
@@ -94,7 +94,7 @@ cpu CPU(
     // Inputs //
     .clk(clk), .rst_n(rst_n), .VPU_data_we(VPU_data_we), .VPU_rdy(VPU_rdy),
     .VPU_V0(VPU_V0), .VPU_V1(VPU_V1), .VPU_V2(VPU_V2), .VPU_V3(VPU_V3), 
-    .VPU_V4(VPU_V4), .VPU_V5(VPU_V5), .VPU_V6(VPU_V6), .VPU_V7(VPU_V7), .VPU_RO(VPU_RO),
+    .VPU_V4(VPU_V4), .VPU_V5(VPU_V5), .VPU_V6(VPU_V6), .VPU_V7(VPU_V7), .VPU_RO({11'h0, lst_stored_obj_out}),
     // Outputs //
     .halt(halt),
     // SPART //
@@ -103,7 +103,7 @@ cpu CPU(
     .start_VPU(start_VPU), .fill_VPU(fill_VPU), .obj_type_VPU(obj_type_VPU),
     .obj_color_VPU(obj_color_VPU), .op_VPU(op_VPU), .code_VPU(code_VPU), .obj_num_VPU(obj_num_VPU),
     .V0_VPU(V0_VPU), .V1_VPU(V1_VPU), .V2_VPU(V2_VPU), .V3_VPU(V3_VPU), .V4_VPU(V4_VPU), 
-    .V5_VPU(V5_VPU), .V6_VPU(V6_VPU), .V7_VPU(V7_VPU), .RO_VPU(RO_VPU)
+    .V5_VPU(V5_VPU), .V6_VPU(V6_VPU), .V7_VPU(V7_VPU), .RO_VPU()
 );
 
 always@(negedge clk)
