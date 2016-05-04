@@ -31,21 +31,6 @@ _CLR_REG    LDU     R0  0x00
             MOV     V5  R0
             MOV     V6  R0
             MOV     V7  R0
-            LDU     R0  du50
-            LDL     R0  dl50
-            LDU     R1  du250
-            LDL     R1  dl250
-            // Draw X //
-            MOV     V0  R0
-            MOV     V1  R0
-            MOV     V2  R1
-            MOV     V3  R1
-            DLINE   0x1 0x3
-            MOV     V0  R0
-            MOV     V1  R1
-            MOV     V2  R1
-            MOV     V3  R0
-            DLINE   0x1 0x5
             J       _SET_MASKS
 _SET_MASKS  LDU     R0  _w 
             LDL     R0  _w
