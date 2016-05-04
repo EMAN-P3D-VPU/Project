@@ -48,6 +48,12 @@ _OBJ_INIT   DPOLY 0x01 0x07
 			WAIT 0x500
 			MOV R10 RO //R10 holds reference to the square
 			
+			DTRI 0x01 0x00
+			LDU R0 0xEF
+			LDL R0 0xFF
+			MOV V1 R0
+			TRNALL RO 0x01
+			
 			MOV R9 R18 //initialize active point to be point 1
 			
 /////////////////////////////
