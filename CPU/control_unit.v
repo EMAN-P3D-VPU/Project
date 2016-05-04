@@ -229,6 +229,7 @@ always@(*)begin
             reg_read_0 = 1;
             alu_to_reg = 1;
             reg_we_dst_0 = 1;
+            Z_we = 1;
         end
         ROT:begin
             reg_read_0 = 1;
