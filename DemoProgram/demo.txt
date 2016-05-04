@@ -44,17 +44,45 @@ _CLR_REG    LDU     R0  0x00
 /////////////////////////////
 //OBJ INIT
 /////////////////////////////
-_OBJ_INIT   DPOLY 0x01 0x07
+_OBJ_INIT   LDU R0 0xD4
+			LDL R0 0x50
+			MOV V0 R0
+			
+			LDU R0 0xD1
+			LDL R0 0x25
+			MOV V1 R0
+			
+			LDU R0 0xD5
+			LDL R0 0x95
+			MOV V2 R0
+			
+			LDU R0 0x0D
+			LDL R0 0x10
+			MOV V3 R0
+			
+			LDU R0 0xD4
+			LDL R0 0x50
+			MOV V0 R0
+			
+			LDU R0 0xD1
+			LDL R0 0x25
+			MOV V1 R0
+			
+			LDU R0 0xD5
+			LDL R0 0x95
+			MOV V2 R0
+			
+			LDU R0 0x0D
+			LDL R0 0x10
+			MOV V3 R0
+			
+			DPOLY 0x01 0x07
 			WAIT 0x500
 			MOV R18 RO //R18 holds reference to the square
 			
 			DTRI 0x01 0x03
 			WAIT 0x500
-			LDU R0 0x00
-			LDL R0 0x50
-			MOV V1 R0
 			MOV R19 RO //R19 holds reference to the triangle
-			TRNALL R19 0x01
 			
 			MOV R1 R18 //R1 holds active object, initialize to be square
 
