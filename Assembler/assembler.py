@@ -127,7 +127,9 @@ def hex_to_binary(hex):
         binary += bcd[h.upper()]
 
     # Sign Extend #
-    if curr_opcode == 'LDU' or curr_opcode == 'LDL':
+    if curr_opcode == 'LDU':
+        binary = binary + '0' * (16 - len(binary))
+    elif curr_opcode == 'LDL':
         binary = '0' * (16 - len(binary)) + binary
     else:
         binary = binary[0] * (16 - len(binary)) + binary
@@ -166,6 +168,7 @@ def decimal_to_binary(type, decimal, size):
             binary = decimal_to_binary('dn', decimal[1:], size)
         else:
             binary = decimal_to_binary('dp', decimal, size)
+        print(binary)
     else:
         print("***ERROR*** Invalid immediate type: " + type)
     
