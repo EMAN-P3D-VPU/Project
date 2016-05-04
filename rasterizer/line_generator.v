@@ -249,11 +249,11 @@ case (state)
 	end
 	POP_LINE: begin
 		// go to idle if there is no object change
-		if(fifo_empty & (end_of_objects | valid_capture) & frame_start & ~obj_change) begin
+		if(fifo_empty & (end_of_objects | ~valid_capture) & frame_start & ~obj_change) begin
 			draw_complete = 1'b1;
 			nxt_state = IDLE;
 		// go directly to clear screen if object change is ready as well
-		end else if (fifo_empty & (end_of_objects | valid_capture) & frame_start & obj_change) begin
+		end else if (fifo_empty & (end_of_objects | ~valid_capture) & frame_start & obj_change) begin
 			clr_coords = 1'b1;
 			draw_complete = 1'b1;
 			nxt_state = CLR_SCREEN;
