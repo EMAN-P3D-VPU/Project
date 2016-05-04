@@ -40,190 +40,115 @@ _CLR_REG    LDU     R0  0x00
             MOV     V5  R0
             MOV     V6  R0
             MOV     V7  R0
-			
-/////////////////////////////
-//Set Control Key Values
-/////////////////////////////			
-_SET_MASKS  LDU R0 0xFF
-			LDL R0 0xBD
-			MOV R1 R0 //R1 holds check value for 'g'
-			
-			LDL R0 0x98
-			MOV R2 RO //R2 holds check value for 'h'
-			
-			LDL R0 0x88
-			MOV R3 R0 //R1 holds check value for 'x'
-			
-			LDL R0 0x87
-			MOV R4 RO //R2 holds check value for 'y'
-			
-			LDL R0 0x8E
-			MOV R5 R0 //R5 holds check value for 'r'
-			
-			LDL R0 0x92
-			MOV R6 R0 //R6 holds check value for 'n'
-			
-			LDL R0 0xE0
-			MOV R13 R0 //R13 holds check value for the space bar
-			
-			LDL R0 0x89
-			MOV R14 R0 //R14 holds check value for 'w'
-			
-			LDL R0 0x8D
-			MOV R15 R0 //R15 holds chack value for 's'
-			
-			LDL R0 0x9C
-			MOV R16 R0 //R16 holds check value for 'd'
-			
-			LDL R0 0x9F
-			MOV R17 R0 //R17 holds check value for 'a'
-			
-			LDL R0 0x9B
-			MOV R18 R0 //R18 holds check value for 'e'
-
-			LDL R0 0x8F
-			MOV R19 R0 //r19 holds check value for 'q'
-		
-			
+					
 /////////////////////////////
 //OBJ INIT
 /////////////////////////////
 _OBJ_INIT   DPOLY 0x01 0x07
 			WAIT 0x500
-			MOV R10 RO //R10 holds reference to the square
+			MOV R18 RO //R18 holds reference to the square
 			
 			DTRI 0x01 0x03
 			WAIT 0x500
 			LDU R0 0x00
 			LDL R0 0x50
 			MOV V1 R0
-			MOV R11 RO //R11 holds reference to the triangle
-			TRNALL R11 0x01
+			MOV R19 RO //R19 holds reference to the triangle
+			TRNALL R19 0x01
 			
-			MOV R9 R10 //R9 holds active object, initialize to be square
+			MOV R1 R18 //R1 holds active object, initialize to be square
+
+/////////////////////////////
+//Set SPART Value Masks
+/////////////////////////////
+_SET_MASKS  LDU     R8  _w
+            LDL     R8  _w
+            LDR     R8  R8
+            LDU     R9  _a
+            LDL     R9  _a
+            LDR     R9  R9
+            LDU     R10 _s
+            LDL     R10 _s
+            LDR     R10  R10
+            LDU     R11 _d
+            LDL     R11 _d
+            LDR     R11  R11
+            LDU     R12 _j
+            LDL     R12 _j
+            LDR     R12  R12
 				
 /////////////////////////////
 //Main Program
 /////////////////////////////
 _Main       MOV R0 FS
-			ADD R0 R13
-			BEQ _ChangeObj //move the obj up if 'space' pressed
+			AND R0 R12
+			BEQ _ChangeObj //move the obj up if 'j' pressed
 			
 			MOV R0 FS
-			ADD R0 R14
+			AND R0 R8
 			BEQ _MoveUp //move the obj up if 'w' pressed
 			
 			MOV R0 FS
-			ADD R0 R15
+			AND R0 R10
 			BEQ _MoveDown //move the obj up if 's' pressed
 			
 			MOV R0 FS
-			ADD R0 R16
+			AND R0 R11
 			BEQ _MoveRight //move the obj up if 'd' pressed
 			
 			MOV R0 FS
-			ADD R0 R17
+			ADD R0 R9
 			BEQ _MoveLeft //move the obj up if 'a' pressed
-			
-			MOV R0 FS
-			ADD R0 R18
-			BEQ _RotR //move the obj up if 'e' pressed
-			
-			MOV R0 FS
-			ADD R0 R19
-			BEQ _RotL //move the obj up if 'q' pressed
-			
-			MOV R0 FS
-			ADD R0 R1
-			BEQ _ScaleUp //move the obj up if 'g' pressed
-			
-			MOV R0 FS
-			ADD R0 R2
-			BEQ _ScaleDown //move the obj up if 'h' pressed
-			
-			MOV R0 FS
-			ADD R0 R3
-			BEQ _RefX //reflect obj over x-axis if 'x' pressed
-			
-			MOV R0 FS
-			ADD R0 R4
-			BEQ _RefY //reflect obj over y-axis if 'y' pressed
-			
-			MOV R0 FS
-			ADD R0 R5
-			BEQ _Remove //clear the screen if 'r' pressed
-			
-			MOV R0 FS
-			ADD R0 R6
-			BEQ _OBJ_INIT //reset the screen if 'n' pressed
 			
 			B _Main
 			
-_ChangeObj  AND R9 R10 //change the active object
+_ChangeObj  AND R1 R18 //change the active object
 			BEQ _Tri
 			BNE _Squ
 			B _Main
 			
 			
-_Tri        MOV R9 R11 //set triangle to active
+_Tri        MOV R1 R19 //set triangle to active
 			WAIT 0x500
 			B _Main
 			
-_Squ        MOV R9 R10 //set square to active
+_Squ        MOV R1 R18 //set square to active
 			WAIT 0x500
 			B _Main
 			
 _MoveUp     LDU R0 0x00 //Moves object up and returns to main
 			LDL R0 0x50
 			MOV V1 R0
-			TRNALL R9 0x02
+			TRNALL R1 0x02
 			WAIT 0x500
             B _Main
 
 _MoveDown   LDU R0 0x00 //Moves object down and returns to main
 			LDL R0 0xB0
 			MOV V1 R0
-			TRNALL R9 0x02
+			TRNALL R1 0x02
 			WAIT 0x500
             B _Main
 
 _MoveRight  LDU R0 0x00 //Moves object right and return to main
 			LDL R0 0x50
 			MOV V0 R0
-			TRNALL R9 0x01
+			TRNALL R1 0x01
 			WAIT 0x500
             B _Main
 
 _MoveLeft   LDU R0 0x00 //Moves object left and returns to main
 			LDL R0 0xB0
 			MOV V0 R0
-			TRNALL R9 0x01
+			TRNALL R1 0x01
 			WAIT 0x500
             B _Main
 
-_RotR       ROTR R9 0x00 0x00 //Rotates object clockwise and returns to main
-			WAIT 0x500
-            B _Main
-
-_RotL       ROTL R9 0x00 0x00 //Rotates object counter-clockwise and returns to main
-			WAIT 0x500
-            B _Main
-			
-_ScaleUp    SCALE R9 0x00 0x03
-			WAIT 0x500
-			B _Main
-			
-_ScaleDown  SCALE R9 0x00 0x00
-			WAIT 0x500
-			B _Main
-			
-_RefX       REFLECT R9 0x01
-			WAIT 0x500
-			B _Main
-
-_RefY       REFLECT R9 0x02
-			WAIT 0x500
-			B _Main
-			
-_Remove     RMVALL
-            B _Main
+/////////////////////////////			
+//Set Vars
+/////////////////////////////
+_w          .FILL       0x0080  // W
+_a          .FILL       0x0040  // A
+_s          .FILL       0x0020  // S
+_d          .FILL       0x0010  // D
+_j          .FILL       0x0008  // J
