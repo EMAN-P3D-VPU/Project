@@ -238,10 +238,21 @@ _nB         LDU     R7  _space
             LDL     R7  _space
             LDR     R8  R7      // key mask
             AND     R8  FS
-            BEQ     _END
+            BEQ     _nC
             // Key detected //
             XOR     FS  R8
             J       _TOGGLE
+
+            // Reset ///////////////////////////////////////////////////////////
+_nC         LDU     R7  _l
+            LDL     R7  _l
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _END
+            // Key detected //
+            XOR     FS  R8
+            RMVALL
+            J       _RESET
 _END        J       _MAIN
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -332,7 +343,7 @@ _TOGGLE_R   JR      R16
 // Memory Sector 0x100
 ////////////////////////////////////////////////////////////////////////////////
 _space      .FILL       0x8000  // space    // toggle
-_l          .FILL       0x4000  // l        // ?
+_l          .FILL       0x4000  // l        // reset
 _k          .FILL       0x2000  // k        // change color
 _j          .FILL       0x1000  // j        // scale down
 _h          .FILL       0x0800  // h        // scale up

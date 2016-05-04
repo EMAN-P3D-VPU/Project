@@ -83,13 +83,13 @@ always
     #2 clk = ~clk;
 
 always@(posedge clk)
-	if(CPU.IF.IF_instr == 16'h6F9E)
+	if(CPU.IF.IF_instr == 16'h6F96)
 		SPART_we = 1;
 	else
 		SPART_we = 0;
 
 always@(posedge clk)
-    if(CPU.IF.IF_instr == 16'h6F9E)
+    if(CPU.IF.IF_instr == 16'h6F96)
 	if(SPART_keys == 13'h0000)
 		SPART_keys = 13'h1000;
 	else
