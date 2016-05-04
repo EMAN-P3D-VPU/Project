@@ -91,7 +91,7 @@ _SET_MASKS  LDU R0 0xFF
 			LDL R0 0xCC
 			//LDL R0 0xCD
 			MOV R13 R0 //r19 holds check value for '4'
-			
+
 _RstMask    LDU R1 0x00
 			LDL R1 0x01
 			
@@ -256,3 +256,12 @@ _R4L        AND R4 R9
 			TRN R10 0x02 0x04
 			WAIT 0x500
             B _RstMask
+			
+/////////////////////////////			
+//Set Vars
+/////////////////////////////
+_w          .FILL       0x0080  // W
+_a          .FILL       0x0040  // A
+_s          .FILL       0x0020  // S
+_d          .FILL       0x0010  // D
+_j          .FILL       0x0008  // J
