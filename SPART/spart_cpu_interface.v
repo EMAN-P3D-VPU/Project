@@ -8,7 +8,7 @@ module spart_cpu_interface(
 	input [7:0] databus,
 
 	// cpu interface
-	output [4:0] bit_mask,
+	output [12:0] bit_mask,
 	output reg bit_mask_ready);
 
 // get both upper case and lower case characters
