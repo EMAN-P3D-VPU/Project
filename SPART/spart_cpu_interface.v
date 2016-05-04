@@ -9,7 +9,7 @@ module spart_cpu_interface(
 
 	// cpu interface
 	output [12:0] bit_mask,
-	output bit_mask_ready);
+	output reg bit_mask_ready);
 
 // get both upper case and lower case characters
 parameter w = 8'h77;
@@ -50,7 +50,9 @@ find_rising_edge rda_find_rising_edge(.clk(clk),
 					.enable(rda),
 					.rising_edge(rda_edge));
 
-// outputs a 1 when a key we care about is pressed
-assign bit_mask_ready = rda_edge;
+// outputs a 1 when a key we care about is pressed (delay for 1 clock cycle)
+always @(posedge clk) begin
+	bit_mask_ready <= rda_edge;
+end
 
 endmodule

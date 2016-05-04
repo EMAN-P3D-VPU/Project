@@ -3,7 +3,7 @@
 module LINE_GENERATOR(/*global inputs*/      clk, rst,
 	              /*raster inputs*/      fifo_data, fifo_empty,
 	              /*raster self-out*/    fifo_rd_en,
-				  /*input from clipper*/ end_of_objects, frame_start, 
+				  /*input from clipper*/ end_of_objects, frame_start, c_valid,
 				  /*input from object*/  obj_change,
 				  /*input from matrix*/  bk_color,
 				  /*input from f_buff*/  frame_ready,
@@ -19,7 +19,7 @@ input fifo_empty;
 output fifo_rd_en;
 
 //CLIPPER INPUTS/OUTPUTS
-input end_of_objects, frame_start;
+input end_of_objects, frame_start, c_valid;
 
 //OBJECT UNIT INPUT
 input obj_change;
@@ -80,6 +80,18 @@ assign dx_in = CAP_REG[17:7];
 assign dy_in = CAP_REG[28:18];
 
 assign octant = CAP_REG[2:0];
+
+// keeps valid
+reg valid_capture;
+always @(posedge clk, negedge rst) begin
+	if (~rst) begin
+		valid_capture <= 1'b0;
+	end else if (c_valid & ~frame_start) begin
+		valid_capture <= c_valid;
+	end else begin
+		valid_capture <= valid_capture;
+	end
+end
 
 //use a (0, 0) indexed register to generate a line
 //with slope dy/dx @ origin
@@ -237,15 +249,15 @@ case (state)
 	end
 	POP_LINE: begin
 		// go to idle if there is no object change
-		if(fifo_empty & end_of_objects & frame_start & ~obj_change) begin
+		if(fifo_empty & (end_of_objects | valid_capture) & frame_start & ~obj_change) begin
 			draw_complete = 1'b1;
 			nxt_state = IDLE;
 		// go directly to clear screen if object change is ready as well
-		end else if (fifo_empty & end_of_objects & frame_start & obj_change) begin
+		end else if (fifo_empty & (end_of_objects | valid_capture) & frame_start & obj_change) begin
 			clr_coords = 1'b1;
 			draw_complete = 1'b1;
 			nxt_state = CLR_SCREEN;
-		// if fifo is not empty -> if invalid just pop line without doing anything with it
+		// go to idle if there is no object change
 		end else if (~fifo_empty) begin
 			// fifo is not empty so read
 			load_line = 1'b1;
