@@ -1,0 +1,42 @@
+        LDL     R0      0x64
+        LDU     R0      0x00
+        MOV     R24     R0
+        MOV     R25     R0
+        MOV     R26     R0
+        MOV     R31     R0
+        LDL     R0      0xC8
+        LDU     R0      0x00
+        MOV     R27     R0
+        MOV     R28     R0
+        MOV     R29     R0
+        MOV     R30     R0
+        FILL    0x3
+        DTRI    0x1     0x2
+        LDL     R0      0x2C
+        LDU     R0      0x01
+        MOV     R24     R0
+        MOV     R25     R0
+        MOV     R26     R0
+        MOV     R31     R0
+        LDL     R0      0x90
+        LDU     R0      0x01
+        MOV     R27     R0
+        MOV     R29     R0
+        LDL     R0      0x58
+        LDU     R0      0x02
+        MOV     R28     R0
+        MOV     R30     R0
+        DPOLY   0x1     0x4
+        LDL     R0      0xff
+        LDU     R0      0xff
+        MOV     R24     R0
+// Translate object in x-direction every 100ms
+_LOOP   TRNALL  0x0     0x1
+        WAIT    dp50
+        J       _LOOP
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        HALT
