@@ -348,7 +348,7 @@ _DRAW       LDU     R0  du100
             DLINE   0x1 0x6
 
 // Main Section -- contains SPART
-_MAIN       WAIT    dp250
+_MAIN       WAIT    dp50
 _Y          LDU     R0  _y
             LDL     R0  _y
             LDR     R1  R0
