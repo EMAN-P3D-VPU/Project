@@ -1,0 +1,374 @@
+FILL    0x3
+
+//point 1
+LDL     R0      dl100
+LDU     R0      du100
+MOV     R24     R0
+LDL     R0      dl50
+LDU     R0      du50
+MOV     R25     R0
+//point 2
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R26     R0
+LDL     R0      dl150
+LDU     R0      du150
+MOV     R27     R0
+//draw line1
+DLINE   0x1     0x0
+//point 1
+
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R24     R0
+LDL     R0      dl150
+LDU     R0      du150
+MOV     R25     R0
+//point 2
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R26     R0
+LDL     R0      dl150
+LDU     R0      du150
+MOV     R27     R0
+//draw line2
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R24     R0
+LDL     R0      dl150
+LDU     R0      du150
+MOV     R25     R0
+//point 2
+LDL     R0      dl500
+LDU     R0      du500
+MOV     R26     R0
+LDL     R0      dl50
+LDU     R0      du50
+MOV     R27     R0
+//draw line3
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl500
+LDU     R0      du500
+MOV     R24     R0
+LDL     R0      dl50
+LDU     R0      du50
+MOV     R25     R0
+//point 2
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R26     R0
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R27     R0
+//draw line4
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R24     R0
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R25     R0
+//point 2
+LDL     R0      dl300
+LDU     R0      du300
+MOV     R26     R0
+LDL     R0      dl450
+LDU     R0      du450
+MOV     R27     R0
+//draw line5
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl300
+LDU     R0      du300
+MOV     R24     R0
+LDL     R0      dl450
+LDU     R0      du450
+MOV     R25     R0
+//point 2
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R26     R0
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R27     R0
+//draw line6
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R24     R0
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R25     R0
+//point 2
+LDL     R0      dl100
+LDU     R0      du100
+MOV     R26     R0
+LDL     R0      dl50
+LDU     R0      du50
+MOV     R27     R0
+//draw line7
+DLINE   0x1     0x0
+
+//point 1
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R24     R0
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R25     R0
+//point 2
+LDL     R0      dl280
+LDU     R0      du280
+MOV     R26     R0
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R27     R0
+//point 3
+LDL     R0      dl280
+LDU     R0      du280
+MOV     R28     R0
+LDL     R0      dl250
+LDU     R0      du250
+MOV     R29     R0
+//point 4
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R30     R0
+LDL     R0      dl250
+LDU     R0      du250
+MOV     R31     R0
+//draw eye1
+DPOLY   0x1     0x1
+
+//point 1
+LDL     R0      dl320
+LDU     R0      du320
+MOV     R24     R0
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R25     R0
+//point 2
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R26     R0
+LDL     R0      dl200
+LDU     R0      du200
+MOV     R27     R0
+//point 3
+LDL     R0      dl320
+LDU     R0      du320
+MOV     R28     R0
+LDL     R0      dl250
+LDU     R0      du250
+MOV     R29     R0
+//point 4
+LDL     R0      dl400
+LDU     R0      du400
+MOV     R30     R0
+LDL     R0      dl250
+LDU     R0      du250
+MOV     R31     R0
+//draw eye2
+DPOLY   0x1     0x1
+
+//point 1
+LDL     R0      dl300
+LDU     R0      du300
+MOV     R24     R0
+LDL     R0      dl270
+LDU     R0      du270
+MOV     R25     R0
+//point 2
+LDL     R0      dl320
+LDU     R0      du320
+MOV     R26     R0
+LDL     R0      dl350
+LDU     R0      du350
+MOV     R27     R0
+//point 3
+LDL     R0      dl280
+LDU     R0      du280
+MOV     R28     R0
+LDL     R0      dl350
+LDU     R0      du350
+MOV     R29     R0
+//draw nose
+DTRI   0x1     0x1
+
+//point 1
+LDL     R0      dl220
+LDU     R0      du220
+MOV     R24     R0
+LDL     R0      dl380
+LDU     R0      du380
+MOV     R25     R0
+//point 2
+LDL     R0      dl380
+LDU     R0      du380
+MOV     R26     R0
+LDL     R0      dl380
+LDU     R0      du380
+MOV     R27     R0
+//point 3
+LDL     R0      dl300
+LDU     R0      du300
+MOV     R28     R0
+LDL     R0      dl420
+LDU     R0      du420
+MOV     R29     R0
+//draw mouth
+DTRI   0x1     0x1
+
+//R1 is +1
+        LDL     R1      0x01
+        LDU     R1      0x00
+//R2 is -1
+        LDL     R2      0xFF
+        LDU     R2      0xFF
+//R3 will be obj_num
+//R4 will be counter
+//R5 will be end counter
+
+// Translate object in x-direction every 50ms
+
+        //load value of +1 into V0
+_A      MOV     R24     R1
+        //clear counter
+        LDL     R4      0x00
+        LDU     R4      0x00
+
+
+        //clear the obj_num
+_B      LDL     R3      0x00
+        LDU     R3      0x00
+
+        //mov obj0
+        TRNALL  R3      0x1
+
+        //mov obj1
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj2
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj3
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj4
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj5
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj6
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj7
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj8
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj9
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj10
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        WAIT    dp50
+        ADDI    R4      dp1
+        LDL     R5      0x64
+        LDU     R5      0x00
+        XOR     R5      R4
+        BEQ     _C
+        J       _B
+
+        //load value of -1 into V0
+_C      MOV     R24     R2
+        //clear counter
+        LDL     R4      0x00
+        LDU     R4      0x00
+
+
+        //clear the obj_num
+_D      LDL     R3      0x00
+        LDU     R3      0x00
+
+        //mov obj0
+        TRNALL  R3      0x1
+
+        //mov obj1
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj2
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj3
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj4
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj5
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj6
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj7
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj8
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj9
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        //mov obj10
+        ADDI    R3      dp1
+        TRNALL  R3      0x1
+
+        WAIT    dp50
+        ADDI    R4      dp1
+        LDL     R5      0x64
+        LDU     R5      0x00
+        XOR     R5      R4
+        BEQ     _A
+        J       _D
+
+///
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        HALT
