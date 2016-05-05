@@ -4,7 +4,7 @@
 // Reset the program //
 _RESET      J       _CLR_REG
             RMVALL
-            FILL    0x7
+			FILL	0x7
             J       _DRAW
             LDU     R20 0x00 // object register
             LDL     R20 0x00
@@ -338,6 +338,7 @@ _TOGGLE     ADDI    R20 dp1
             XOR     R21 R18
             BNE     _TOGGLE_R
             LDL     R20 0x00
+			LDU     R20 0x00
 
 _TOGGLE_R   JR      R16
 
