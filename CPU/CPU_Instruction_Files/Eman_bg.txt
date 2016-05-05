@@ -49,7 +49,7 @@ _DRAW       LDU     R0  du100
             MOV     V1  R1
             MOV     V2  R2
             MOV     V3  R3
-            DLINE   0x1 0x0
+            DLINE   0x1 0x7
 // 2
             LDU     R0  du100
             LDL     R0  dl100
@@ -63,7 +63,7 @@ _DRAW       LDU     R0  du100
             MOV     V1  R1
             MOV     V2  R2
             MOV     V3  R3
-            DLINE   0x1 0x0
+            DLINE   0x1 0x7
 // 3
             LDU     R0  du100
             LDL     R0  dl100
@@ -77,7 +77,7 @@ _DRAW       LDU     R0  du100
             MOV     V1  R1
             MOV     V2  R2
             MOV     V3  R3
-            DLINE   0x1 0x0
+            DLINE   0x1 0x7
 // 4
             LDU     R0  du100
             LDL     R0  dl100
@@ -91,7 +91,7 @@ _DRAW       LDU     R0  du100
             MOV     V1  R1
             MOV     V2  R2
             MOV     V3  R3
-            DLINE   0x1 0x0
+            DLINE   0x1 0x7
 // 5 - M
             LDU     R0  du200
             LDL     R0  dl200
