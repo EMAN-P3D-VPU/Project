@@ -6,8 +6,9 @@ _RESET      J       _CLR_REG
             RMVALL
 			FILL	0x7
             J       _DRAW
-            LDU     R20 0x00 // object register
-            LDL     R20 0x00
+			LDU     R0  0x00
+			LDL     R0  0x00
+            MOV     R20 R0 // object register
 
             J       _MAIN
 
@@ -119,8 +120,8 @@ _n0         LDU     R7  _w
             BEQ     _n1
             // Key detected //
             XOR     FS  R8
-            LDU     R0  du-1
-            LDL     R0  dl-1
+            LDU     R0  du-2
+            LDL     R0  dl-2
             MOV     V0  R0
             TRNALL  R20 0x2
 
@@ -132,8 +133,8 @@ _n1         LDU     R7  _s
             BEQ     _n2
             // Key detected //
             XOR     FS  R8
-            LDU     R0  du1
-            LDL     R0  dl1
+            LDU     R0  du2
+            LDL     R0  dl2
             MOV     V0  R0
             TRNALL  R20 0x2
 
@@ -145,8 +146,8 @@ _n2         LDU     R7  _d
             BEQ     _n3
             // Key detected //
             XOR     FS  R8
-            LDU     R0  du1
-            LDL     R0  dl1
+            LDU     R0  du2
+            LDL     R0  dl2
             MOV     V0  R0
             TRNALL  R20 0x1
 
@@ -158,8 +159,8 @@ _n3         LDU     R7  _a
             BEQ     _n4
             // Key detected //
             XOR     FS  R8
-            LDU     R0  du-1
-            LDL     R0  dl-1
+            LDU     R0  du-2
+            LDL     R0  dl-2
             MOV     V0  R0
             TRNALL  R20 0x1
 
@@ -332,15 +333,21 @@ _COLOR_R    JR      R16
 // Switch Objects
 ////////////////////////////////////////////////////////////////////////////////
 _TOGGLE     ADDI    R20 dp1
-            MOV     R21 R20
-            LDU     R18 0x00
-            LDL     R18 0x04
-            XOR     R21 R18
-            BNE     _TOGGLE_R
-            LDL     R20 0x00
-			LDU     R20 0x00
+            MOV     R3 R20
+            LDU     R7 0x00
+            LDL     R7 0x04
+            AND     R3 R7
+			NOP // Peter
+			NOP // Kenneth
+			NOP // Deepinder
+			NOP // Matt
+			NOP // Danny
+            BEQ     _TOGGLE_R
+			LDU     R3  0x00
+			LDL     R3  0x00
+            MOV     R20 R3
+_TOGGLE_R	JR      R16
 
-_TOGGLE_R   JR      R16
 
 ////////////////////////////////////////////////////////////////////////////////
 // Memory Sector 0x100
