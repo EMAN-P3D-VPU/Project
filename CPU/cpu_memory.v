@@ -48,7 +48,8 @@ reg [15:0]  RAM [511:0];
 initial begin
     //$readmemh("CPU_Instruction_Files/CPU_instr_1.hex", RAM);
     //$readmemh("/userspace/p/procek/554_eMan_Final/Project/CPU/CPU_Instruction_Files/CPU_instr_1.hex", RAM);
-    $readmemh("CPU_Instruction_Files/SPART_instr.txt", RAM); // RAM must be >= 512
+    $readmemh("../Assembler/test_instr_01.out", RAM); // RAM must be >= 512
+    //$readmemh("/userspace/d/dsingh/ece554/EMAN/Assembler/test_instr_01.out", RAM); // RAM must be >= 512
 end
 
 

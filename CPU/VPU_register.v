@@ -59,7 +59,7 @@ output  reg [1:0]   VPU_obj_type;
 output  reg [2:0]   VPU_obj_color;
 output  reg [3:0]   VPU_op;
 output  reg [3:0]   VPU_code;
-output  reg [4:0]   VPU_obj_num;
+output  [4:0]   VPU_obj_num;
 output  reg [15:0]  V0_out, V1_out, V2_out, V3_out, V4_out, V5_out, V6_out, V7_out, RO_out;
 
 /////////////////////////////
@@ -144,7 +144,7 @@ always@(posedge clk)begin
         VPU_start_r <= 1'h0;
     else if(~VPU_rdy)
         VPU_start_r <= 1'h0;
-    else if(~STALL)
+    else if(~STALL | (STALL & VPU_start))
         VPU_start_r <= VPU_start & ~fill;
     else
         VPU_start_r <= VPU_start_r;
@@ -156,7 +156,7 @@ always@(posedge clk)begin
     if(!rst_n)begin
         VPU_op    <= 4'h0;
         VPU_code  <= 4'h0;
-    end else if(~STALL)begin
+    end else if(~STALL | (STALL & VPU_start))begin
         VPU_op    <= op;
         VPU_code  <= code;
     end else begin 
@@ -168,7 +168,7 @@ end
 always@(posedge clk)begin
     if(!rst_n)
         VPU_fill      <= 1'h0;
-    else if(~STALL)
+    else if(~STALL | (STALL & VPU_start))
         VPU_fill      <= fill;
     else
         VPU_fill      <= VPU_fill;
@@ -177,7 +177,7 @@ end
 always@(posedge clk)begin
     if(!rst_n)
         VPU_obj_type <= 2'h0;
-    else if(~STALL)
+    else if(~STALL | (STALL & VPU_start))
         VPU_obj_type <= VPU_instr[10:9];
     else
         VPU_obj_type <= VPU_obj_type;
@@ -186,20 +186,21 @@ end
 always@(posedge clk)begin
     if(!rst_n)
         VPU_obj_color <= 3'h0;
-    else if(~STALL)
+    else if(~STALL | (STALL & VPU_start))
         VPU_obj_color <= VPU_instr[2:0];
     else
         VPU_obj_color <= VPU_obj_color;
 end
 
-always@(posedge clk)begin
-    if(!rst_n)
-        VPU_obj_num <= 5'h0;
-    else if(~STALL)
-        VPU_obj_num <= VPU_object;
-    else
-        VPU_obj_num <= VPU_obj_num;
-end
+assign VPU_obj_num = VPU_object;
+//always@(posedge clk)begin
+//    if(!rst_n)
+//        VPU_obj_num <= 5'h0;
+//    else if(~STALL | (STALL & VPU_start))
+//        VPU_obj_num <= VPU_object;
+//    else
+//        VPU_obj_num <= VPU_obj_num;
+//end
 
 always@(posedge clk)begin
     if(!rst_n)begin
@@ -212,7 +213,7 @@ always@(posedge clk)begin
         V6_out <= 16'h0000;
         V7_out <= 16'h0000;
         RO_out <= 16'h0000;
-    end else if(~STALL)begin
+    end else if(~STALL | (STALL & VPU_start))begin
         V0_out <= V0_in;
         V1_out <= V1_in;
         V2_out <= V2_in;
