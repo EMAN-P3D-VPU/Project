@@ -158,10 +158,9 @@ case(st)
             if(obj_num < nxt_obj) //always use the free location with lowest index for nxt_obj
                 set_nxt_obj = 1'b1;
             nxt_st = IDLE;
-        //end else if (del_all) begin
-        //    obj_map = 32'b0; //clear the entire obj_map
-        //    clr_nxt_obj = 1'b1;//reset nxt_obj
-        //    nxt_st = IDLE;
+        end else if (del_all) begin
+            clr_nxt_obj = 1'b1;//reset nxt_obj
+            nxt_st = IDLE;
         end else if (ref_addr) begin //simply read the obj_num given by CPU and translate address
             drive_ref_addr = 1'b1;
             nxt_st = IDLE;
