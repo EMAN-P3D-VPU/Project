@@ -1,0 +1,25 @@
+SPART (what bit in FS (where LSB is 0))
+w - 3
+a - 4
+s - 5
+d - 6
+y - 7
+u - 8
+i - 9
+o - 10
+h - 11
+j - 12
+k - 13
+l - 14
+space - 15
+
+
+Color Palette
+0 - Black (000000)
+1 - Red (FF0000)
+2 - Orange (FF8000)
+3 - Yellow (FFFF00)
+4 - Green (00FF00)
+5 - Blue (0000FF)
+6 - Purple (7F00FF)
+7 - Pink (FF00FF)

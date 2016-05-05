@@ -1,0 +1,235 @@
+/userspace/d/dsingh/ece554/EMAN/CPU/instruction_fetch.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/instruction_fetch.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module instruction_fetch
+
+Top level modules:
+	instruction_fetch
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/register_file.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/register_file.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module register_file
+
+Top level modules:
+	register_file
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/memory_writeback_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/memory_writeback_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module memory_writeback_tb
+
+Top level modules:
+	memory_writeback_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/vpu_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/vpu_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module vpu_tb
+
+Top level modules:
+	vpu_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/branch_unit_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/branch_unit_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module branch_unit_tb
+
+Top level modules:
+	branch_unit_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/vpu_top_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/vpu_top_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module vpu_top_tb
+
+Top level modules:
+	vpu_top_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/clipping_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/clipping_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module clipping_unit
+
+Top level modules:
+	clipping_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/afifo.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/afifo.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module aFifo
+
+Top level modules:
+	aFifo
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/VPU_register.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/VPU_register.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module VPU_register
+
+Top level modules:
+	VPU_register
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/instruction_decode_execute.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/instruction_decode_execute.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module instruction_decode_execute
+
+Top level modules:
+	instruction_decode_execute
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/object_unit_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/object_unit_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module object_unit_tb
+
+Top level modules:
+	object_unit_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/cpu_memory.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/cpu_memory.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module cpu_memory
+
+Top level modules:
+	cpu_memory
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/cpu.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/cpu.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module cpu
+
+Top level modules:
+	cpu
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv {2 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module control_unit_tb
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(118): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(336): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(347): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(356): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(376): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(385): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+** Warning: /userspace/d/dsingh/ece554/EMAN/CPU/control_unit_tb.sv(404): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+
+Top level modules:
+	control_unit_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/coeff_ROM.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/coeff_ROM.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module coeff_ROM
+
+Top level modules:
+	coeff_ROM
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/alu_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/alu_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module alu_tb
+
+Top level modules:
+	alu_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/instruction_fetch_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/instruction_fetch_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module instruction_fetch_tb
+
+Top level modules:
+	instruction_fetch_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/register_file_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/register_file_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module register_file_tb
+
+Top level modules:
+	register_file_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/memory_writeback.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/memory_writeback.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module memory_writeback
+
+Top level modules:
+	memory_writeback
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/graycounter.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/graycounter.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module GrayCounter
+
+Top level modules:
+	GrayCounter
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/branch_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/branch_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module branch_unit
+
+Top level modules:
+	branch_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/matrix_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/matrix_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module matrix_unit
+
+Top level modules:
+	matrix_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/video_mem_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/video_mem_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module video_mem_unit
+
+Top level modules:
+	video_mem_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/vpu_top.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/vpu_top.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module vpu_top
+
+Top level modules:
+	vpu_top
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/VPU_register_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/VPU_register_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module VPU_register_tb
+
+Top level modules:
+	VPU_register_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/instruction_decode_execute_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/instruction_decode_execute_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module instruction_decode_execute_tb
+
+Top level modules:
+	instruction_decode_execute_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/object_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/object_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module object_unit
+
+Top level modules:
+	object_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/cpu_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/cpu_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module cpu_tb
+
+Top level modules:
+	cpu_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/cpu_memory_tb.sv {1 {vlog -work work -vopt -sv -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/cpu_memory_tb.sv
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module cpu_memory_tb
+
+Top level modules:
+	cpu_memory_tb
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/control_unit.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/control_unit.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module control_unit
+
+Top level modules:
+	control_unit
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/timescale.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/timescale.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/fpgasim_example/lib/glbl.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/fpgasim_example/lib/glbl.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module glbl
+
+Top level modules:
+	glbl
+
+} {} {}} /userspace/d/dsingh/ece554/EMAN/CPU/alu.v {1 {vlog -work work -vopt -stats=none /userspace/d/dsingh/ece554/EMAN/CPU/alu.v
+Model Technology ModelSim SE-64 vlog 10.4 Compiler 2014.12 Dec  2 2014
+-- Compiling module alu
+
+Top level modules:
+	alu
+
+} {} {}}

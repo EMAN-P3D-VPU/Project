@@ -1,0 +1,108 @@
+--------------------------------------------------------------------------------
+Release 14.7 Trace  (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+
+C:\ProgramData\App-V\DAA02E26-5322-4947-BF0F-062031F30E14\CFE6CF14-93A8-4FCD-AB10-8A5F8232BFDB\Root\14.7\ISE_DS\ISE\bin\nt64\unwrapped\trce.exe
+-intstyle ise -v 3 -s 1 -n 3 -fastpaths -xml cpu_vpu_top.twx cpu_vpu_top.ncd -o
+cpu_vpu_top.twr cpu_vpu_top.pcf -ucf cpu_vpu_top.ucf
+
+Design file:              cpu_vpu_top.ncd
+Physical constraint file: cpu_vpu_top.pcf
+Device,package,speed:     xc5vlx110t,ff1136,-1 (PRODUCTION 1.73 2013-10-13, STEPPING level 0)
+Report level:             verbose report
+
+Environment Variable      Effect 
+--------------------      ------ 
+NONE                      No environment variables were set
+--------------------------------------------------------------------------------
+
+INFO:Timing:2698 - No timing constraints found, doing default enumeration.
+INFO:Timing:3412 - To improve timing, see the Timing Closure User Guide (UG612).
+INFO:Timing:2752 - To get complete path coverage, use the unconstrained paths 
+   option. All paths that are not constrained will be reported in the 
+   unconstrained paths section(s) of the report.
+INFO:Timing:3339 - The clock-to-out numbers in this timing report are based on 
+   a 50 Ohm transmission line loading model.  For the details of this model, 
+   and for more information on accounting for different loading conditions, 
+   please see the device datasheet.
+
+
+
+Data Sheet report:
+-----------------
+All values displayed in nanoseconds (ns)
+
+Setup/Hold to clock clkin
+------------+------------+------------+------------------+--------+
+            |Max Setup to|Max Hold to |                  | Clock  |
+Source      | clk (edge) | clk (edge) |Internal Clock(s) | Phase  |
+------------+------------+------------+------------------+--------+
+rst_n       |    8.730(R)|   -2.869(R)|clk               |   0.000|
+            |    6.626(F)|   -5.456(F)|clk               |   0.000|
+rxd         |    2.849(R)|   -2.031(R)|clk               |   0.000|
+------------+------------+------------+------------------+--------+
+
+Clock clkin to Pad
+------------+------------+------------------+--------+
+            | clk (edge) |                  | Clock  |
+Destination |   to PAD   |Internal Clock(s) | Phase  |
+------------+------------+------------------+--------+
+D<0>        |    9.804(R)|clk_25mhz_OBUF    |   0.000|
+D<1>        |    9.471(R)|clk_25mhz_OBUF    |   0.000|
+D<2>        |    9.456(R)|clk_25mhz_OBUF    |   0.000|
+D<3>        |    9.722(R)|clk_25mhz_OBUF    |   0.000|
+D<4>        |    9.806(R)|clk_25mhz_OBUF    |   0.000|
+D<5>        |    9.697(R)|clk_25mhz_OBUF    |   0.000|
+D<6>        |    9.375(R)|clk_25mhz_OBUF    |   0.000|
+D<7>        |    9.314(R)|clk_25mhz_OBUF    |   0.000|
+D<8>        |    9.488(R)|clk_25mhz_OBUF    |   0.000|
+D<9>        |    9.173(R)|clk_25mhz_OBUF    |   0.000|
+D<10>       |    9.308(R)|clk_25mhz_OBUF    |   0.000|
+D<11>       |    9.085(R)|clk_25mhz_OBUF    |   0.000|
+blank       |    5.840(R)|clk_25mhz_OBUF    |   0.000|
+hsync       |    5.396(R)|clk_25mhz_OBUF    |   0.000|
+txd         |    5.180(R)|clk               |   0.000|
+vsync       |    6.140(R)|clk_25mhz_OBUF    |   0.000|
+------------+------------+------------------+--------+
+
+Clock to Setup on destination clock clkin
+---------------+---------+---------+---------+---------+
+               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+---------------+---------+---------+---------+---------+
+clkin          |   17.873|   10.522|   10.494|    3.198|
+---------------+---------+---------+---------+---------+
+
+Pad to Pad
+---------------+---------------+---------+
+Source Pad     |Destination Pad|  Delay  |
+---------------+---------------+---------+
+clkin          |D<0>           |    4.661|
+clkin          |D<1>           |    4.766|
+clkin          |D<2>           |    5.497|
+clkin          |D<3>           |    5.436|
+clkin          |D<4>           |    4.850|
+clkin          |D<5>           |    4.743|
+clkin          |D<6>           |    4.508|
+clkin          |D<7>           |    4.560|
+clkin          |D<8>           |    4.469|
+clkin          |D<9>           |    5.195|
+clkin          |D<10>          |    5.042|
+clkin          |D<11>          |    4.968|
+clkin          |clk_25mhz      |    3.242|
+clkin          |clk_25mhz_n    |    3.247|
+rst_n          |dvi_rst        |   11.698|
+---------------+---------------+---------+
+
+
+Analysis completed Wed May 04 23:17:21 2016 
+--------------------------------------------------------------------------------
+
+Trace Settings:
+-------------------------
+Trace Settings 
+
+Peak Memory Usage: 578 MB
+
+
+

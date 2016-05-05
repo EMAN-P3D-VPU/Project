@@ -1,0 +1,12 @@
+xst -intstyle ise -ifn "I:/Documents/ECE 554/Final_Project/cpu_vpu_top.xst" -ofn "I:/Documents/ECE 554/Final_Project/cpu_vpu_top.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc cpu_vpu_top.ucf -p xc5vlx110t-ff1136-1 "cpu_vpu_top.ngc" cpu_vpu_top.ngd  
+map -intstyle ise -p xc5vlx110t-ff1136-1 -w -logic_opt off -ol high -t 1 -register_duplication off -global_opt off -mt off -cm area -ir off -pr off -lc off -power off -o cpu_vpu_top_map.ncd cpu_vpu_top.ngd cpu_vpu_top.pcf 
+par -w -intstyle ise -ol high -mt off cpu_vpu_top_map.ncd cpu_vpu_top.ncd cpu_vpu_top.pcf 
+trce -intstyle ise -v 3 -s 1 -n 3 -fastpaths -xml cpu_vpu_top.twx cpu_vpu_top.ncd -o cpu_vpu_top.twr cpu_vpu_top.pcf -ucf cpu_vpu_top.ucf 
+bitgen -intstyle ise -f cpu_vpu_top.ut cpu_vpu_top.ncd 
+xst -intstyle ise -ifn "I:/Documents/ECE 554/Final_Project/cpu_vpu_top.xst" -ofn "I:/Documents/ECE 554/Final_Project/cpu_vpu_top.syr" 
+ngdbuild -intstyle ise -dd _ngo -sd ipcore_dir -nt timestamp -uc cpu_vpu_top.ucf -p xc5vlx110t-ff1136-1 "cpu_vpu_top.ngc" cpu_vpu_top.ngd  
+map -intstyle ise -p xc5vlx110t-ff1136-1 -w -logic_opt off -ol high -t 1 -register_duplication off -global_opt off -mt off -cm area -ir off -pr off -lc off -power off -o cpu_vpu_top_map.ncd cpu_vpu_top.ngd cpu_vpu_top.pcf 
+par -w -intstyle ise -ol high -mt off cpu_vpu_top_map.ncd cpu_vpu_top.ncd cpu_vpu_top.pcf 
+trce -intstyle ise -v 3 -s 1 -n 3 -fastpaths -xml cpu_vpu_top.twx cpu_vpu_top.ncd -o cpu_vpu_top.twr cpu_vpu_top.pcf -ucf cpu_vpu_top.ucf 
+bitgen -intstyle ise -f cpu_vpu_top.ut cpu_vpu_top.ncd 

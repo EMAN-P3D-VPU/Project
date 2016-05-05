@@ -1,0 +1,8 @@
+INTSTYLE=ise
+INFILE=I:\Documents\ECE 554\Final_Project\cpu_vpu_top.ncd
+OUTFILE=I:\Documents\ECE 554\Final_Project\cpu_vpu_top.bit
+FAMILY=Virtex5
+PART=xc5vlx110t-1ff1136
+WORKINGDIR=I:\Documents\ECE 554\Final_Project
+LICENSE=ISE
+USER_INFO=204658407_203016412_210597697_865

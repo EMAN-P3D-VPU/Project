@@ -1,0 +1,14 @@
+# Output products list for <rast_mult>
+rast_mult.asy
+rast_mult.gise
+rast_mult.ngc
+rast_mult.sym
+rast_mult.v
+rast_mult.veo
+rast_mult.xco
+rast_mult.xise
+rast_mult\doc\mult_gen_ds255.pdf
+rast_mult\doc\mult_gen_v11_2_readme.txt
+rast_mult\doc\mult_gen_v11_2_vinfo.html
+rast_mult_flist.txt
+rast_mult_xmdf.tcl
