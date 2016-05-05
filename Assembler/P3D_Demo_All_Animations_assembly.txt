@@ -1,0 +1,367 @@
+////////////////////////////////////////////////////////////////////////////////
+// Showcase all transformation features on several objects in interactive demo
+////////////////////////////////////////////////////////////////////////////////
+// Reset the program //
+_RESET      J       _CLR_REG
+            RMVALL
+            FILL    0x7
+            J       _DRAW
+            LDU     R20 0x00 // object register
+            LDL     R20 0x00
+
+            J       _MAIN
+
+// Zero out all registers for the sake of flushing out X's //
+_CLR_REG    LDU     R0  0x00
+            LDL     R0  0x00
+            MOV     R1  R0
+            MOV     R2  R0
+            MOV     R3  R0
+            MOV     R4  R0
+            MOV     R5  R0
+            MOV     R6  R0
+            MOV     R7  R0
+            MOV     R8  R0
+            MOV     R9  R0
+            MOV     R10 R0
+            MOV     R11 R0
+            MOV     R12 R0
+            MOV     R13 R0
+            MOV     R14 R0
+            MOV     R15 R0
+            //MOV     R16 R0 // Don't clear this or can't return...
+            MOV     R17 R0
+            MOV     R18 R0
+            MOV     R19 R0
+            MOV     R20 R0
+            MOV     R21 R0
+            MOV     FS  R0
+            MOV     RO  R0
+            MOV     V0  R0
+            MOV     V1  R0
+            MOV     V2  R0
+            MOV     V3  R0
+            MOV     V4  R0
+            MOV     V5  R0
+            MOV     V6  R0
+            MOV     V7  R0
+
+            JR      R16
+
+            // Triangle
+_DRAW       LDU     R0  du100
+            LDL     R0  dl100
+            LDU     R1  du50
+            LDL     R1  dl50
+            LDU     R2  du150
+            LDL     R2  dl150
+            LDU     R3  du25
+            LDL     R3  dl25
+            MOV     V0  R0
+            MOV     V1  R1
+            MOV     V2  R2
+            MOV     V3  R0
+            MOV     V4  R3
+            MOV     V5  R2
+            DTRI    0x1 0x0         // BLACK
+            // Polygon (square)
+            LDU     R0  du200
+            LDL     R0  dl200
+            LDU     R1  du250
+            LDL     R1  dl250
+            LDU     R2  du300
+            LDL     R2  dl300
+            LDU     R3  du400
+            LDL     R3  dl400
+            MOV     V0  R0
+            MOV     V1  R1
+            MOV     V2  R2
+            MOV     V3  R1
+            MOV     V4  R2
+            MOV     V5  R3
+            MOV     V6  R0
+            MOV     V7  R3
+            DPOLY   0x1 0x0         // BLACK
+            // Line
+            LDU     R0  du325
+            LDL     R0  dl325
+            LDU     R1  du75
+            LDL     R1  dl75
+            LDU     R2  du500
+            LDL     R2  dl500
+            LDU     R3  du200
+            LDL     R3  dl200
+            MOV     V0  R0
+            MOV     V1  R1
+            MOV     V2  R2
+            MOV     V3  R3
+            DLINE   0x1 0x0         // BLACK
+            // Point
+            LDU     R0  du75
+            LDL     R0  dl75
+            LDU     R1  du325
+            LDL     R1  dl325
+            MOV     V0  R0
+            MOV     V1  R1
+            DPT     0x1 0x0         // BLACK
+
+            JR      R16
+////////////////////////////////////////////////////////////////////////////////
+// Top of the loop
+////////////////////////////////////////////////////////////////////////////////
+_MAIN       WAIT    dp50
+
+            // Translate Up (-y) ///////////////////////////////////////////////
+_n0         LDU     R7  _w
+            LDL     R7  _w
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n1
+            // Key detected //
+            XOR     FS  R8
+            LDU     R0  du-1
+            LDL     R0  dl-1
+            MOV     V0  R0
+            TRNALL  R20 0x2
+
+            // Translate Down (+y) /////////////////////////////////////////////
+_n1         LDU     R7  _s
+            LDL     R7  _s
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n2
+            // Key detected //
+            XOR     FS  R8
+            LDU     R0  du1
+            LDL     R0  dl1
+            MOV     V0  R0
+            TRNALL  R20 0x2
+
+            // Translate Right (+x) ////////////////////////////////////////////
+_n2         LDU     R7  _d
+            LDL     R7  _d
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n3
+            // Key detected //
+            XOR     FS  R8
+            LDU     R0  du1
+            LDL     R0  dl1
+            MOV     V0  R0
+            TRNALL  R20 0x1
+
+            // Translate Left (-x) /////////////////////////////////////////////
+_n3         LDU     R7  _a
+            LDL     R7  _a
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n4
+            // Key detected //
+            XOR     FS  R8
+            LDU     R0  du-1
+            LDL     R0  dl-1
+            MOV     V0  R0
+            TRNALL  R20 0x1
+
+            // Rotate Right centroid ///////////////////////////////////////////
+_n4         LDU     R7  _i
+            LDL     R7  _i
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n5
+            // Key detected //
+            XOR     FS  R8
+            ROTL    R20 0x1 0x0
+
+            // Rotate Right ////////////////////////////////////////////////////
+_n5         LDU     R7  _o
+            LDL     R7  _o
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n6
+            // Key detected //
+            XOR     FS  R8
+            ROTL    R20 0x0 0x0
+
+            // Rotate Left centroid ////////////////////////////////////////////
+_n6         LDU     R7  _u
+            LDL     R7  _u
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n7
+            // Key detected //
+            XOR     FS  R8
+            ROTR    R20 0x1 0x0
+
+            // Rotate Left /////////////////////////////////////////////////////
+_n7         LDU     R7  _y
+            LDL     R7  _y
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n8
+            // Key detected //
+            XOR     FS  R8
+            ROTR    R20 0x0 0x0
+
+            // Scale Up ////////////////////////////////////////////////////////
+_n8         LDU     R7  _h
+            LDL     R7  _h
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _n9
+            // Key detected //
+            XOR     FS  R8
+            SCALE   R20 0x1 0x2
+
+            // Scale Down //////////////////////////////////////////////////////
+_n9         LDU     R7  _j
+            LDL     R7  _j
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _nA
+            // Key detected //
+            XOR     FS  R8
+            SCALE   R20 0x1 0x0
+
+            // Background color ////////////////////////////////////////////////
+_nA         LDU     R7  _k
+            LDL     R7  _k
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _nB
+            // Key detected //
+            XOR     FS  R8
+            J       _COLOR
+
+            // Toggle //////////////////////////////////////////////////////////
+_nB         LDU     R7  _space
+            LDL     R7  _space
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _nC
+            // Key detected //
+            XOR     FS  R8
+            J       _TOGGLE
+
+            // Reset ///////////////////////////////////////////////////////////
+_nC         LDU     R7  _l
+            LDL     R7  _l
+            LDR     R8  R7      // key mask
+            AND     R8  FS
+            BEQ     _END
+            // Key detected //
+            XOR     FS  R8
+            RMVALL
+            J       _RESET
+_END        J       _MAIN
+
+////////////////////////////////////////////////////////////////////////////////
+// Toggle Background Color
+////////////////////////////////////////////////////////////////////////////////
+_COLOR      LSR     R19 0x1
+            BNE     _fill_color
+            LDL     R2  0x80
+            MOV     R19 R2
+
+_fill_color LDU     R7  _white
+            LDL     R7  _white
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_r
+            FILL    0x7         // white
+            B       _COLOR_R
+
+_fill_r     LDU     R7  _red
+            LDL     R7  _red
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_o
+            FILL    0x1         // red
+            B       _COLOR_R
+
+_fill_o     LDU     R7  _orange
+            LDL     R7  _orange
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_y
+            FILL    0x2         // orange
+            B       _COLOR_R
+
+_fill_y     LDU     R7  _yellow
+            LDL     R7  _yellow
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_g
+            FILL    0x3         // yellow
+            B       _COLOR_R
+
+_fill_g     LDU     R7  _green
+            LDL     R7  _green
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_b
+            FILL    0x4         // green
+            B       _COLOR_R
+
+_fill_b     LDU     R7  _blue
+            LDL     R7  _blue
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_p
+            FILL    0x5         // blue
+            B       _COLOR_R
+
+_fill_p     LDU     R7  _purple
+            LDL     R7  _purple
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _fill_blk
+            FILL    0x6         // purple
+            B       _COLOR_R
+
+_fill_blk   LDU     R7  _black
+            LDL     R7  _black
+            LDR     R8  R7      // color mask
+            AND     R8  R19
+            BEQ     _COLOR_R
+            FILL    0x0         // black
+
+_COLOR_R    JR      R16
+
+////////////////////////////////////////////////////////////////////////////////
+// Switch Objects
+////////////////////////////////////////////////////////////////////////////////
+_TOGGLE     ADDI    R20 dp1
+            MOV     R21 R20
+            LDU     R18 0x00
+            LDL     R18 0x04
+            XOR     R21 R18
+            BNE     _TOGGLE_R
+            LDL     R20 0x00
+
+_TOGGLE_R   JR      R16
+
+////////////////////////////////////////////////////////////////////////////////
+// Memory Sector 0x100
+////////////////////////////////////////////////////////////////////////////////
+_space      .FILL       0x8000  // space    // toggle
+_l          .FILL       0x4000  // l        // reset
+_k          .FILL       0x2000  // k        // change color
+_j          .FILL       0x1000  // j        // scale down
+_h          .FILL       0x0800  // h        // scale up
+_o          .FILL       0x0400  // o        // rotate right
+_i          .FILL       0x0200  // i        // rotate right centroid
+_u          .FILL       0x0100  // u        // rotate left centroid
+_y          .FILL       0x0080  // y        // rotate left
+_d          .FILL       0x0040  // d        // go right
+_s          .FILL       0x0020  // s        // go down
+_a          .FILL       0x0010  // a        // go left
+_w          .FILL       0x0008  // w        // go up
+_white      .FILL       0x0001
+_red        .FILL       0x0002
+_orange     .FILL       0x0004
+_yellow     .FILL       0x0008
+_green      .FILL       0x0010
+_blue       .FILL       0x0020
+_purple     .FILL       0x0040
+_black      .FILL       0x0080
