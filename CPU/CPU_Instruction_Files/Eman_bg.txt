@@ -348,8 +348,6 @@ _DRAW       LDU     R0  du100
             DLINE   0x1 0x6
 
 // Main Section -- contains SPART
-            FILL    0x7
-            WAIT    dp500
 _MAIN       WAIT    dp250
 _Y          LDU     R0  _y
             LDL     R0  _y
@@ -358,7 +356,6 @@ _Y          LDU     R0  _y
             BEQ     _U
             XOR     FS  R1
             FILL    0x0
-            J       _MAIN
 _U          LDU     R0  _u
             LDL     R0  _u
             LDR     R1  R0
@@ -366,7 +363,6 @@ _U          LDU     R0  _u
             BEQ     _I
             XOR     FS  R1
             FILL    0x1
-            J       _MAIN
 _I          LDU     R0  _i
             LDL     R0  _i
             LDR     R1  R0
@@ -374,7 +370,6 @@ _I          LDU     R0  _i
             BEQ     _O
             XOR     FS  R1
             FILL    0x2
-            J       _MAIN
 _O          LDU     R0  _o
             LDL     R0  _o
             LDR     R1  R0
@@ -382,7 +377,6 @@ _O          LDU     R0  _o
             BEQ     _H
             XOR     FS  R1
             FILL    0x3
-            J       _MAIN
 _H          LDU     R0  _h
             LDL     R0  _h
             LDR     R1  R0
@@ -390,7 +384,6 @@ _H          LDU     R0  _h
             BEQ     _J
             XOR     FS  R1
             FILL    0x4
-            J       _MAIN
 _J          LDU     R0  _j
             LDL     R0  _j
             LDR     R1  R0
@@ -398,7 +391,6 @@ _J          LDU     R0  _j
             BEQ     _K
             XOR     FS  R1
             FILL    0x5
-            J       _MAIN
 _K          LDU     R0  _k
             LDL     R0  _k
             LDR     R1  R0
@@ -406,7 +398,6 @@ _K          LDU     R0  _k
             BEQ     _L
             XOR     FS  R1
             FILL    0x6
-            B       _MAIN
 _L          LDU     R0  _l
             LDL     R0  _l
             LDR     R1  R0
