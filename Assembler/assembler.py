@@ -128,7 +128,7 @@ def hex_to_binary(hex):
 
     # Sign Extend #
     if curr_opcode == 'LDU':
-        binary = binary + '0' * (16 - len(binary))
+        binary = '0' * (16 - len(binary)) + binary
     elif curr_opcode == 'LDL':
         binary = '0' * (16 - len(binary)) + binary
     else:
